@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-    "module": "node16",
-    "moduleResolution": "node16",
     "target": "ESNext",
-    "lib": [
-      "ESNext"
-    ],
-    "types": [
-      "node"
-    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "strict": true,
+    "noEmit": true,
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "vite.config.ts"
