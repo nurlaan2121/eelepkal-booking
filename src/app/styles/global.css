@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap');
+
+:root {
+  --main-color: #FF9800;
+  --black: #000000;
+  --white: #FFFFFF;
+  --grey: #757575;
+  --grey-light: #F5F5F5;
+  --red: #C43B3B;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--white);
+  color: var(--black);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: var(--main-color) !important;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
