@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@jridgewell/sourcemap-codec": "^1.5.5",
     "@tanstack/react-query": "^5.90.21",
     "axios": "^1.13.5",
+    "glob": "^13.0.6",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
