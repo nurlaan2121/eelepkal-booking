@@ -3,23 +3,33 @@ import { useAuthStore } from '../../features/auth/authStore';
 import { authService } from '../services/authService';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: '/api/proxy',
   timeout: Number(import.meta.env.VITE_TIMEOUT) || 10000,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Support credentials (cookies/tokens) as requested
 });
 
-// Request Interceptor
+// Request Interceptor: Transform /auth/login -> ?path=auth/login
 api.interceptors.request.use(
   (config) => {
+    if (config.url && !config.url.startsWith('http')) {
+      // Remove leading slash if exists
+      const cleanPath = config.url.startsWith('/') ? config.url.substring(1) : config.url;
+
+      // Update the URL to the proxy format
+      config.params = { ...config.params, path: cleanPath };
+      config.url = ''; // baseURL takes care of /api/proxy
+    }
+
     // Access token from Zustand (In-Memory)
     const token = useAuthStore.getState().accessToken;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url} - Token attached`);
+      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.params.path} - Token attached`);
     } else {
-      console.warn(`[API Request] ${config.method?.toUpperCase()} ${config.url} - NO TOKEN FOUND`);
+      console.warn(`[API Request] ${config.method?.toUpperCase()} ${config.params?.path || config.url} - NO TOKEN FOUND`);
     }
     return config;
   },

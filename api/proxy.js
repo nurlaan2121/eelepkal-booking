@@ -1,39 +1,45 @@
 export default async function handler(req, res) {
-    // Use the 'path' query parameter from the vercel.json rewrite
+    // 1. Extract path from query parameter
     const { path } = req.query;
-
-    // Construct the target URL correctly
-    // If path is undefined (hitting /api directly), we use an empty string
     const targetUrl = `https://eelepkal.com/api/${path || ''}`;
 
-    console.log(`[Proxy] ${req.method} ${req.url} -> ${targetUrl}`);
+    console.log(`[Proxy Request] ${req.method} ${path || '/'} -> ${targetUrl}`);
 
-    // Set up common headers
-    const headers = {
+    // 2. Prepare request headers for the backend
+    const forwardHeaders = {
         'Content-Type': 'application/json',
         'Origin': 'https://eelepkal.com',
         'Referer': 'https://eelepkal.com/',
     };
 
-    // Forward Authorization header if present
+    // Forward Authorization if exists
     if (req.headers.authorization) {
-        headers['Authorization'] = req.headers.authorization;
+        forwardHeaders['Authorization'] = req.headers.authorization;
+    }
+
+    // Handle CORS Preflight (OPTIONS)
+    if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Origin', 'https://app.eelepkal.com');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        return res.status(200).end();
     }
 
     try {
         const fetchOptions = {
             method: req.method,
-            headers: headers,
+            headers: forwardHeaders,
         };
 
-        // Forward body for non-GET requests
-        if (req.method !== 'GET' && req.method !== 'OPTIONS' && req.method !== 'HEAD') {
+        // Forward body for mutations
+        if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) && req.body) {
             fetchOptions.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
         }
 
         const response = await fetch(targetUrl, fetchOptions);
 
-        // Get response content type to handle non-JSON responses
+        // Check content type to handle JSON or Text
         const contentType = response.headers.get('content-type');
         let responseData;
 
@@ -43,19 +49,21 @@ export default async function handler(req, res) {
             responseData = await response.text();
         }
 
-        // Pass CORS headers back to the browser
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        console.log(`[Proxy Response] ${req.method} ${path} -> Status: ${response.status}`);
+
+        // Set CORS headers for the frontend (app.eelepkal.com)
+        res.setHeader('Access-Control-Allow-Origin', 'https://app.eelepkal.com');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         res.setHeader('Access-Control-Allow-Credentials', 'true');
 
         return res.status(response.status).send(responseData);
     } catch (error) {
-        console.error('[Proxy Error]:', error);
+        console.error(`[Proxy Error] ${req.method} ${path}:`, error);
         return res.status(500).json({
             error: 'Proxy Error',
             message: error.message,
-            targetUrl
+            path
         });
     }
 }
