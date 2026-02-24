@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-    readonly VITE_API_BASE_URL: string
-    readonly VITE_TIMEOUT: string
+    readonly VITE_API_BASE_URL = https://eelepkal.com
+    readonly VITE_TIMEOUT = 10000
     // more env variables...
 }
 
