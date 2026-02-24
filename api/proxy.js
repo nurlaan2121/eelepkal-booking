@@ -1,7 +1,6 @@
 export default async function handler(req, res) {
-    const { url } = req;
-    const targetPath = url.replace('/api', '');
-    const targetUrl = `https://eelepkal.com/api${targetPath}`;
+    const { path } = req.query;
+    const targetUrl = `https://eelepkal.com/api/${path || ''}`;
 
     // Allow only POST, GET, PUT, DELETE for this specific project
     const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
