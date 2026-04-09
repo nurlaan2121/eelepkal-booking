@@ -178,8 +178,8 @@ export const venueService = {
             venueId: params.venueId,
             floor: params.floor,
             countOfGuests: params.countOfGuests,
-            // Extract only the date part (YYYY-MM-DD) as the server expects LocalDate
-            fullVisitTime: params.fullVisitTime.split('T')[0],
+            // This endpoint requires ZonedDateTime (full timestamp)
+            fullVisitTime: params.fullVisitTime,
             offset: params.offset ?? 0,
             limit: params.limit ?? 20,
         };
