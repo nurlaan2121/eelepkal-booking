@@ -99,14 +99,18 @@ export const venueService = {
     },
 
     // 8. Feedbacks
-    getVenueReviews: async (venueId: string | number): Promise<import('../dto/venueDto').VenueReview[]> => {
-        const response = await api.get<import('../dto/venueDto').VenueReview[]>(`/client-venue/feedbacks/${venueId}`);
+    getVenueReviews: async (venueId: string | number, offset = 0, limit = 20): Promise<import('../dto/venueDto').VenueReview[]> => {
+        const response = await api.get<import('../dto/venueDto').VenueReview[]>(`/client-venue/feedbacks/${venueId}`, {
+            params: { offset, limit }
+        });
         return response.data;
     },
 
     // 9. Filials
-    getVenueFilials: async (venueId: string | number): Promise<import('../dto/venueDto').VenueFilial[]> => {
-        const response = await api.get<import('../dto/venueDto').VenueFilial[]>(`/client-venue/get-filials/${venueId}`);
+    getVenueFilials: async (venueId: string | number, offset = 0, limit = 20): Promise<import('../dto/venueDto').VenueFilial[]> => {
+        const response = await api.get<import('../dto/venueDto').VenueFilial[]>(`/client-venue/get-filials/${venueId}`, {
+            params: { offset, limit }
+        });
         return response.data;
     },
 

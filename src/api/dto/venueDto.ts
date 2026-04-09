@@ -78,14 +78,7 @@ export interface VenueSchedule {
     SUNDAY?: string;
 }
 
-export interface VenueAmenities {
-    photoShooting?: string;
-    changingRoom?: string;
-    heating?: string;
-    childChair?: string;
-    cinema?: string;
-    [key: string]: string | undefined;
-}
+export type VenueAmenities = Record<string, string>;
 
 export interface VenueContacts {
     email?: string;
