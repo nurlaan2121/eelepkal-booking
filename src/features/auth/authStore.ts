@@ -48,7 +48,12 @@ export const useAuthStore = create<AuthState>()(
             name: 'elevauto-auth-storage',
             // Only persist user data. isAuthenticated will be false on refresh 
             // because accessToken is not persisted.
-            partialize: (state) => ({ user: state.user }),
+            partialize: (state) => ({
+                user: state.user,
+                accessToken: state.accessToken,
+                isAuthenticated: state.isAuthenticated
+            }),
+
             storage: createJSONStorage(() => localStorage),
         }
     )
