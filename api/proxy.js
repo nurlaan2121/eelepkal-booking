@@ -1,9 +1,14 @@
 export default async function handler(req, res) {
     // 1. Extract path from query parameter
-    const { path } = req.query;
-    const targetUrl = `https://eelepkal.com/api/${path || ''}`;
+    const { path, ...query } = req.query;
 
-    console.log(`[Proxy Request] ${req.method} ${path || '/'} -> ${targetUrl}`);
+    delete query.path;
+
+    const queryString = new URLSearchParams(query).toString();
+
+    const targetUrl = `https://eelepkal.com/api/${path || ''}${queryString ? `?${queryString}` : ''}`;
+
+    console.log(`[Proxy Request] ${req.method} -> ${targetUrl}`);
 
     // 2. Prepare request headers for the backend
     const forwardHeaders = {
