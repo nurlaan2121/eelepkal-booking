@@ -124,3 +124,41 @@ export interface VenuePaymentDetails {
     bankName: string | null;
     qrcodeUrl: string | null;
 }
+
+export interface MenuCategory {
+    id: number;
+    name: string;
+}
+
+export interface MenuItem {
+    id: number;
+    name: string;
+    price: number;
+    description: string;
+    imageUrl: string;
+    favorite: boolean;
+}
+
+export interface TableItem {
+    id: number;
+    image: string;
+    title: string;
+    tableType: string;
+    capacity: string;
+    deposit: string;
+    tableStatus: 'BUSY' | 'OPEN';
+    recommendationForBooking: boolean;
+}
+
+export interface TablesSchemaResponse {
+    tables: TableItem[];
+    countOpen: number;
+    countBusy: number;
+    countForYou: number;
+}
+
+export interface BookingConditions {
+    deposit?: string;
+    cancellationPolicy?: string;
+    otherConditions?: string;
+}

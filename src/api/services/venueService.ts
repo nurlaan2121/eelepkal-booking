@@ -118,5 +118,44 @@ export const venueService = {
     getPaymentDetails: async (venueId: string | number): Promise<import('../dto/venueDto').VenuePaymentDetails[]> => {
         const response = await api.get<import('../dto/venueDto').VenuePaymentDetails[]>(`/client-venue/payment/get-all-payment-details/${venueId}`);
         return response.data;
+    },
+
+    // 11. Menu Categories
+    getMenuCategories: async (): Promise<import('../dto/venueDto').MenuCategory[]> => {
+        const response = await api.get<import('../dto/venueDto').MenuCategory[]>('/dev/category/allIdAndName');
+        return response.data;
+    },
+
+    // 12. Menu Items by Category
+    getMenuItemsByCategory: async (venueId: string | number, categoryId: number, offset = 0, limit = 10): Promise<import('../dto/venueDto').MenuItem[]> => {
+        const response = await api.get<import('../dto/venueDto').MenuItem[]>(`/client-menu/getByCategoryId/${venueId}/${categoryId}`, {
+            params: { offset, limit }
+        });
+        return response.data;
+    },
+
+    // 13. Tables for Booking
+    getTablesForBooking: async (params: {
+        venueId: string | number;
+        floor: number;
+        countOfGuests: number;
+        fullVisitTime: string;
+        offset?: number;
+        limit?: number;
+    }): Promise<import('../dto/venueDto').TablesSchemaResponse> => {
+        const response = await api.get<import('../dto/venueDto').TablesSchemaResponse>('/client-table/get-all-tables-as-list-for-booking', {
+            params: {
+                ...params,
+                offset: params.offset ?? 0,
+                limit: params.limit ?? 20
+            }
+        });
+        return response.data;
+    },
+
+    // 14. Booking Conditions
+    getBookingConditions: async (venueId: string | number): Promise<import('../dto/venueDto').BookingConditions> => {
+        const response = await api.get<import('../dto/venueDto').BookingConditions>(`/guest-conditions/get/${venueId}`);
+        return response.data;
     }
 };

@@ -12,6 +12,8 @@ import VenueDescription from './components/VenueDescription';
 import VenueReviews from './components/VenueReviews';
 import VenueFilials from './components/VenueFilials';
 import VenuePayments from './components/VenuePayments';
+import VenueMenuSection from './components/VenueMenuSection';
+import VenueTablesSection from './components/VenueTablesSection';
 
 const VenueDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -29,6 +31,8 @@ const VenueDetailsPage: React.FC = () => {
     const reviewsQuery = useQuery({ queryKey: ['venueReviews', venueId], queryFn: () => venueService.getVenueReviews(venueId) });
     const filialsQuery = useQuery({ queryKey: ['venueFilials', venueId], queryFn: () => venueService.getVenueFilials(venueId) });
     const paymentsQuery = useQuery({ queryKey: ['venuePayments', venueId], queryFn: () => venueService.getPaymentDetails(venueId) });
+
+    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING'>('ABOUT');
 
     const isLoading = basicQuery.isLoading;
     const error = basicQuery.error;
@@ -55,27 +59,56 @@ const VenueDetailsPage: React.FC = () => {
                     onShare={() => { }}
                 />
 
-                <VenueInfo
-                    basic={basic}
-                    details={detailsQuery.data || null}
-                />
+                <div style={styles.tabs}>
+                    <button
+                        onClick={() => setActiveTab('ABOUT')}
+                        style={{ ...styles.tab, borderBottom: activeTab === 'ABOUT' ? '3px solid #FF9800' : '3px solid transparent', color: activeTab === 'ABOUT' ? '#FF9800' : '#757575' }}
+                    >
+                        О заведении
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('MENU')}
+                        style={{ ...styles.tab, borderBottom: activeTab === 'MENU' ? '3px solid #FF9800' : '3px solid transparent', color: activeTab === 'MENU' ? '#FF9800' : '#757575' }}
+                    >
+                        Меню
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('BOOKING')}
+                        style={{ ...styles.tab, borderBottom: activeTab === 'BOOKING' ? '3px solid #FF9800' : '3px solid transparent', color: activeTab === 'BOOKING' ? '#FF9800' : '#757575' }}
+                    >
+                        Бронирование
+                    </button>
+                </div>
 
-                <VenueWorkingHours
-                    schedule={hoursQuery.data || null}
-                    todayHours={basic.todayWorkingHours}
-                />
+                {activeTab === 'ABOUT' && (
+                    <>
+                        <VenueInfo
+                            basic={basic}
+                            details={detailsQuery.data || null}
+                        />
 
-                <VenueDescription description={descriptionQuery.data || null} />
+                        <VenueWorkingHours
+                            schedule={hoursQuery.data || null}
+                            todayHours={basic.todayWorkingHours}
+                        />
 
-                <VenueAmenitiesSection amenities={amenitiesQuery.data || null} />
+                        <VenueDescription description={descriptionQuery.data || null} />
 
-                <VenueContacts contacts={contactsQuery.data || null} />
+                        <VenueAmenitiesSection amenities={amenitiesQuery.data || null} />
 
-                <VenueReviews reviews={reviewsQuery.data || []} />
+                        <VenueContacts contacts={contactsQuery.data || null} />
 
-                <VenueFilials filials={filialsQuery.data || []} />
+                        <VenueReviews reviews={reviewsQuery.data || []} />
 
-                <VenuePayments payments={paymentsQuery.data || []} />
+                        <VenueFilials filials={filialsQuery.data || []} />
+
+                        <VenuePayments payments={paymentsQuery.data || []} />
+                    </>
+                )}
+
+                {activeTab === 'MENU' && <VenueMenuSection venueId={venueId} />}
+
+                {activeTab === 'BOOKING' && <VenueTablesSection venueId={venueId} />}
             </div>
         </div>
     );
@@ -140,6 +173,25 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: '#F5F5F5',
         borderRadius: '16px',
         animation: 'pulse 1.5s infinite ease-in-out',
+    },
+    tabs: {
+        display: 'flex',
+        borderBottom: '1px solid #E0E0E0',
+        marginBottom: '20px',
+        position: 'sticky',
+        top: '80px',
+        backgroundColor: '#FFF',
+        zIndex: 9,
+    },
+    tab: {
+        flex: 1,
+        padding: '16px 0',
+        border: 'none',
+        backgroundColor: 'transparent',
+        fontSize: '14px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
     },
 };
 
