@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from '../shared/layouts/MainLayout';
 import HomeScreen from '../features/home/HomeScreen';
 import SearchScreen from '../features/search/SearchScreen';
+import VenueDetailsPage from '../features/venues/VenueDetailsPage';
 
 export const router = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
                     {
                         path: '/search',
                         element: <SearchScreen />,
+                    },
+                    {
+                        path: '/venue/:id',
+                        element: <VenueDetailsPage />,
                     },
                     {
                         path: '/booking',
