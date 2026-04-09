@@ -32,7 +32,7 @@ const VenueDetailsPage: React.FC = () => {
     const filialsQuery = useQuery({ queryKey: ['venueFilials', venueId], queryFn: () => venueService.getVenueFilials(venueId) });
     const paymentsQuery = useQuery({ queryKey: ['venuePayments', venueId], queryFn: () => venueService.getPaymentDetails(venueId) });
 
-    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING'>('ABOUT');
+    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
 
     const isLoading = basicQuery.isLoading;
     const error = basicQuery.error;
@@ -78,6 +78,12 @@ const VenueDetailsPage: React.FC = () => {
                     >
                         Бронирование
                     </button>
+                    <button
+                        onClick={() => setActiveTab('REVIEWS')}
+                        style={{ ...styles.tab, borderBottom: activeTab === 'REVIEWS' ? '3px solid #FF9800' : '3px solid transparent', color: activeTab === 'REVIEWS' ? '#FF9800' : '#757575' }}
+                    >
+                        Отзывы
+                    </button>
                 </div>
 
                 {activeTab === 'ABOUT' && (
@@ -98,8 +104,6 @@ const VenueDetailsPage: React.FC = () => {
 
                         <VenueContacts contacts={contactsQuery.data || null} />
 
-                        <VenueReviews reviews={reviewsQuery.data || []} />
-
                         <VenueFilials filials={filialsQuery.data || []} />
 
                         <VenuePayments payments={paymentsQuery.data || []} />
@@ -109,6 +113,12 @@ const VenueDetailsPage: React.FC = () => {
                 {activeTab === 'MENU' && <VenueMenuSection venueId={venueId} />}
 
                 {activeTab === 'BOOKING' && <VenueTablesSection venueId={venueId} />}
+
+                {activeTab === 'REVIEWS' && (
+                    <div style={{ marginTop: '16px' }}>
+                        <VenueReviews reviews={reviewsQuery.data || []} />
+                    </div>
+                )}
             </div>
         </div>
     );

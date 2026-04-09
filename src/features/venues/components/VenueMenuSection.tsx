@@ -17,7 +17,7 @@ const VenueMenuSection: React.FC<VenueMenuSectionProps> = ({ venueId }) => {
     const menuItemsQuery = useQuery({
         queryKey: ['menuItems', venueId, selectedCategoryId],
         queryFn: () => venueService.getMenuItemsByCategory(venueId, selectedCategoryId!),
-        enabled: !!selectedCategoryId,
+        enabled: !!selectedCategoryId && !!venueId,
     });
 
     React.useEffect(() => {

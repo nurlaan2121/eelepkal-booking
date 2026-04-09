@@ -20,11 +20,12 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
     const tablesQuery = useQuery({
         queryKey: ['venueTables', venueId, floor, guests, visitTime],
         queryFn: () => venueService.getTablesForBooking({
-            venueId,
+            venueId: Number(venueId),
             floor,
             countOfGuests: guests,
             fullVisitTime: visitTime,
         }),
+        enabled: !!venueId && !isNaN(Number(venueId)),
     });
 
     const categories = [
