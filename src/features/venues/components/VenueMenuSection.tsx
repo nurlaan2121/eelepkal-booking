@@ -2,12 +2,15 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
 
+import MenuItemDetailsModal from './MenuItemDetailsModal';
+
 interface VenueMenuSectionProps {
     venueId: string | number;
 }
 
 const VenueMenuSection: React.FC<VenueMenuSectionProps> = ({ venueId }) => {
     const [selectedCategoryId, setSelectedCategoryId] = React.useState<number | null>(null);
+    const [selectedMenuId, setSelectedMenuId] = React.useState<number | null>(null);
 
     const categoriesQuery = useQuery({
         queryKey: ['menuCategories'],
@@ -53,7 +56,11 @@ const VenueMenuSection: React.FC<VenueMenuSectionProps> = ({ venueId }) => {
                     <div style={styles.empty}>В этой категории пока ничего нет</div>
                 ) : (
                     menuItemsQuery.data?.map((item) => (
-                        <div key={item.id} style={styles.menuCard}>
+                        <div
+                            key={item.id}
+                            style={styles.menuCard}
+                            onClick={() => setSelectedMenuId(item.id)}
+                        >
                             <img src={item.imageUrl} alt={item.name} style={styles.itemImage} />
                             <div style={styles.itemInfo}>
                                 <h4 style={styles.itemName}>{item.name}</h4>
@@ -64,6 +71,13 @@ const VenueMenuSection: React.FC<VenueMenuSectionProps> = ({ venueId }) => {
                     ))
                 )}
             </div>
+
+            {selectedMenuId && (
+                <MenuItemDetailsModal
+                    menuId={selectedMenuId}
+                    onClose={() => setSelectedMenuId(null)}
+                />
+            )}
         </div>
     );
 };

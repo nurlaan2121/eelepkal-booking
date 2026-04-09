@@ -141,6 +141,12 @@ export const venueService = {
         return response.data;
     },
 
+    // 12b. Menu Item Details
+    getMenuItemById: async (menuId: number | string): Promise<import('../dto/venueDto').MenuItem> => {
+        const response = await api.get<import('../dto/venueDto').MenuItem>(`/client-menu/get/${menuId}`);
+        return response.data;
+    },
+
     // 13. Tables for Booking
     getTablesForBooking: async (params: {
         venueId: number;

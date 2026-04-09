@@ -137,6 +137,9 @@ export interface MenuItem {
     description: string;
     imageUrl: string;
     favorite: boolean;
+    addressVenue?: string;
+    unit?: string;
+    value?: string;
 }
 
 export interface TableItem {
