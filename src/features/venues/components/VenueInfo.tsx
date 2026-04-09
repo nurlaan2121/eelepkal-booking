@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Utensils, Wallet } from 'lucide-react';
+import { MapPin, Utensils, Wallet, Users } from 'lucide-react';
 import type { VenueBasicInfo, VenueDetails } from '../../../api/dto/venueDto';
 
 interface VenueInfoProps {
@@ -29,6 +29,18 @@ const VenueInfo: React.FC<VenueInfoProps> = ({ basic, details }) => {
                     <span style={styles.value}>{details?.typesOfCuisines || 'Не указано'}</span>
                 </div>
             </div>
+
+            {details?.capacities && Object.entries(details.capacities).map(([key, value]) => (
+                <div key={key} style={styles.row}>
+                    <div style={styles.iconBox}>
+                        <Users size={20} color="#FF9800" />
+                    </div>
+                    <div style={styles.content}>
+                        <span style={styles.label}>{key} (вместимость)</span>
+                        <span style={styles.value}>{value} чел.</span>
+                    </div>
+                </div>
+            ))}
 
             <div style={styles.row}>
                 <div style={styles.iconBox}>
