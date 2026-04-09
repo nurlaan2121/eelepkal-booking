@@ -160,6 +160,19 @@ export interface TablesSchemaResponse {
     countForYou: number;
 }
 
+export interface TableDetails {
+    id: number;
+    images: Record<string, string>;
+    title: string;
+    tableType: string;
+    description: string;
+    deposit: string;
+    capacity: string;
+    eventTypes: string[];
+    amenities: string[];
+    status: 'OPEN' | 'BUSY';
+}
+
 export interface BookingConditions {
     cancellationDeadline: number[] | null;
     editingDeadline: number[] | null;

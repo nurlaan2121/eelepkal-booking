@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -57,38 +57,45 @@ export const venueService = {
     },
 
     // 1. Basic Information
-    getVenueBasic: async (venueId: string | number): Promise<import('../dto/venueDto').VenueBasicInfo> => {
-        const response = await api.get<import('../dto/venueDto').VenueBasicInfo>(`/client-venue/venue-get-basic/${venueId}`);
+    getVenueBasic: async (venueId: string | number): Promise<VenueBasicInfo> => {
+        const response = await api.get<VenueBasicInfo>(`/client-venue/venue-get-basic/${venueId}`);
         return response.data;
     },
 
     // 2. Details (main block)
-    getVenueDetails: async (venueId: string | number): Promise<import('../dto/venueDto').VenueDetails> => {
-        const response = await api.get<import('../dto/venueDto').VenueDetails>(`/client-venue/venue-get-details/${venueId}`);
+    getVenueDetails: async (venueId: string | number): Promise<VenueDetails> => {
+        const response = await api.get<VenueDetails>(`/client-venue/venue-get-details/${venueId}`);
         return response.data;
     },
 
-    // 3. Working Hours
-    getVenueHours: async (venueId: string | number): Promise<import('../dto/venueDto').VenueSchedule> => {
-        const response = await api.get<import('../dto/venueDto').VenueSchedule>(`/client-venue/get-hours/${venueId}`);
+    // 13b. Table Details
+    getTableDetails: async (tableId: number | string, fullVisitTime: string): Promise<TableDetails> => {
+        const response = await api.get<TableDetails>(`/client-table/get/${tableId}`, {
+            params: { fullVisitTime }
+        });
+        return response.data;
+    },
+
+    getVenueHours: async (venueId: string | number): Promise<VenueSchedule> => {
+        const response = await api.get<VenueSchedule>(`/client-venue/get-hours/${venueId}`);
         return response.data;
     },
 
     // 4. Amenities
-    getVenueAmenities: async (venueId: string | number): Promise<import('../dto/venueDto').VenueAmenities> => {
-        const response = await api.get<import('../dto/venueDto').VenueAmenities>(`/client-venue/get-amenities/${venueId}`);
+    getVenueAmenities: async (venueId: string | number): Promise<VenueAmenities> => {
+        const response = await api.get<VenueAmenities>(`/client-venue/get-amenities/${venueId}`);
         return response.data;
     },
 
     // 5. Contacts
-    getVenueContacts: async (venueId: string | number): Promise<import('../dto/venueDto').VenueContacts> => {
-        const response = await api.get<import('../dto/venueDto').VenueContacts>(`/client-venue/get-contacts/${venueId}`);
+    getVenueContacts: async (venueId: string | number): Promise<VenueContacts> => {
+        const response = await api.get<VenueContacts>(`/client-venue/get-contacts/${venueId}`);
         return response.data;
     },
 
     // 6. Public Admin
-    getVenueAdmin: async (venueId: string | number): Promise<import('../dto/venueDto').PublicAdmin> => {
-        const response = await api.get<import('../dto/venueDto').PublicAdmin>(`/client-venue/get-public-admin/${venueId}`);
+    getVenueAdmin: async (venueId: string | number): Promise<PublicAdmin> => {
+        const response = await api.get<PublicAdmin>(`/client-venue/get-public-admin/${venueId}`);
         return response.data;
     },
 
@@ -99,10 +106,10 @@ export const venueService = {
     },
 
     // 8. Feedbacks
-    getVenueReviews: async (venueId: string | number, offset = 0, limit = 20): Promise<import('../dto/venueDto').VenueReview[]> => {
+    getVenueReviews: async (venueId: string | number, offset = 0, limit = 20): Promise<VenueReview[]> => {
         console.log("🚀 [getVenueReviews] START", { venueId, offset, limit });
         try {
-            const response = await api.get<import('../dto/venueDto').VenueReview[]>(`/client-venue/feedbacks/${venueId}`, {
+            const response = await api.get<VenueReview[]>(`/client-venue/feedbacks/${venueId}`, {
                 params: { offset, limit }
             });
             console.log("✅ [getVenueReviews] SUCCESS", response.data);
@@ -114,36 +121,36 @@ export const venueService = {
     },
 
     // 9. Filials
-    getVenueFilials: async (venueId: string | number, offset = 0, limit = 20): Promise<import('../dto/venueDto').VenueFilial[]> => {
-        const response = await api.get<import('../dto/venueDto').VenueFilial[]>(`/client-venue/get-filials/${venueId}`, {
+    getVenueFilials: async (venueId: string | number, offset = 0, limit = 20): Promise<VenueFilial[]> => {
+        const response = await api.get<VenueFilial[]>(`/client-venue/get-filials/${venueId}`, {
             params: { offset, limit }
         });
         return response.data;
     },
 
     // 10. Payment Details
-    getPaymentDetails: async (venueId: string | number): Promise<import('../dto/venueDto').VenuePaymentDetails[]> => {
-        const response = await api.get<import('../dto/venueDto').VenuePaymentDetails[]>(`/client-venue/payment/get-all-payment-details/${venueId}`);
+    getPaymentDetails: async (venueId: string | number): Promise<VenuePaymentDetails[]> => {
+        const response = await api.get<VenuePaymentDetails[]>(`/client-venue/payment/get-all-payment-details/${venueId}`);
         return response.data;
     },
 
     // 11. Menu Categories
-    getMenuCategories: async (): Promise<import('../dto/venueDto').MenuCategory[]> => {
-        const response = await api.get<import('../dto/venueDto').MenuCategory[]>('/dev/category/allIdAndName');
+    getMenuCategories: async (): Promise<MenuCategory[]> => {
+        const response = await api.get<MenuCategory[]>('/dev/category/allIdAndName');
         return response.data;
     },
 
     // 12. Menu Items by Category
-    getMenuItemsByCategory: async (venueId: string | number, categoryId: number, offset = 0, limit = 10): Promise<import('../dto/venueDto').MenuItem[]> => {
-        const response = await api.get<import('../dto/venueDto').MenuItem[]>(`/client-menu/getByCategoryId/${venueId}/${categoryId}`, {
+    getMenuItemsByCategory: async (venueId: string | number, categoryId: number, offset = 0, limit = 10): Promise<MenuItem[]> => {
+        const response = await api.get<MenuItem[]>(`/client-menu/getByCategoryId/${venueId}/${categoryId}`, {
             params: { offset, limit }
         });
         return response.data;
     },
 
     // 12b. Menu Item Details
-    getMenuItemById: async (menuId: number | string): Promise<import('../dto/venueDto').MenuItem> => {
-        const response = await api.get<import('../dto/venueDto').MenuItem>(`/client-menu/get/${menuId}`);
+    getMenuItemById: async (menuId: number | string): Promise<MenuItem> => {
+        const response = await api.get<MenuItem>(`/client-menu/get/${menuId}`);
         return response.data;
     },
 
@@ -155,7 +162,7 @@ export const venueService = {
         fullVisitTime: string;
         offset?: number;
         limit?: number;
-    }): Promise<import('../dto/venueDto').TablesSchemaResponse> => {
+    }): Promise<TablesSchemaResponse> => {
 
         console.log("🚀 [getTablesForBooking] START");
 
@@ -178,9 +185,7 @@ export const venueService = {
         console.log("📡 FINAL REQUEST PARAMS:", requestParams);
 
         try {
-            const response = await api.get<
-                import('../dto/venueDto').TablesSchemaResponse
-            >('/client-table/get-all-tables-as-list-for-booking', {
+            const response = await api.get<TablesSchemaResponse>('/client-table/get-all-tables-as-list-for-booking', {
                 params: requestParams
             });
 
@@ -202,8 +207,8 @@ export const venueService = {
     },
 
     // 14. Booking Conditions
-    getBookingConditions: async (venueId: string | number): Promise<import('../dto/venueDto').BookingConditions> => {
-        const response = await api.get<import('../dto/venueDto').BookingConditions>(`/guest-conditions/get/${venueId}`);
+    getBookingConditions: async (venueId: string | number): Promise<BookingConditions> => {
+        const response = await api.get<BookingConditions>(`/guest-conditions/get/${venueId}`);
         return response.data;
     }
 };

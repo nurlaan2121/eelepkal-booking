@@ -5,6 +5,7 @@ import { Users, Calendar, Clock } from 'lucide-react';
 import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
 
 import { TableItem } from '../../../api/dto/venueDto';
+import TableDetailsModal from './TableDetailsModal';
 
 interface VenueTablesSectionProps {
     venueId: string | number;
@@ -13,6 +14,7 @@ interface VenueTablesSectionProps {
 const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
     const [floor, setFloor] = React.useState(1);
     const [guests, setGuests] = React.useState(1);
+    const [selectedTableId, setSelectedTableId] = React.useState<number | null>(null);
 
     // Default to tomorrow 12:00
     const [selectedDate, setSelectedDate] = React.useState(() => {
@@ -112,7 +114,11 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                     <div style={styles.empty}>Свободных столиков нет на это время</div>
                 ) : (
                     tablesQuery.data?.tables.map((table: TableItem) => (
-                        <div key={table.id} style={styles.tableCard}>
+                        <div
+                            key={table.id}
+                            style={styles.tableCard}
+                            onClick={() => setSelectedTableId(table.id)}
+                        >
                             <img src={table.image} alt={table.title} style={styles.tableImage} />
                             <div style={styles.tableInfo}>
                                 <h4 style={styles.tableName}>{table.title}</h4>
@@ -132,6 +138,10 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                                     cursor: table.tableStatus === 'BUSY' ? 'not-allowed' : 'pointer'
                                 }}
                                 disabled={table.tableStatus === 'BUSY'}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Booking logic here
+                                }}
                             >
                                 {table.tableStatus === 'BUSY' ? 'Занят' : 'Бронь'}
                             </button>
@@ -139,6 +149,14 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                     ))
                 )}
             </div>
+
+            {selectedTableId && (
+                <TableDetailsModal
+                    tableId={selectedTableId}
+                    visitTime={fullVisitTime}
+                    onClose={() => setSelectedTableId(null)}
+                />
+            )}
         </div>
     );
 };
