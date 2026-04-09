@@ -1,16 +1,17 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star, MapPin } from 'lucide-react';
 import type { RecommendedVenue } from '../../../api/dto/venueDto';
 
 interface VenueCardProps {
     venue: RecommendedVenue;
-    onClick?: () => void;
 }
 
 
-const VenueCard: React.FC<VenueCardProps> = ({ venue, onClick }) => {
+const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
+    const navigate = useNavigate();
+
     return (
-        <div style={styles.card} onClick={onClick}>
+        <div style={styles.card} onClick={() => navigate(`/venue/${venue.venueId}`)}>
             <div style={styles.imageContainer}>
                 <img src={venue.firstImageUrl} alt={venue.venueName} style={styles.image} />
                 <div style={styles.ratingBadge}>
