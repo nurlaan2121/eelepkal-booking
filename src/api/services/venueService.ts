@@ -142,12 +142,12 @@ export const venueService = {
         fullVisitTime: string;
         offset?: number;
         limit?: number;
-    }) => {
+    }): Promise<import('../dto/venueDto').TablesSchemaResponse> => {
         if (!params.venueId) {
             throw new Error("venueId is required");
         }
 
-        const response = await api.get('/client-table/get-all-tables-as-list-for-booking', {
+        const response = await api.get<import('../dto/venueDto').TablesSchemaResponse>('/client-table/get-all-tables-as-list-for-booking', {
             params: {
                 venueId: params.venueId,
                 floor: params.floor,

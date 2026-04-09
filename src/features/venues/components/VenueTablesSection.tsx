@@ -4,6 +4,8 @@ import { venueService } from '../../../api/services/venueService';
 import { Users, Calendar, Clock } from 'lucide-react';
 import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
 
+import { TableItem } from '../../../api/dto/venueDto';
+
 interface VenueTablesSectionProps {
     venueId: string | number;
 }
@@ -109,7 +111,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                 ) : tablesQuery.data?.tables.length === 0 ? (
                     <div style={styles.empty}>Свободных столиков нет на это время</div>
                 ) : (
-                    tablesQuery.data?.tables.map((table) => (
+                    tablesQuery.data?.tables.map((table: TableItem) => (
                         <div key={table.id} style={styles.tableCard}>
                             <img src={table.image} alt={table.title} style={styles.tableImage} />
                             <div style={styles.tableInfo}>
