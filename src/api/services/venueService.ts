@@ -136,20 +136,28 @@ export const venueService = {
 
     // 13. Tables for Booking
     getTablesForBooking: async (params: {
-        venueId: string | number;
+        venueId: number;
         floor: number;
         countOfGuests: number;
         fullVisitTime: string;
         offset?: number;
         limit?: number;
-    }): Promise<import('../dto/venueDto').TablesSchemaResponse> => {
-        const response = await api.get<import('../dto/venueDto').TablesSchemaResponse>('/client-table/get-all-tables-as-list-for-booking', {
+    }) => {
+        if (!params.venueId) {
+            throw new Error("venueId is required");
+        }
+
+        const response = await api.get('/client-table/get-all-tables-as-list-for-booking', {
             params: {
-                ...params,
+                venueId: params.venueId,
+                floor: params.floor,
+                countOfGuests: params.countOfGuests,
+                fullVisitTime: params.fullVisitTime,
                 offset: params.offset ?? 0,
-                limit: params.limit ?? 20
+                limit: params.limit ?? 20,
             }
         });
+
         return response.data;
     },
 

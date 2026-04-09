@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
-import { Users, Calendar } from 'lucide-react';
+import { Users, Calendar, Clock } from 'lucide-react';
+import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
 
 interface VenueTablesSectionProps {
     venueId: string | number;
@@ -10,21 +11,36 @@ interface VenueTablesSectionProps {
 const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
     const [floor, setFloor] = React.useState(1);
     const [guests, setGuests] = React.useState(1);
-    const [visitTime] = React.useState(() => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(12, 0, 0, 0);
-        return tomorrow.toISOString();
+
+    // Default to tomorrow 12:00
+    const [selectedDate, setSelectedDate] = React.useState(() => {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date.toISOString().split('T')[0];
     });
+    const [selectedTime, setSelectedTime] = React.useState("12:00");
+
+    const fullVisitTime = React.useMemo(() => {
+        return formatToBackendDateTime(selectedDate, selectedTime);
+    }, [selectedDate, selectedTime]);
 
     const tablesQuery = useQuery({
-        queryKey: ['venueTables', venueId, floor, guests, visitTime],
-        queryFn: () => venueService.getTablesForBooking({
-            venueId: Number(venueId),
-            floor,
-            countOfGuests: guests,
-            fullVisitTime: visitTime,
-        }),
+        queryKey: ['venueTables', venueId, floor, guests, fullVisitTime],
+        queryFn: async () => {
+            console.log({
+                venueId,
+                floor,
+                countOfGuests: guests,
+                fullVisitTime
+            });
+
+            return venueService.getTablesForBooking({
+                venueId: Number(venueId),
+                floor,
+                countOfGuests: guests,
+                fullVisitTime,
+            });
+        },
         enabled: !!venueId && !isNaN(Number(venueId)),
     });
 
@@ -40,7 +56,21 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                 <div style={styles.pickerRow}>
                     <div style={styles.picker}>
                         <Calendar size={18} color="#FF9800" />
-                        <span style={styles.pickerLabel}>Завтра, 12:00</span>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            style={styles.input}
+                        />
+                    </div>
+                    <div style={styles.picker}>
+                        <Clock size={18} color="#FF9800" />
+                        <input
+                            type="time"
+                            value={selectedTime}
+                            onChange={(e) => setSelectedTime(e.target.value)}
+                            style={styles.input}
+                        />
                     </div>
                     <div style={styles.picker}>
                         <Users size={18} color="#FF9800" />
@@ -49,7 +79,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                             onChange={(e) => setGuests(Number(e.target.value))}
                             style={styles.select}
                         >
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20].map(n => (
                                 <option key={n} value={n}>{n} чел.</option>
                             ))}
                         </select>
@@ -141,11 +171,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     select: {
         backgroundColor: 'transparent',
         border: 'none',
-        fontSize: '14px',
+        fontSize: '13px',
         fontWeight: '600',
         color: '#424242',
         width: '100%',
         outline: 'none',
+        cursor: 'pointer',
+    },
+    input: {
+        backgroundColor: 'transparent',
+        border: 'none',
+        fontSize: '13px',
+        fontWeight: '600',
+        color: '#424242',
+        width: '100%',
+        outline: 'none',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
     },
     floorBar: {
         display: 'flex',
