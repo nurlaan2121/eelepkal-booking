@@ -47,13 +47,13 @@ export const venueService = {
         offset = 0,
         limit = 20
     ): Promise<RecommendedVenue[]> => {
-        const response = await api.post<RecommendedVenue[]>('/client-venue/search', filter, {
-            params: {
-                word: word || undefined,
-                offset,
-                limit
-            }
+        const response = await api.post<RecommendedVenue[]>('/client-venue/search', {
+            ...filter,
+            word: word || undefined,
+            offset,
+            limit
         });
         return response.data;
     }
+
 };

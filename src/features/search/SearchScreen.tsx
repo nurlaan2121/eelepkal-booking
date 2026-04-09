@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState, useRef } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchStore } from './searchStore';
 import { venueService } from '../../api/services/venueService';
 import VenueCard from '../home/components/VenueCard';
@@ -10,6 +10,7 @@ const SearchScreen: React.FC = () => {
     const { query, filters, setQuery } = useSearchStore();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [debouncedQuery, setDebouncedQuery] = useState(query);
+    const observerTarget = useRef<HTMLDivElement>(null);
 
     // Debounce search query
     useEffect(() => {
@@ -19,11 +20,42 @@ const SearchScreen: React.FC = () => {
         return () => clearTimeout(timer);
     }, [query]);
 
-    const { data: results, isLoading, isError } = useQuery({
+    const {
+        data,
+        isLoading,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteQuery({
         queryKey: ['searchVenues', debouncedQuery, filters],
-        queryFn: () => venueService.searchVenues(debouncedQuery, filters),
-        enabled: true, // Fetch even if query is empty to show default/filtered venues
+        queryFn: ({ pageParam = 0 }) => venueService.searchVenues(debouncedQuery, filters, pageParam, 20),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            // If the last page has 20 items, there might be more
+            return lastPage.length === 20 ? allPages.length * 20 : undefined;
+        },
     });
+
+    // Infinite scroll observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => observer.disconnect();
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+    const results = data?.pages.flat() || [];
 
     return (
         <div style={styles.container}>
@@ -49,7 +81,7 @@ const SearchScreen: React.FC = () => {
 
             {/* Results */}
             <div style={styles.content}>
-                {isLoading ? (
+                {isLoading && !isFetchingNextPage ? (
                     <div style={styles.center}>
                         <Loader2 size={40} color="#FF9800" className="animate-spin" />
                     </div>
@@ -57,18 +89,25 @@ const SearchScreen: React.FC = () => {
                     <div style={styles.center}>
                         <p style={styles.errorText}>Ошибка при поиске. Попробуйте снова.</p>
                     </div>
-                ) : results && results.length > 0 ? (
+                ) : results.length > 0 ? (
                     <div style={styles.resultsGrid}>
-                        {results.map((venue) => (
-                            <VenueCard key={venue.venueId} venue={venue} />
+                        {results.map((venue, index) => (
+                            <VenueCard key={`${venue.venueId}-${index}`} venue={venue} />
                         ))}
+
+                        {/* Loading trigger / indicator */}
+                        <div ref={observerTarget} style={styles.loaderTarget}>
+                            {isFetchingNextPage && (
+                                <Loader2 size={24} color="#FF9800" className="animate-spin" />
+                            )}
+                        </div>
                     </div>
-                ) : (
+                ) : !isLoading ? (
                     <div style={styles.center}>
                         <SearchX size={64} color="#E0E0E0" />
                         <p style={styles.emptyText}>Ничего не найдено</p>
                     </div>
-                )}
+                ) : null}
             </div>
 
             {/* Filter Modal */}
@@ -146,6 +185,14 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontSize: '16px',
         fontWeight: '500',
     },
+    loaderTarget: {
+        height: '40px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px 0',
+    },
 };
+
 
 export default SearchScreen;

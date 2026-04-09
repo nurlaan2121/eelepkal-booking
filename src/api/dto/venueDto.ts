@@ -24,11 +24,16 @@ export interface Venue {
 }
 
 export interface VenueSearchRequest {
+    word?: string;
     minRating?: number;
     minAverageCheck?: number;
     maxAverageCheck?: number;
     venueAmenitiesIds?: number[];
+    offset?: number;
+    limit?: number;
 }
+
+
 
 export interface FavoriteToggleResponse {
     status: string;
