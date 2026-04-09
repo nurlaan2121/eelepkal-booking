@@ -68,10 +68,11 @@ export const venueService = {
         return response.data;
     },
 
-    // 13b. Table Details
     getTableDetails: async (tableId: number | string, fullVisitTime: string): Promise<TableDetails> => {
+        // Extract only the date part (YYYY-MM-DD) as the server expects LocalDate
+        const dateOnly = fullVisitTime.split('T')[0];
         const response = await api.get<TableDetails>(`/client-table/get/${tableId}`, {
-            params: { fullVisitTime }
+            params: { fullVisitTime: dateOnly }
         });
         return response.data;
     },
@@ -177,7 +178,8 @@ export const venueService = {
             venueId: params.venueId,
             floor: params.floor,
             countOfGuests: params.countOfGuests,
-            fullVisitTime: params.fullVisitTime,
+            // Extract only the date part (YYYY-MM-DD) as the server expects LocalDate
+            fullVisitTime: params.fullVisitTime.split('T')[0],
             offset: params.offset ?? 0,
             limit: params.limit ?? 20,
         };
