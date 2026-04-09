@@ -10,6 +10,7 @@ import VenueAmenitiesSection from './components/VenueAmenities';
 import VenueContacts from './components/VenueContacts';
 import VenueDescription from './components/VenueDescription';
 import VenueReviews from './components/VenueReviews';
+import VenueBookingConditions from './components/VenueBookingConditions';
 import VenueFilials from './components/VenueFilials';
 import VenuePayments from './components/VenuePayments';
 import VenueMenuSection from './components/VenueMenuSection';
@@ -31,6 +32,7 @@ const VenueDetailsPage: React.FC = () => {
     const reviewsQuery = useQuery({ queryKey: ['venueReviews', venueId], queryFn: () => venueService.getVenueReviews(venueId) });
     const filialsQuery = useQuery({ queryKey: ['venueFilials', venueId], queryFn: () => venueService.getVenueFilials(venueId) });
     const paymentsQuery = useQuery({ queryKey: ['venuePayments', venueId], queryFn: () => venueService.getPaymentDetails(venueId) });
+    const conditionsQuery = useQuery({ queryKey: ['venueConditions', venueId], queryFn: () => venueService.getBookingConditions(venueId) });
 
     const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
 
@@ -41,8 +43,6 @@ const VenueDetailsPage: React.FC = () => {
     if (error || !basicQuery.data) return <div style={styles.error}>Ошибка при загрузке данных</div>;
 
     const basic = basicQuery.data;
-
-    console.log('Rendering VenueDetailsPage', { activeTab, reviewsStatus: reviewsQuery.status, reviewsData: reviewsQuery.data });
 
     return (
         <div style={styles.page}>
@@ -93,6 +93,10 @@ const VenueDetailsPage: React.FC = () => {
                         <VenueInfo
                             basic={basic}
                             details={detailsQuery.data || null}
+                        />
+
+                        <VenueBookingConditions
+                            conditions={conditionsQuery.data || null}
                         />
 
                         <VenueWorkingHours

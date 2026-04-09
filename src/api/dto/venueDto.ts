@@ -158,7 +158,10 @@ export interface TablesSchemaResponse {
 }
 
 export interface BookingConditions {
-    deposit?: string;
-    cancellationPolicy?: string;
-    otherConditions?: string;
+    cancellationDeadline: number[] | null;
+    editingDeadline: number[] | null;
+    cancellationAllowed: boolean;
+    editingAllowed: boolean;
+    withADeposit: boolean;
+    deposit: number | null;
 }
