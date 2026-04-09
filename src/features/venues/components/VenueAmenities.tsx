@@ -1,5 +1,4 @@
 import React from 'react';
-import { Accessibility } from 'lucide-react';
 import type { VenueAmenities } from '../../../api/dto/venueDto';
 
 interface VenueAmenitiesProps {
