@@ -143,22 +143,49 @@ export const venueService = {
         offset?: number;
         limit?: number;
     }): Promise<import('../dto/venueDto').TablesSchemaResponse> => {
+
+        console.log("🚀 [getTablesForBooking] START");
+
+        console.log("📤 RAW PARAMS:", params);
+
         if (!params.venueId) {
+            console.error("❌ venueId is missing!", params);
             throw new Error("venueId is required");
         }
 
-        const response = await api.get<import('../dto/venueDto').TablesSchemaResponse>('/client-table/get-all-tables-as-list-for-booking', {
-            params: {
-                venueId: params.venueId,
-                floor: params.floor,
-                countOfGuests: params.countOfGuests,
-                fullVisitTime: params.fullVisitTime,
-                offset: params.offset ?? 0,
-                limit: params.limit ?? 20,
-            }
-        });
+        const requestParams = {
+            venueId: params.venueId,
+            floor: params.floor,
+            countOfGuests: params.countOfGuests,
+            fullVisitTime: params.fullVisitTime,
+            offset: params.offset ?? 0,
+            limit: params.limit ?? 20,
+        };
 
-        return response.data;
+        console.log("📡 FINAL REQUEST PARAMS:", requestParams);
+
+        try {
+            const response = await api.get<
+                import('../dto/venueDto').TablesSchemaResponse
+            >('/client-table/get-all-tables-as-list-for-booking', {
+                params: requestParams
+            });
+
+            console.log("✅ RESPONSE STATUS:", response.status);
+            console.log("📥 RESPONSE DATA:", response.data);
+
+            return response.data;
+
+        } catch (error: any) {
+            console.error("🔥 API ERROR:", error);
+
+            if (error.response) {
+                console.error("📉 STATUS:", error.response.status);
+                console.error("📩 SERVER RESPONSE:", error.response.data);
+            }
+
+            throw error;
+        }
     },
 
     // 14. Booking Conditions
