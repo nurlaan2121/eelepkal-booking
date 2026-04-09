@@ -27,6 +27,7 @@ const VenueAmenitiesSection: React.FC<VenueAmenitiesProps> = ({ amenities }) => 
     );
 };
 
+
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
         padding: '24px',
