@@ -42,6 +42,8 @@ const VenueDetailsPage: React.FC = () => {
 
     const basic = basicQuery.data;
 
+    console.log('Rendering VenueDetailsPage', { activeTab, reviewsStatus: reviewsQuery.status, reviewsData: reviewsQuery.data });
+
     return (
         <div style={styles.page}>
             <div style={styles.container}>
@@ -116,7 +118,15 @@ const VenueDetailsPage: React.FC = () => {
 
                 {activeTab === 'REVIEWS' && (
                     <div style={{ marginTop: '16px' }}>
-                        <VenueReviews reviews={reviewsQuery.data || []} />
+                        {reviewsQuery.isLoading ? (
+                            <div style={styles.tabLoading}>Загрузка отзывов...</div>
+                        ) : reviewsQuery.isError ? (
+                            <div style={styles.tabError}>Ошибка при загрузке отзывов</div>
+                        ) : !reviewsQuery.data || reviewsQuery.data.length === 0 ? (
+                            <div style={styles.tabEmpty}>Отзывов пока нет</div>
+                        ) : (
+                            <VenueReviews reviews={reviewsQuery.data} />
+                        )}
                     </div>
                 )}
             </div>
@@ -202,6 +212,21 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '700',
         cursor: 'pointer',
         transition: 'all 0.2s',
+    },
+    tabLoading: {
+        textAlign: 'center',
+        padding: '40px 0',
+        color: '#757575',
+    },
+    tabError: {
+        textAlign: 'center',
+        padding: '40px 0',
+        color: '#F44336',
+    },
+    tabEmpty: {
+        textAlign: 'center',
+        padding: '40px 0',
+        color: '#9E9E9E',
     },
 };
 

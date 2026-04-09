@@ -100,10 +100,17 @@ export const venueService = {
 
     // 8. Feedbacks
     getVenueReviews: async (venueId: string | number, offset = 0, limit = 20): Promise<import('../dto/venueDto').VenueReview[]> => {
-        const response = await api.get<import('../dto/venueDto').VenueReview[]>(`/client-venue/feedbacks/${venueId}`, {
-            params: { offset, limit }
-        });
-        return response.data;
+        console.log("🚀 [getVenueReviews] START", { venueId, offset, limit });
+        try {
+            const response = await api.get<import('../dto/venueDto').VenueReview[]>(`/client-venue/feedbacks/${venueId}`, {
+                params: { offset, limit }
+            });
+            console.log("✅ [getVenueReviews] SUCCESS", response.data);
+            return response.data;
+        } catch (error) {
+            console.error("🔥 [getVenueReviews] ERROR", error);
+            throw error;
+        }
     },
 
     // 9. Filials
