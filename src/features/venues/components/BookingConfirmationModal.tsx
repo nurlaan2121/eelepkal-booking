@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, Clock, Users, CheckCircle2, AlertCircle, Loader2, Landmark, QrCode, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Calendar, Clock, Users, CheckCircle2, AlertCircle, Loader2, Landmark, QrCode, Upload, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { venueService } from '../../../api/services/venueService';
 import { BookingRequest, VenuePaymentDetails } from '../../../api/dto/venueDto';
 
@@ -23,6 +23,7 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
     const [error, setError] = React.useState<string | null>(null);
     const [bookingId, setBookingId] = React.useState<number | null>(null);
     const [paymentDetails, setPaymentDetails] = React.useState<VenuePaymentDetails[]>([]);
+    const [currentPaymentIndex, setCurrentPaymentIndex] = React.useState(0);
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
     const [isUploading, setIsUploading] = React.useState(false);
     const [uploadSuccess, setUploadSuccess] = React.useState(false);
@@ -31,25 +32,31 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
         setIsSubmitting(true);
         setError(null);
         try {
+            console.log("🚀 Booking process started for table:", tableId);
             // 1. Create booking
             const response = await venueService.bookTable(tableId, bookingData);
             const newBookingId = response.id;
+            console.log("✅ Booking successful, ID:", newBookingId);
             setBookingId(newBookingId);
 
             // 2. Check for payment details
             const payments = await venueService.getPaymentDetails(bookingData.venueId);
+            console.log("💳 Payment details fetched:", payments);
             setPaymentDetails(payments);
 
             // 3. Determine if payment is required
-            // Array not empty AND at least one qrcodeUrl != null
             const requiresPayment = payments.length > 0 && payments.some(p => p.qrcodeUrl !== null);
 
             if (requiresPayment) {
+                // Find first payment with QR code
+                const firstQrIndex = payments.findIndex(p => p.qrcodeUrl !== null);
+                setCurrentPaymentIndex(firstQrIndex >= 0 ? firstQrIndex : 0);
                 setStage('PAYMENT');
             } else {
                 setStage('SUCCESS');
             }
         } catch (err: any) {
+            console.error("❌ Booking failed:", err);
             const message = err.response?.data?.message || 'Произошла ошибка при бронировании. Попробуйте еще раз.';
             setError(message);
         } finally {
@@ -61,27 +68,40 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
         if (e.target.files && e.target.files[0]) {
             setSelectedFile(e.target.files[0]);
             setError(null);
+            console.log("📁 File selected:", e.target.files[0].name);
         }
     };
 
     const handleUploadAndBind = async () => {
-        if (!selectedFile || !bookingId) return;
+        if (!selectedFile) {
+            setError("Пожалуйста, выберите файл чека");
+            return;
+        }
+        if (!bookingId) {
+            setError("Ошибка: ID бронирования не найден");
+            return;
+        }
 
         setIsUploading(true);
         setError(null);
         try {
+            console.log("📤 Uploading receipt...");
             // 1. Upload to S3
             const uploadRes = await venueService.uploadReceipt(selectedFile);
             const fileUrl = uploadRes.data;
+            console.log("✅ Receipt uploaded, URL:", fileUrl);
 
             // 2. Bind to booking
+            console.log("🔗 Binding receipt to booking", bookingId);
             await venueService.assignReceiptToBooking(bookingId, fileUrl);
+            console.log("✅ Receipt bound successfully");
 
             setUploadSuccess(true);
             setTimeout(() => {
                 setStage('SUCCESS');
-            }, 1500);
+            }, 1000);
         } catch (err: any) {
+            console.error("❌ Receipt binding failed:", err);
             const message = err.response?.data?.message || 'Ошибка при загрузке чека. Попробуйте еще раз.';
             setError(message);
         } finally {
@@ -98,6 +118,14 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
 
     // Extract time for display
     const displayTime = bookingData.fullVisitTime.split('T')[1].substring(0, 5);
+
+    const nextPayment = () => {
+        setCurrentPaymentIndex((prev) => (prev + 1) % paymentDetails.length);
+    };
+
+    const prevPayment = () => {
+        setCurrentPaymentIndex((prev) => (prev - 1 + paymentDetails.length) % paymentDetails.length);
+    };
 
     // Initial Confirmation Stage
     if (stage === 'CONFIRM') {
@@ -166,7 +194,8 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
 
     // Payment Stage
     if (stage === 'PAYMENT') {
-        const payment = paymentDetails.find(p => p.qrcodeUrl !== null) || paymentDetails[0];
+        const payment = paymentDetails[currentPaymentIndex];
+        const hasMultiplePayments = paymentDetails.length > 1;
 
         return (
             <div style={styles.overlay} onClick={() => !isUploading && onClose()}>
@@ -181,7 +210,22 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
                     </div>
 
                     <div style={styles.body}>
-                        <p style={styles.subtitle}>Для подтверждения бронирования необходимо внести предоплату по реквизитам ниже:</p>
+                        <p style={styles.subtitle}>Выберите способ и внесите предоплату по реквизитам ниже:</p>
+
+                        {hasMultiplePayments && (
+                            <div style={styles.selector}>
+                                <button onClick={prevPayment} style={styles.selectorBtn} disabled={isUploading}>
+                                    <ChevronLeft size={20} />
+                                </button>
+                                <div style={styles.selectorLabels}>
+                                    <span style={styles.selectorText}>Способ {currentPaymentIndex + 1} из {paymentDetails.length}</span>
+                                    <span style={styles.selectorBank}>{payment.bankName}</span>
+                                </div>
+                                <button onClick={nextPayment} style={styles.selectorBtn} disabled={isUploading}>
+                                    <ChevronRight size={20} />
+                                </button>
+                            </div>
+                        )}
 
                         <div style={styles.paymentCard}>
                             {payment.qrcodeUrl && (
@@ -267,14 +311,14 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
                             {isUploading ? (
                                 <>
                                     <Loader2 size={18} style={styles.spinner} />
-                                    Загрузка...
+                                    Отправка...
                                 </>
                             ) : uploadSuccess ? (
                                 <>
                                     <CheckCircle2 size={18} />
-                                    Чек отправлен!
+                                    Успешно отправлено!
                                 </>
-                            ) : 'Отправить чек'}
+                            ) : 'Загрузить чек'}
                         </button>
                     </div>
                 </div>
@@ -295,7 +339,7 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
                     <h2 style={styles.successTitle}>Успешно!</h2>
                     <p style={styles.successText}>
                         {isPaymentFlow
-                            ? 'Чек успешно отправлен. Администратор проверит оплату и подтвердит бронирование.'
+                            ? 'Чек успешно отправлен. Ожидайте подтверждения от администратора.'
                             : 'Запрос отправлен. Пожалуйста, подождите, пока администратор подтвердит бронирование.'
                         }
                     </p>
@@ -323,7 +367,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1100,
-        backdropFilter: 'blur(8px)',
+        backdropFilter: 'blur(10px)',
     },
     modal: {
         backgroundColor: '#FFF',
@@ -399,6 +443,44 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: '#111827',
         fontWeight: '700',
     },
+    selector: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#F3F4F6',
+        padding: '12px',
+        borderRadius: '18px',
+        marginBottom: '16px',
+    },
+    selectorBtn: {
+        width: '36px',
+        height: '36px',
+        borderRadius: '10px',
+        border: 'none',
+        backgroundColor: '#FFF',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+    },
+    selectorLabels: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '2px',
+    },
+    selectorText: {
+        fontSize: '11px',
+        color: '#9CA3AF',
+        fontWeight: '700',
+        textTransform: 'uppercase',
+    },
+    selectorBank: {
+        fontSize: '14px',
+        color: '#111827',
+        fontWeight: '700',
+    },
     paymentCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: '24px',
@@ -422,6 +504,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderRadius: '16px',
         border: '1px solid #F3F4F6',
         padding: '10px',
+        backgroundColor: '#FFF'
     },
     qrLabel: {
         fontSize: '12px',
