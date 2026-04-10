@@ -203,14 +203,14 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
                                     </div>
                                 </div>
                                 <div style={styles.bankRow}>
-                                    <div style={styles.bankInfo} style={{ marginLeft: '34px' }}>
+                                    <div style={{ ...styles.bankInfo, marginLeft: '34px' }}>
                                         <span style={styles.infoLabel}>Номер счета</span>
                                         <span style={styles.bankValue}>{payment.bankAccountNumber}</span>
                                     </div>
                                 </div>
                                 {payment.taxIdentificationNumber && (
                                     <div style={styles.bankRow}>
-                                        <div style={styles.bankInfo} style={{ marginLeft: '34px' }}>
+                                        <div style={{ ...styles.bankInfo, marginLeft: '34px' }}>
                                             <span style={styles.infoLabel}>ИНН</span>
                                             <span style={styles.bankValue}>{payment.taxIdentificationNumber}</span>
                                         </div>
