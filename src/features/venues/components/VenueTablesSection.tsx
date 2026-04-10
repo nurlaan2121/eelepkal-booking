@@ -6,6 +6,7 @@ import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
 
 import { TableItem } from '../../../api/dto/venueDto';
 import TableDetailsModal from './TableDetailsModal';
+import BookingConfirmationModal from './BookingConfirmationModal';
 
 interface VenueTablesSectionProps {
     venueId: string | number;
@@ -15,6 +16,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
     const [floor, setFloor] = React.useState(1);
     const [guests, setGuests] = React.useState(1);
     const [selectedTableId, setSelectedTableId] = React.useState<number | null>(null);
+    const [bookingConfirmation, setBookingConfirmation] = React.useState<{ tableId: number, title: string } | null>(null);
 
     // Default to tomorrow 12:00
     const [selectedDate, setSelectedDate] = React.useState(() => {
@@ -140,7 +142,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                                 disabled={table.tableStatus === 'BUSY'}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    // Booking logic here
+                                    setBookingConfirmation({ tableId: table.id, title: table.title });
                                 }}
                             >
                                 {table.tableStatus === 'BUSY' ? 'Занят' : 'Бронь'}
@@ -155,6 +157,33 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                     tableId={selectedTableId}
                     visitTime={fullVisitTime}
                     onClose={() => setSelectedTableId(null)}
+                    onBook={() => {
+                        const table = tablesQuery.data?.tables.find(t => t.id === selectedTableId);
+                        if (table) {
+                            setBookingConfirmation({ tableId: table.id, title: table.title });
+                            setSelectedTableId(null);
+                        }
+                    }}
+                />
+            )}
+
+            {bookingConfirmation && (
+                <BookingConfirmationModal
+                    tableId={bookingConfirmation.tableId}
+                    tableTitle={bookingConfirmation.title}
+                    bookingData={{
+                        venueId: Number(venueId),
+                        floor,
+                        countOfGuests: guests,
+                        fullVisitTime,
+                    }}
+                    onClose={(success) => {
+                        setBookingConfirmation(null);
+                        if (success) {
+                            // Optionally refetch tables if needed
+                            tablesQuery.refetch();
+                        }
+                    }}
                 />
             )}
         </div>

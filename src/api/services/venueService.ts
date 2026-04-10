@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -211,6 +211,12 @@ export const venueService = {
     // 14. Booking Conditions
     getBookingConditions: async (venueId: string | number): Promise<BookingConditions> => {
         const response = await api.get<BookingConditions>(`/guest-conditions/get/${venueId}`);
+        return response.data;
+    },
+
+    // 15. Book Table
+    bookTable: async (tableId: number, data: BookingRequest): Promise<BookingResponse> => {
+        const response = await api.post<BookingResponse>(`/client-table/booking/${tableId}`, data);
         return response.data;
     }
 };

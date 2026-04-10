@@ -181,3 +181,14 @@ export interface BookingConditions {
     withADeposit: boolean;
     deposit: number | null;
 }
+
+export interface BookingRequest {
+    venueId: number;
+    floor: number;
+    countOfGuests: number;
+    fullVisitTime: string;
+}
+
+export interface BookingResponse {
+    id: number;
+}
