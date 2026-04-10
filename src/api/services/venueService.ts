@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -214,9 +214,28 @@ export const venueService = {
         return response.data;
     },
 
-    // 15. Book Table
     bookTable: async (tableId: number, data: BookingRequest): Promise<BookingResponse> => {
         const response = await api.post<BookingResponse>(`/client-table/booking/${tableId}`, data);
+        return response.data;
+    },
+
+    // 16. Upload file to S3
+    uploadReceipt: async (file: File): Promise<S3Response> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post<S3Response>('/s3', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    },
+
+    // 17. Bind receipt to booking
+    assignReceiptToBooking: async (bookingId: number, chequeUrl: string): Promise<any> => {
+        const response = await api.post(`/client-conditions/assign-to-booking/${bookingId}`, null, {
+            params: { chequeUrl }
+        });
         return response.data;
     }
 };

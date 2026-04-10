@@ -192,3 +192,7 @@ export interface BookingRequest {
 export interface BookingResponse {
     id: number;
 }
+
+export interface S3Response {
+    data: string;
+}
