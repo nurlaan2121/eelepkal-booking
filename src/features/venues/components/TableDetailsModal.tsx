@@ -7,9 +7,10 @@ interface TableDetailsModalProps {
     tableId: number;
     visitTime: string;
     onClose: () => void;
+    onBook: () => void;
 }
 
-const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTime, onClose }) => {
+const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTime, onClose, onBook }) => {
     const { data: table, isLoading, error } = useQuery({
         queryKey: ['tableDetails', tableId, visitTime],
         queryFn: () => venueService.getTableDetails(tableId, visitTime),
@@ -96,8 +97,16 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
                         </div>
                     )}
 
-                    <button style={styles.actionBtn} onClick={onClose}>
-                        Понятно
+                    <button
+                        style={{
+                            ...styles.actionBtn,
+                            backgroundColor: table.status === 'BUSY' ? '#E0E0E0' : '#212121',
+                            cursor: table.status === 'BUSY' ? 'not-allowed' : 'pointer'
+                        }}
+                        onClick={onBook}
+                        disabled={table.status === 'BUSY'}
+                    >
+                        {table.status === 'BUSY' ? 'Столик занят' : 'Забронировать'}
                     </button>
                 </div>
             </div>
