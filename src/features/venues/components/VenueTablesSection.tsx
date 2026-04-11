@@ -110,6 +110,26 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
             </div>
 
             <div style={styles.tableList}>
+                {tablesQuery.data && (
+                    <div style={styles.statsBar}>
+                        <div style={styles.statItem}>
+                            <div style={{ ...styles.statDot, backgroundColor: '#4CAF50' }} />
+                            <span style={styles.statLabel}>Свободно:</span>
+                            <span style={styles.statCount}>{tablesQuery.data.countOpen}</span>
+                        </div>
+                        <div style={styles.statItem}>
+                            <div style={{ ...styles.statDot, backgroundColor: '#9E9E9E' }} />
+                            <span style={styles.statLabel}>Занято:</span>
+                            <span style={styles.statCount}>{tablesQuery.data.countBusy}</span>
+                        </div>
+                        <div style={styles.statItem}>
+                            <div style={{ ...styles.statDot, backgroundColor: '#FF9800' }} />
+                            <span style={styles.statLabel}>Для вас:</span>
+                            <span style={styles.statCount}>{tablesQuery.data.countForYou}</span>
+                        </div>
+                    </div>
+                )}
+
                 {tablesQuery.isLoading ? (
                     <div>Поиск свободных столиков...</div>
                 ) : tablesQuery.data?.tables.length === 0 ? (
@@ -256,6 +276,37 @@ const styles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
+    },
+    statsBar: {
+        display: 'flex',
+        gap: '12px',
+        padding: '12px 16px',
+        backgroundColor: '#F9FAFB',
+        borderRadius: '16px',
+        border: '1px solid #F3F4F6',
+        marginBottom: '4px',
+    },
+    statItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+    },
+    statDot: {
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+    },
+    statLabel: {
+        fontSize: '11px',
+        fontWeight: '600',
+        color: '#6B7280',
+        textTransform: 'uppercase',
+        letterSpacing: '0.02em',
+    },
+    statCount: {
+        fontSize: '13px',
+        fontWeight: '800',
+        color: '#111827',
     },
     tableCard: {
         display: 'flex',
