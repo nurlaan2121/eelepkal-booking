@@ -39,6 +39,18 @@ const HomeScreen: React.FC = () => {
                             Забронировать столик
                             <ChevronRight size={18} />
                         </button>
+                        <button
+                            className="btn-primary"
+                            style={{
+                                background: 'rgba(255, 255, 255, 0.15)',
+                                backdropFilter: 'blur(8px)',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                boxShadow: 'none'
+                            }}
+                            onClick={() => window.open('https://site.eelepkal.com/', '_blank', 'noopener,noreferrer')}
+                        >
+                            Узнать больше
+                        </button>
                     </div>
                 </div>
             </section>
@@ -215,6 +227,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     heroActions: {
         marginTop: '8px',
+        display: 'flex',
+        gap: '12px',
+        flexWrap: 'wrap',
     },
     stepsSection: {
         display: 'flex',

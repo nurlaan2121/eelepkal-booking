@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Instagram, Heart } from 'lucide-react';
+import { MapPin, Instagram, Heart, ExternalLink } from 'lucide-react';
 
 const Footer: React.FC = () => {
     return (
@@ -21,16 +21,16 @@ const Footer: React.FC = () => {
                 {/* Links */}
                 <div style={styles.linksCol}>
                     <span style={styles.colTitle}>Сервис</span>
-                    <a href="/venues" style={styles.link}>Заведения</a>
-                    <a href="/search" style={styles.link}>Поиск</a>
-                    <a href="/booking" style={styles.link}>Мои брони</a>
+                    <a href="/venues" style={styles.link}>Приложение</a>
+                    <a className="external-link" href="https://site.eelepkal.com/#about" target="_blank" rel="noopener noreferrer">О нас</a>
+                    <a className="external-link" href="https://site.eelepkal.com/#services" target="_blank" rel="noopener noreferrer">Услуги</a>
                 </div>
 
                 <div style={styles.linksCol}>
                     <span style={styles.colTitle}>Помощь</span>
-                    <a href="mailto:support@eelepkal.kg" style={styles.link}>Контакты</a>
-                    <a href="#" style={styles.link}>Политика конфиденциальности</a>
-                    <a href="#" style={styles.link}>Условия использования</a>
+                    <a className="external-link" href="https://site.eelepkal.com/#business" target="_blank" rel="noopener noreferrer">Для бизнеса</a>
+                    <a className="external-link" href="https://site.eelepkal.com/#faq" target="_blank" rel="noopener noreferrer">FAQ</a>
+                    <a className="external-link" href="https://site.eelepkal.com/#contacts" target="_blank" rel="noopener noreferrer">Контакты <ExternalLink size={12} /></a>
                 </div>
             </div>
 
