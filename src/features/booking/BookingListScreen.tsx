@@ -4,11 +4,14 @@ import { bookingService } from '../../api/services/bookingService';
 import { BookingKind } from '../../api/dto/bookingDto';
 import BookingCard from './components/BookingCard';
 import BookingTabs from './components/BookingTabs';
-import { Loader2, Inbox, AlertCircle } from 'lucide-react';
+import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
+import type { BookingDTO } from '../../api/dto/bookingDto';
+import { Inbox, AlertCircle } from 'lucide-react';
+
+const LIMIT = 10;
 
 const BookingListScreen: React.FC = () => {
     const [kind, setKind] = useState<BookingKind>(BookingKind.ACTIVE);
-    const LIMIT = 10;
 
     const {
         data,
@@ -17,71 +20,69 @@ const BookingListScreen: React.FC = () => {
         isFetchingNextPage,
         isLoading,
         isError,
-        refetch
+        refetch,
     } = useInfiniteQuery({
         queryKey: ['bookings', kind],
         queryFn: ({ pageParam = 0 }) => bookingService.getAllBookings(kind, pageParam, LIMIT),
         initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === LIMIT ? allPages.length * LIMIT : undefined;
-        },
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.length === LIMIT ? allPages.length * LIMIT : undefined,
     });
 
-    const bookings = data?.pages.flat() || [];
+    const bookings: BookingDTO[] = data?.pages.flat() ?? [];
 
-    if (isLoading) {
-        return (
-            <div style={styles.centerContainer}>
-                <Loader2 size={48} color="#FF9800" className="animate-spin" />
-            </div>
-        );
-    }
+    const emptyState = (
+        <div style={styles.emptyContainer}>
+            <Inbox size={64} color="#BDBDBD" />
+            <p style={styles.emptyText}>У вас нет бронирований</p>
+        </div>
+    );
 
-    if (isError) {
-        return (
-            <div style={styles.centerContainer}>
-                <AlertCircle size={48} color="#F44336" />
-                <p style={styles.errorText}>Произошла ошибка при загрузке</p>
-                <button style={styles.retryButton} onClick={() => refetch()}>
-                    Повторить
-                </button>
-            </div>
-        );
-    }
+    const errorState = (
+        <div style={styles.centerContainer}>
+            <AlertCircle size={48} color="#F44336" />
+            <p style={styles.errorText}>Произошла ошибка при загрузке</p>
+            <button style={styles.retryButton} onClick={() => refetch()}>
+                Повторить
+            </button>
+        </div>
+    );
+
+    const skeleton = (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[1, 2, 3].map((i) => (
+                <div key={i} style={styles.skeletonCard} className="animate-pulse" />
+            ))}
+        </div>
+    );
 
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>Мои бронирования</h1>
 
-            <BookingTabs activeTab={kind} onChange={setKind} />
+            <BookingTabs
+                activeTab={kind}
+                onChange={(newKind) => {
+                    // Switching tabs triggers a new queryKey → React Query auto-resets
+                    setKind(newKind);
+                }}
+            />
 
             <div style={styles.list}>
-                {bookings.length > 0 ? (
-                    <>
-                        {bookings.map((booking) => (
-                            <BookingCard key={booking.bookingId} booking={booking} />
-                        ))}
-
-                        {hasNextPage && (
-                            <button
-                                style={styles.loadMoreButton}
-                                onClick={() => fetchNextPage()}
-                                disabled={isFetchingNextPage}
-                            >
-                                {isFetchingNextPage ? (
-                                    <Loader2 size={20} className="animate-spin" />
-                                ) : (
-                                    'Загрузить еще'
-                                )}
-                            </button>
-                        )}
-                    </>
-                ) : (
-                    <div style={styles.emptyContainer}>
-                        <Inbox size={64} color="#BDBDBD" />
-                        <p style={styles.emptyText}>У вас нет бронирований</p>
-                    </div>
-                )}
+                <InfiniteScrollList<BookingDTO>
+                    items={bookings}
+                    keyExtractor={(b) => b.bookingId}
+                    renderItem={(b) => <BookingCard booking={b} />}
+                    hasNextPage={!!hasNextPage}
+                    isFetchingNextPage={isFetchingNextPage}
+                    isLoading={isLoading}
+                    isError={isError}
+                    onLoadMore={fetchNextPage}
+                    emptyState={emptyState}
+                    errorState={errorState}
+                    skeleton={skeleton}
+                    gap={12}
+                />
             </div>
         </div>
     );
@@ -102,11 +103,10 @@ const styles: { [key: string]: React.CSSProperties } = {
         textAlign: 'center',
     },
     list: {
-        display: 'flex',
-        flexDirection: 'column',
+        marginTop: '8px',
     },
     centerContainer: {
-        height: '80vh',
+        height: '60vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -140,19 +140,10 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '700',
         cursor: 'pointer',
     },
-    loadMoreButton: {
-        margin: '10px 0 40px 0',
-        padding: '12px',
-        backgroundColor: '#FFFFFF',
-        color: '#FF9800',
-        border: '2px solid #FF9800',
+    skeletonCard: {
+        height: '120px',
         borderRadius: '16px',
-        fontWeight: '700',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
+        backgroundColor: '#F0F0F0',
     },
 };
 

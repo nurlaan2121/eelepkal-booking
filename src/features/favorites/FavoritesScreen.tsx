@@ -5,12 +5,15 @@ import { venueService } from '../../api/services/venueService';
 import FavoritesTabs, { FavoriteType } from './components/FavoritesTabs';
 import FavoriteVenueCard from './components/FavoriteVenueCard';
 import FavoriteMenuCard from './components/FavoriteMenuCard';
-import { Loader2, Heart, ArrowRight, AlertCircle } from 'lucide-react';
+import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
+import type { FavoriteVenue, FavoriteMenu } from '../../api/dto/venueDto';
+import { Heart, ArrowRight, AlertCircle } from 'lucide-react';
+
+const LIMIT = 10;
 
 const FavoritesScreen: React.FC = () => {
     const [activeTab, setActiveTab] = useState<FavoriteType>(FavoriteType.VENUES);
     const navigate = useNavigate();
-    const LIMIT = 10;
 
     const {
         data: venuesData,
@@ -19,15 +22,14 @@ const FavoritesScreen: React.FC = () => {
         isFetchingNextPage: isFetchingMoreVenues,
         isLoading: isLoadingVenues,
         isError: isErrorVenues,
-        refetch: refetchVenues
+        refetch: refetchVenues,
     } = useInfiniteQuery({
         queryKey: ['favourite-venues'],
         queryFn: ({ pageParam = 0 }) => venueService.getFavouriteVenues(pageParam, LIMIT),
         initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === LIMIT ? allPages.length * LIMIT : undefined;
-        },
-        enabled: activeTab === FavoriteType.VENUES
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.length === LIMIT ? allPages.length * LIMIT : undefined,
+        enabled: activeTab === FavoriteType.VENUES,
     });
 
     const {
@@ -37,35 +39,32 @@ const FavoritesScreen: React.FC = () => {
         isFetchingNextPage: isFetchingMoreMenus,
         isLoading: isLoadingMenus,
         isError: isErrorMenus,
-        refetch: refetchMenus
+        refetch: refetchMenus,
     } = useInfiniteQuery({
         queryKey: ['favourite-menus'],
         queryFn: ({ pageParam = 0 }) => venueService.getFavouriteMenus(pageParam, LIMIT),
         initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === LIMIT ? allPages.length * LIMIT : undefined;
-        },
-        enabled: activeTab === FavoriteType.MENUS
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.length === LIMIT ? allPages.length * LIMIT : undefined,
+        enabled: activeTab === FavoriteType.MENUS,
     });
 
-    const venues = venuesData?.pages.flat() || [];
-    const menus = menusData?.pages.flat() || [];
+    const venues: FavoriteVenue[] = venuesData?.pages.flat() ?? [];
+    const menus: FavoriteMenu[] = menusData?.pages.flat() ?? [];
 
     const isLoading = activeTab === FavoriteType.VENUES ? isLoadingVenues : isLoadingMenus;
     const isError = activeTab === FavoriteType.VENUES ? isErrorVenues : isErrorMenus;
-    const items = activeTab === FavoriteType.VENUES ? venues : menus;
-    const hasNextPage = activeTab === FavoriteType.VENUES ? hasMoreVenues : hasMoreMenus;
-    const isFetchingNextPage = activeTab === FavoriteType.VENUES ? isFetchingMoreVenues : isFetchingMoreMenus;
-    const fetchNextPage = activeTab === FavoriteType.VENUES ? fetchNextVenues : fetchNextMenus;
     const refetch = activeTab === FavoriteType.VENUES ? refetchVenues : refetchMenus;
 
-    const renderEmptyState = () => (
+    const emptyState = (
         <div style={styles.emptyContainer}>
             <div style={styles.heartIconCircle}>
                 <Heart size={40} color="#BDBDBD" />
             </div>
             <h2 style={styles.emptyTitle}>У вас пока нет избранного</h2>
-            <p style={styles.emptySubtitle}>Сохраняйте заведения и блюда, чтобы они всегда были под рукой</p>
+            <p style={styles.emptySubtitle}>
+                Сохраняйте заведения и блюда, чтобы они всегда были под рукой
+            </p>
             <button style={styles.searchButton} onClick={() => navigate('/search')}>
                 Перейти к поиску
                 <ArrowRight size={18} />
@@ -73,7 +72,17 @@ const FavoritesScreen: React.FC = () => {
         </div>
     );
 
-    const renderSkeleton = () => (
+    const errorState = (
+        <div style={styles.centerContainer}>
+            <AlertCircle size={48} color="#F44336" />
+            <p style={styles.errorText}>Произошла ошибка при загрузке</p>
+            <button style={styles.retryButton} onClick={() => refetch()}>
+                Повторить
+            </button>
+        </div>
+    );
+
+    const skeleton = (
         <div style={styles.grid}>
             {[1, 2, 3, 4].map((i) => (
                 <div key={i} style={styles.skeletonCard}>
@@ -87,18 +96,6 @@ const FavoritesScreen: React.FC = () => {
         </div>
     );
 
-    if (isError) {
-        return (
-            <div style={styles.centerContainer}>
-                <AlertCircle size={48} color="#F44336" />
-                <p style={styles.errorText}>Произошла ошибка при загрузке</p>
-                <button style={styles.retryButton} onClick={() => refetch()}>
-                    Повторить
-                </button>
-            </div>
-        );
-    }
-
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>Избранное</h1>
@@ -106,33 +103,38 @@ const FavoritesScreen: React.FC = () => {
             <FavoritesTabs activeTab={activeTab} onChange={setActiveTab} />
 
             <div style={styles.content}>
-                {isLoading ? (
-                    renderSkeleton()
-                ) : items.length > 0 ? (
-                    <>
-                        <div style={styles.grid}>
-                            {activeTab === FavoriteType.VENUES
-                                ? venues.map((v) => <FavoriteVenueCard key={v.venueId} venue={v} />)
-                                : menus.map((m) => <FavoriteMenuCard key={m.menuitemId} menuItem={m} />)
-                            }
-                        </div>
-
-                        {hasNextPage && (
-                            <button
-                                style={styles.loadMoreButton}
-                                onClick={() => fetchNextPage()}
-                                disabled={isFetchingNextPage}
-                            >
-                                {isFetchingNextPage ? (
-                                    <Loader2 size={20} className="animate-spin" />
-                                ) : (
-                                    'Загрузить еще'
-                                )}
-                            </button>
-                        )}
-                    </>
+                {activeTab === FavoriteType.VENUES ? (
+                    <InfiniteScrollList<FavoriteVenue>
+                        items={venues}
+                        keyExtractor={(v) => v.venueId}
+                        renderItem={(v) => <FavoriteVenueCard venue={v} />}
+                        hasNextPage={!!hasMoreVenues}
+                        isFetchingNextPage={isFetchingMoreVenues}
+                        isLoading={isLoading}
+                        isError={isError}
+                        onLoadMore={fetchNextVenues}
+                        emptyState={emptyState}
+                        errorState={errorState}
+                        skeleton={skeleton}
+                        containerStyle={styles.grid}
+                        gap={20}
+                    />
                 ) : (
-                    renderEmptyState()
+                    <InfiniteScrollList<FavoriteMenu>
+                        items={menus}
+                        keyExtractor={(m) => m.menuitemId}
+                        renderItem={(m) => <FavoriteMenuCard menuItem={m} />}
+                        hasNextPage={!!hasMoreMenus}
+                        isFetchingNextPage={isFetchingMoreMenus}
+                        isLoading={isLoading}
+                        isError={isError}
+                        onLoadMore={fetchNextMenus}
+                        emptyState={emptyState}
+                        errorState={errorState}
+                        skeleton={skeleton}
+                        containerStyle={styles.grid}
+                        gap={20}
+                    />
                 )}
             </div>
         </div>
@@ -162,7 +164,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
         gap: '20px',
         width: '100%',
-    },
+    } as React.CSSProperties,
     centerContainer: {
         height: '80vh',
         display: 'flex',
@@ -231,21 +233,6 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderRadius: '16px',
         fontWeight: '700',
         cursor: 'pointer',
-    },
-    loadMoreButton: {
-        margin: '40px auto',
-        padding: '14px 32px',
-        backgroundColor: '#FFFFFF',
-        color: '#FF9800',
-        border: '2px solid #FF9800',
-        borderRadius: '16px',
-        fontWeight: '700',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '10px',
-        width: 'fit-content',
     },
     skeletonCard: {
         backgroundColor: '#FFFFFF',

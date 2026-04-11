@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { ChevronLeft } from 'lucide-react';
 import { venueService } from '../../api/services/venueService';
 import VenueHeader from './components/VenueHeader';
@@ -9,13 +9,16 @@ import VenueWorkingHours from './components/VenueWorkingHours';
 import VenueAmenitiesSection from './components/VenueAmenities';
 import VenueContacts from './components/VenueContacts';
 import VenueDescription from './components/VenueDescription';
-import VenueReviews from './components/VenueReviews';
 import VenueBookingConditions from './components/VenueBookingConditions';
 import VenueFilials from './components/VenueFilials';
 import VenuePayments from './components/VenuePayments';
 import VenueMenuSection from './components/VenueMenuSection';
 import VenueTablesSection from './components/VenueTablesSection';
 import AddReviewModal from './components/AddReviewModal';
+import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
+import type { VenueReview } from '../../api/dto/venueDto';
+
+const REVIEWS_LIMIT = 10;
 
 const VenueDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -30,7 +33,13 @@ const VenueDetailsPage: React.FC = () => {
     const amenitiesQuery = useQuery({ queryKey: ['venueAmenities', venueId], queryFn: () => venueService.getVenueAmenities(venueId) });
     const contactsQuery = useQuery({ queryKey: ['venueContacts', venueId], queryFn: () => venueService.getVenueContacts(venueId) });
     const descriptionQuery = useQuery({ queryKey: ['venueDescription', venueId], queryFn: () => venueService.getVenueDescription(venueId) });
-    const reviewsQuery = useQuery({ queryKey: ['venueReviews', venueId], queryFn: () => venueService.getVenueReviews(venueId) });
+    const reviewsQuery = useInfiniteQuery({
+        queryKey: ['venueReviews', venueId],
+        queryFn: ({ pageParam = 0 }) => venueService.getVenueReviews(venueId, pageParam, REVIEWS_LIMIT),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.length === REVIEWS_LIMIT ? allPages.length * REVIEWS_LIMIT : undefined,
+    });
     const filialsQuery = useQuery({ queryKey: ['venueFilials', venueId], queryFn: () => venueService.getVenueFilials(venueId) });
     const paymentsQuery = useQuery({ queryKey: ['venuePayments', venueId], queryFn: () => venueService.getPaymentDetails(venueId) });
     const conditionsQuery = useQuery({ queryKey: ['venueConditions', venueId], queryFn: () => venueService.getBookingConditions(venueId) });
@@ -128,15 +137,45 @@ const VenueDetailsPage: React.FC = () => {
                                 Оставить отзыв
                             </button>
                         </div>
-                        {reviewsQuery.isLoading ? (
-                            <div style={styles.tabLoading}>Загрузка отзывов...</div>
-                        ) : reviewsQuery.isError ? (
-                            <div style={styles.tabError}>Ошибка при загрузке отзывов</div>
-                        ) : !reviewsQuery.data || reviewsQuery.data.length === 0 ? (
-                            <div style={styles.tabEmpty}>Отзывов пока нет</div>
-                        ) : (
-                            <VenueReviews reviews={reviewsQuery.data} />
-                        )}
+                        <InfiniteScrollList<VenueReview>
+                            items={reviewsQuery.data?.pages.flat() ?? []}
+                            keyExtractor={(r) => r.id}
+                            renderItem={(review) => (
+                                <div style={styles.reviewCard}>
+                                    <div style={styles.reviewHeader}>
+                                        <div style={styles.reviewAvatar}>
+                                            {review.client.image ? (
+                                                <img src={review.client.image} alt={review.client.fullName} style={styles.reviewAvatarImg} />
+                                            ) : (
+                                                <span style={styles.reviewAvatarInitial}>
+                                                    {review.client.fullName?.charAt(0) ?? '?'}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <div style={styles.reviewAuthor}>{review.client.fullName}</div>
+                                            <div style={styles.reviewRating}>
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <span key={star} style={{ color: star <= review.rating ? '#FFD700' : '#E0E0E0', fontSize: 14 }}>★</span>
+                                                ))}
+                                                <span style={styles.reviewDate}>
+                                                    {new Date(review.createdAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p style={styles.reviewText}>{review.text}</p>
+                                </div>
+                            )}
+                            hasNextPage={!!reviewsQuery.hasNextPage}
+                            isFetchingNextPage={reviewsQuery.isFetchingNextPage}
+                            isLoading={reviewsQuery.isLoading}
+                            isError={reviewsQuery.isError}
+                            onLoadMore={reviewsQuery.fetchNextPage}
+                            emptyState={<div style={styles.tabEmpty}>Отзывов пока нет</div>}
+                            errorState={<div style={styles.tabError}>Ошибка при загрузке отзывов</div>}
+                            gap={16}
+                        />
                     </div>
                 )}
 
@@ -146,6 +185,7 @@ const VenueDetailsPage: React.FC = () => {
                         onClose={() => setIsAddReviewModalOpen(false)}
                         onSuccess={() => {
                             setIsAddReviewModalOpen(false);
+                            // Reset and refetch from page 0
                             reviewsQuery.refetch();
                         }}
                     />
@@ -264,6 +304,61 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '600',
         cursor: 'pointer',
         transition: 'background-color 0.2s',
+    },
+    reviewCard: {
+        backgroundColor: '#F9F9F9',
+        borderRadius: '16px',
+        padding: '16px',
+        border: '1px solid #F0F0F0',
+    },
+    reviewHeader: {
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'center',
+        marginBottom: '10px',
+    },
+    reviewAvatar: {
+        width: '40px',
+        height: '40px',
+        borderRadius: '50%',
+        backgroundColor: '#FF9800',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        flexShrink: 0,
+    },
+    reviewAvatarImg: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+    },
+    reviewAvatarInitial: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        fontSize: '16px',
+    },
+    reviewAuthor: {
+        fontSize: '15px',
+        fontWeight: '700',
+        color: '#212121',
+        marginBottom: '2px',
+    },
+    reviewRating: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '2px',
+    },
+    reviewDate: {
+        fontSize: '12px',
+        color: '#9E9E9E',
+        marginLeft: '6px',
+    },
+    reviewText: {
+        fontSize: '14px',
+        color: '#424242',
+        lineHeight: '1.5',
+        margin: 0,
     },
 };
 
