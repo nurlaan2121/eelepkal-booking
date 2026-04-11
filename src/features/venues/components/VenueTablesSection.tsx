@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
-import { Users, Calendar, Clock } from 'lucide-react';
+import { Users, Calendar, Clock, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
 
 import { TableItem } from '../../../api/dto/venueDto';
@@ -25,10 +25,36 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
         return date.toISOString().split('T')[0];
     });
     const [selectedTime, setSelectedTime] = React.useState("12:00");
+    const [isChecking, setIsChecking] = React.useState(false);
+    const [isWorking, setIsWorking] = React.useState<boolean | null>(null);
+    const [checkMessage, setCheckMessage] = React.useState<string | null>(null);
 
     const fullVisitTime = React.useMemo(() => {
         return formatToBackendDateTime(selectedDate, selectedTime);
     }, [selectedDate, selectedTime]);
+
+    // Debounced check for business hours
+    React.useEffect(() => {
+        if (!venueId || !fullVisitTime) return;
+
+        const timer = setTimeout(async () => {
+            setIsChecking(true);
+            setCheckMessage(null);
+            try {
+                const result = await venueService.checkIsWorking(venueId, fullVisitTime);
+                setIsWorking(result.httpStatus === 'OK');
+                setCheckMessage(result.message);
+            } catch (error) {
+                console.error("Check working hours error:", error);
+                setIsWorking(null);
+                setCheckMessage("Ошибка проверки времени, попробуйте снова");
+            } finally {
+                setIsChecking(false);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timer);
+    }, [venueId, fullVisitTime]);
 
     const tablesQuery = useQuery({
         queryKey: ['venueTables', venueId, floor, guests, fullVisitTime],
@@ -47,7 +73,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                 fullVisitTime,
             });
         },
-        enabled: !!venueId && !isNaN(Number(venueId)),
+        enabled: !!venueId && !isNaN(Number(venueId)) && isWorking === true,
     });
 
     const categories = [
@@ -90,6 +116,32 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                             ))}
                         </select>
                     </div>
+                </div>
+
+                {/* Working Status Check */}
+                <div style={styles.statusContainer}>
+                    {isChecking ? (
+                        <div style={styles.statusChecking}>
+                            <Loader2 size={16} className="animate-spin" color="#FF9800" />
+                            <span>Проверка времени...</span>
+                        </div>
+                    ) : isWorking !== null && (
+                        <div style={{
+                            ...styles.statusMessage,
+                            backgroundColor: isWorking ? '#E8F5E9' : '#FFEBEE',
+                            color: isWorking ? '#2E7D32' : '#C62828',
+                            border: `1px solid ${isWorking ? '#C8E6C9' : '#FFCDD2'}`
+                        }}>
+                            {isWorking ? (
+                                <><CheckCircle2 size={16} /> <span>{checkMessage || "Заведение открыто ✅"}</span></>
+                            ) : (
+                                <><AlertCircle size={16} /> <span>{checkMessage || "Заведение закрыто в это время ❌"}</span></>
+                            )}
+                        </div>
+                    )}
+                    {isWorking === false && !isChecking && (
+                        <p style={styles.workingErrorSub}>Укажите другое время или выберите другое заведение</p>
+                    )}
                 </div>
 
                 <div style={styles.floorBar}>
@@ -172,7 +224,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                 )}
             </div>
 
-            {selectedTableId && (
+            {selectedTableId !== null && (
                 <TableDetailsModal
                     tableId={selectedTableId}
                     visitTime={fullVisitTime}
@@ -187,7 +239,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                 />
             )}
 
-            {bookingConfirmation && (
+            {bookingConfirmation !== null && (
                 <BookingConfirmationModal
                     tableId={bookingConfirmation.tableId}
                     tableTitle={bookingConfirmation.title}
@@ -206,7 +258,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                     }}
                 />
             )}
-        </div>
+        </div >
     );
 };
 
@@ -371,6 +423,36 @@ const styles: { [key: string]: React.CSSProperties } = {
         textAlign: 'center',
         padding: '40px 0',
         color: '#9E9E9E',
+    },
+    statusContainer: {
+        marginBottom: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+    },
+    statusChecking: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '13px',
+        color: '#757575',
+        fontWeight: '500',
+        padding: '8px 12px',
+    },
+    statusMessage: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '10px 16px',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontWeight: '600',
+    },
+    workingErrorSub: {
+        fontSize: '12px',
+        color: '#757575',
+        margin: '0 0 0 4px',
+        fontWeight: '500',
     },
 };
 

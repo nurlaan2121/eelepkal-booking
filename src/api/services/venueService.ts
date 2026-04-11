@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -235,6 +235,13 @@ export const venueService = {
     assignReceiptToBooking: async (bookingId: number, chequeUrl: string): Promise<any> => {
         const response = await api.post(`/client-conditions/assign-to-booking/${bookingId}`, null, {
             params: { chequeUrl }
+        });
+        return response.data;
+    },
+
+    checkIsWorking: async (venueId: string | number, fullVisitTime: string): Promise<VenueWorkingStatusResponse> => {
+        const response = await api.post<VenueWorkingStatusResponse>(`/client-venue/check-is-working/${venueId}`, null, {
+            params: { fullVisitTime }
         });
         return response.data;
     }

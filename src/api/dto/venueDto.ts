@@ -196,3 +196,8 @@ export interface BookingResponse {
 export interface S3Response {
     data: string;
 }
+
+export interface VenueWorkingStatusResponse {
+    httpStatus: string;
+    message: string;
+}
