@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import BottomNavigation from '../components/Navigation/BottomNavigation';
 import Footer from '../components/Footer/Footer';
-import { ExternalLink } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
     const [scrolled, setScrolled] = useState(false);
@@ -26,14 +25,6 @@ const MainLayout: React.FC = () => {
                     <img src="/logo.png" alt="Ээлеп кал" style={{ height: 36, width: 36, objectFit: 'contain' }} />
                     <h1 style={styles.title}>Ээлеп кал</h1>
                 </div>
-
-                <nav style={styles.nav}>
-                    <a className="external-nav-link" href="https://site.eelepkal.com/#about" target="_blank" rel="noopener noreferrer">О нас</a>
-                    <a className="external-nav-link" href="https://site.eelepkal.com/#services" target="_blank" rel="noopener noreferrer">Услуги</a>
-                    <a className="external-nav-link" href="https://site.eelepkal.com/#business" target="_blank" rel="noopener noreferrer">Для бизнеса</a>
-                    <a className="external-nav-link" href="https://site.eelepkal.com/#contacts" target="_blank" rel="noopener noreferrer">Контакты</a>
-                    <a className="external-nav-link" href="https://site.eelepkal.com/#faq" target="_blank" rel="noopener noreferrer">Вопросы <ExternalLink size={14} /></a>
-                </nav>
             </header>
 
             <main style={styles.main}>
@@ -65,16 +56,6 @@ const styles: { [key: string]: React.CSSProperties } = {
         transition: 'all var(--transition-base)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '24px',
-    },
-    nav: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '24px',
-        overflowX: 'auto',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
     },
     logoWrapper: {
         display: 'flex',
