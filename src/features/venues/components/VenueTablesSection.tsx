@@ -44,10 +44,15 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                 const result = await venueService.checkIsWorking(venueId, fullVisitTime);
                 setIsWorking(result.httpStatus === 'OK');
                 setCheckMessage(result.message);
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Check working hours error:", error);
-                setIsWorking(null);
-                setCheckMessage("Ошибка проверки времени, попробуйте снова");
+
+                // Extract error message from server if available
+                const serverMessage = error.response?.data?.message;
+                const isClosed = error.response?.status === 400 || error.response?.data?.httpStatus === 'BAD_REQUEST';
+
+                setIsWorking(isClosed ? false : null);
+                setCheckMessage(serverMessage || "Ошибка проверки времени, попробуйте снова");
             } finally {
                 setIsChecking(false);
             }
