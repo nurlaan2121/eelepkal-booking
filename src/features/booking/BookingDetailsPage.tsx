@@ -13,7 +13,6 @@ import {
     Hash,
     CreditCard,
     CheckCircle2,
-    XCircle,
     AlertCircle,
     Share2,
     Copy,
