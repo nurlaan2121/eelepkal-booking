@@ -60,7 +60,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ onClose }) => {
 
                     {/* Price Range Section */}
                     <div style={styles.section}>
-                        <h3 style={styles.sectionTitle}>Средний чек (₸)</h3>
+                        <h3 style={styles.sectionTitle}>Средний чек (сом)</h3>
                         <div style={styles.rangeRow}>
                             <input
                                 type="number"

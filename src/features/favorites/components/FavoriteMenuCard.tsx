@@ -38,7 +38,7 @@ const FavoriteMenuCard: React.FC<FavoriteMenuCardProps> = ({ menuItem }) => {
             <div style={styles.info}>
                 <div style={styles.titleRow}>
                     <h3 style={styles.name}>{menuItem.name}</h3>
-                    <span style={styles.price}>{menuItem.price} ₸</span>
+                    <span style={styles.price}>{menuItem.price} сом</span>
                 </div>
 
                 <p style={styles.description}>
