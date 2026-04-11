@@ -201,3 +201,24 @@ export interface VenueWorkingStatusResponse {
     httpStatus: string;
     message: string;
 }
+
+export interface FavoriteMenu {
+    menuitemId: number;
+    name: string;
+    imageUrl: string;
+    description: string;
+    price: number;
+    venueLogoUrl: string;
+    from: string;
+    status: 'ACTIVE' | 'INACTIVE';
+}
+
+export interface FavoriteVenue {
+    venueId: number;
+    venueName: string;
+    firstImageUrl: string;
+    address: string;
+    cuisine: string;
+    rating: number;
+    status: 'ACTIVE' | 'INACTIVE';
+}

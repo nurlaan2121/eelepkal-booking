@@ -10,6 +10,7 @@ import BookingListScreen from '../features/booking/BookingListScreen';
 import BookingDetailsPage from '../features/booking/BookingDetailsPage';
 
 import ProfileScreen from '../features/profile/ProfileScreen';
+import FavoritesScreen from '../features/favorites/FavoritesScreen';
 
 export const router = createBrowserRouter([
     {
@@ -48,7 +49,7 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: '/favorites',
-                        element: <div style={{ padding: 20 }}>Favorites (Placeholder)</div>,
+                        element: <FavoritesScreen />,
                     },
                     {
                         path: '/profile',

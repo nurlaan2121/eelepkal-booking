@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse, FavoriteMenu, FavoriteVenue } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -242,6 +242,21 @@ export const venueService = {
     checkIsWorking: async (venueId: string | number, fullVisitTime: string): Promise<VenueWorkingStatusResponse> => {
         const response = await api.post<VenueWorkingStatusResponse>(`/client-venue/check-is-working/${venueId}`, null, {
             params: { fullVisitTime }
+        });
+        return response.data;
+    },
+
+    // 18. Favourites
+    getFavouriteVenues: async (offset = 0, limit = 20): Promise<FavoriteVenue[]> => {
+        const response = await api.get<FavoriteVenue[]>('/client-venue/get-favourites', {
+            params: { offset, limit }
+        });
+        return response.data;
+    },
+
+    getFavouriteMenus: async (offset = 0, limit = 20): Promise<FavoriteMenu[]> => {
+        const response = await api.get<FavoriteMenu[]>('/client-menu/get-favourites', {
+            params: { offset, limit }
         });
         return response.data;
     }
