@@ -1,15 +1,15 @@
 import React from 'react';
-import { Star, Share2, Heart } from 'lucide-react';
+import { Star, Share2 } from 'lucide-react';
 import type { VenueBasicInfo } from '../../../api/dto/venueDto';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface VenueHeaderProps {
     venue: VenueBasicInfo;
     isFavorite: boolean;
-    onToggleFavorite: () => void;
     onShare: () => void;
 }
 
-const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onToggleFavorite, onShare }) => {
+const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onShare }) => {
     const images = Object.values(venue.images);
     const [activeImage, setActiveImage] = React.useState(images[0] || '');
 
@@ -22,13 +22,12 @@ const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onToggleFa
                     <button onClick={onShare} style={styles.iconButton}>
                         <Share2 size={20} color="#000" />
                     </button>
-                    <button onClick={onToggleFavorite} style={styles.iconButton}>
-                        <Heart
-                            size={20}
-                            color={isFavorite ? "#F44336" : "#000"}
-                            fill={isFavorite ? "#F44336" : "transparent"}
-                        />
-                    </button>
+                    <FavoriteButton
+                        id={venue.venueId}
+                        type="venue"
+                        initialIsFavorite={isFavorite}
+                        containerStyle={styles.iconButton}
+                    />
                 </div>
 
                 <div style={styles.ratingBadge}>

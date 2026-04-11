@@ -1,5 +1,6 @@
 import React from 'react';
 import type { FavoriteMenu } from '../../../api/dto/venueDto';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface FavoriteMenuCardProps {
     menuItem: FavoriteMenu;
@@ -33,6 +34,12 @@ const FavoriteMenuCard: React.FC<FavoriteMenuCardProps> = ({ menuItem }) => {
                         <span style={styles.inactiveText}>Недоступно</span>
                     </div>
                 )}
+                <FavoriteButton
+                    id={menuItem.menuitemId}
+                    type="menu"
+                    initialIsFavorite={menuItem.status !== 'INACTIVE'}
+                    containerStyle={styles.favoriteBadge}
+                />
             </div>
 
             <div style={styles.info}>
@@ -95,6 +102,17 @@ const styles: { [key: string]: React.CSSProperties } = {
         padding: '6px 12px',
         backgroundColor: 'rgba(0,0,0,0.6)',
         borderRadius: '8px',
+    },
+    favoriteBadge: {
+        position: 'absolute',
+        top: '12px',
+        right: '12px',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: '50%',
+        width: '32px',
+        height: '32px',
+        backdropFilter: 'blur(4px)',
+        zIndex: 2,
     },
     info: {
         padding: '16px',

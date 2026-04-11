@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Star, MapPin } from 'lucide-react';
 import type { RecommendedVenue } from '../../../api/dto/venueDto';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface VenueCardProps {
     venue: RecommendedVenue;
@@ -18,6 +19,12 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
                     <Star size={14} color="#FFD700" fill="#FFD700" />
                     <span style={styles.ratingText}>{venue.rating.toFixed(1)}</span>
                 </div>
+                <FavoriteButton
+                    id={venue.venueId}
+                    type="venue"
+                    initialIsFavorite={venue.favorite}
+                    containerStyle={styles.favoriteBadge}
+                />
             </div>
 
             <div style={styles.info}>
@@ -64,6 +71,17 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         gap: '4px',
         backdropFilter: 'blur(4px)',
+    },
+    favoriteBadge: {
+        position: 'absolute',
+        top: '12px',
+        left: '12px',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: '50%',
+        width: '32px',
+        height: '32px',
+        backdropFilter: 'blur(4px)',
+        zIndex: 2,
     },
     ratingText: {
         fontSize: '12px',

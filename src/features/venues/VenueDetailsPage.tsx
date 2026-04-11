@@ -59,7 +59,6 @@ const VenueDetailsPage: React.FC = () => {
                 <VenueHeader
                     venue={basic}
                     isFavorite={basic.favoriteForClient}
-                    onToggleFavorite={() => { }}
                     onShare={() => { }}
                 />
 

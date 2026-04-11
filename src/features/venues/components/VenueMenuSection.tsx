@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 import MenuItemDetailsModal from './MenuItemDetailsModal';
 
@@ -65,7 +66,15 @@ const VenueMenuSection: React.FC<VenueMenuSectionProps> = ({ venueId }) => {
                             <div style={styles.itemInfo}>
                                 <h4 style={styles.itemName}>{item.name}</h4>
                                 <p style={styles.itemDesc}>{item.description}</p>
-                                <span style={styles.itemPrice}>{item.price} KGS</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={styles.itemPrice}>{item.price} KGS</span>
+                                    <FavoriteButton
+                                        id={item.id}
+                                        type="menu"
+                                        initialIsFavorite={item.favorite}
+                                        size={20}
+                                    />
+                                </div>
                             </div>
                         </div>
                     ))

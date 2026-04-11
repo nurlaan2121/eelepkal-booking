@@ -35,8 +35,13 @@ export const venueService = {
     },
 
     // Toggle Favorite
-    toggleFavorite: async (venueId: number): Promise<FavoriteToggleResponse> => {
+    toggleVenueFavourite: async (venueId: number): Promise<FavoriteToggleResponse> => {
         const response = await api.put<FavoriteToggleResponse>(`/client-venue/favourite-un-favourite/${venueId}`);
+        return response.data;
+    },
+
+    toggleMenuFavourite: async (menuId: number): Promise<FavoriteToggleResponse> => {
+        const response = await api.put<FavoriteToggleResponse>(`/client-menu/favourite-un-favourite/${menuId}`);
         return response.data;
     },
 

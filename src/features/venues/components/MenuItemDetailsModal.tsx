@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, MapPin, Scale, Heart } from 'lucide-react';
+import { X, MapPin, Scale } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
+import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface MenuItemDetailsModalProps {
     menuId: number;
@@ -40,9 +41,13 @@ const MenuItemDetailsModal: React.FC<MenuItemDetailsModalProps> = ({ menuId, onC
 
                 <div style={styles.imageContainer}>
                     <img src={item.imageUrl} alt={item.name} style={styles.image} />
-                    <button style={styles.favoriteBtn}>
-                        <Heart size={20} color={item.favorite ? "#F44336" : "#757575"} fill={item.favorite ? "#F44336" : "transparent"} />
-                    </button>
+                    <FavoriteButton
+                        id={item.id}
+                        type="menu"
+                        initialIsFavorite={item.favorite}
+                        containerStyle={styles.favoriteBtn}
+                        size={24}
+                    />
                 </div>
 
                 <div style={styles.body}>
