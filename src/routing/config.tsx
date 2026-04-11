@@ -6,6 +6,7 @@ import MainLayout from '../shared/layouts/MainLayout';
 import HomeScreen from '../features/home/HomeScreen';
 import SearchScreen from '../features/search/SearchScreen';
 import VenueDetailsPage from '../features/venues/VenueDetailsPage';
+import BookingListScreen from '../features/booking/BookingListScreen';
 
 export const router = createBrowserRouter([
     {
@@ -36,7 +37,7 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: '/booking',
-                        element: <div style={{ padding: 20 }}>Bookings (Placeholder)</div>,
+                        element: <BookingListScreen />,
                     },
                     {
                         path: '/favorites',
