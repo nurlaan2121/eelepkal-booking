@@ -35,7 +35,22 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
             console.log("🚀 Booking process started for table:", tableId);
             // 1. Create booking
             const response = await venueService.bookTable(tableId, bookingData);
-            const newBookingId = response.id;
+
+            // Defensive: Extract ID whether response is {id: N} or {data: {id: N}} or potentially N itself
+            let newBookingId: number | null = null;
+            if (typeof response === 'number') {
+                newBookingId = response;
+            } else if (response && typeof response.id === 'number') {
+                newBookingId = response.id;
+            } else if (response && (response as any).data && typeof (response as any).data.id === 'number') {
+                newBookingId = (response as any).data.id;
+            }
+
+            if (newBookingId === null) {
+                console.error("❌ Failed to extract booking ID from response:", response);
+                throw new Error("Не удалось получить ID бронирования из ответа сервера");
+            }
+
             console.log("✅ Booking successful, ID:", newBookingId);
             setBookingId(newBookingId);
 
@@ -57,7 +72,7 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
             }
         } catch (err: any) {
             console.error("❌ Booking failed:", err);
-            const message = err.response?.data?.message || 'Произошла ошибка при бронировании. Попробуйте еще раз.';
+            const message = err.response?.data?.message || err.message || 'Произошла ошибка при бронировании. Попробуйте еще раз.';
             setError(message);
         } finally {
             setIsSubmitting(false);
@@ -77,7 +92,7 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
             setError("Пожалуйста, выберите файл чека");
             return;
         }
-        if (!bookingId) {
+        if (bookingId === null) {
             setError("Ошибка: ID бронирования не найден");
             return;
         }
