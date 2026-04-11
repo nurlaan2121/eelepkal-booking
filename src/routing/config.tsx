@@ -9,6 +9,8 @@ import VenueDetailsPage from '../features/venues/VenueDetailsPage';
 import BookingListScreen from '../features/booking/BookingListScreen';
 import BookingDetailsPage from '../features/booking/BookingDetailsPage';
 
+import ProfileScreen from '../features/profile/ProfileScreen';
+
 export const router = createBrowserRouter([
     {
         path: '/login',
@@ -50,7 +52,7 @@ export const router = createBrowserRouter([
                     },
                     {
                         path: '/profile',
-                        element: <div style={{ padding: 20 }}>Profile (Placeholder)</div>,
+                        element: <ProfileScreen />,
                     },
                 ],
             },
