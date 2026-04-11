@@ -83,7 +83,7 @@ const SearchScreen: React.FC = () => {
             <div style={styles.content}>
                 {isLoading && !isFetchingNextPage ? (
                     <div style={styles.center}>
-                        <Loader2 size={40} color="#FF9800" className="animate-spin" />
+                        <Loader2 size={40} color="var(--color-primary)" className="animate-spin" />
                     </div>
                 ) : isError ? (
                     <div style={styles.center}>
@@ -98,13 +98,13 @@ const SearchScreen: React.FC = () => {
                         {/* Loading trigger / indicator */}
                         <div ref={observerTarget} style={styles.loaderTarget}>
                             {isFetchingNextPage && (
-                                <Loader2 size={24} color="#FF9800" className="animate-spin" />
+                                <Loader2 size={24} color="var(--color-primary)" className="animate-spin" />
                             )}
                         </div>
                     </div>
                 ) : !isLoading ? (
                     <div style={styles.center}>
-                        <SearchX size={64} color="#E0E0E0" />
+                        <SearchX size={64} color="var(--color-text-muted)" />
                         <p style={styles.emptyText}>Ничего не найдено</p>
                     </div>
                 ) : null}
@@ -177,11 +177,11 @@ const styles: { [key: string]: React.CSSProperties } = {
         gap: '16px',
     },
     errorText: {
-        color: '#F44336',
+        color: 'var(--color-error)',
         fontSize: '14px',
     },
     emptyText: {
-        color: '#757575',
+        color: 'var(--color-text-muted)',
         fontSize: '16px',
         fontWeight: '500',
     },

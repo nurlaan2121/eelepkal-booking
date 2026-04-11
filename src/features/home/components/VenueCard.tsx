@@ -12,7 +12,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
     const navigate = useNavigate();
 
     return (
-        <div style={styles.card} onClick={() => navigate(`/venue/${venue.venueId}`)}>
+        <div style={styles.card} className="card-hover" onClick={() => navigate(`/venue/${venue.venueId}`)}>
             <div style={styles.imageContainer}>
                 <img src={venue.firstImageUrl} alt={venue.venueName} style={styles.image} />
                 <div style={styles.ratingBadge}>
@@ -42,17 +42,20 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
     card: {
-        minWidth: '240px',
-        backgroundColor: '#FFFFFF',
-        borderRadius: '16px',
+        minWidth: '250px',
+        maxWidth: '280px',
+        backgroundColor: 'var(--color-surface)',
+        borderRadius: 'var(--radius-xl)',
         overflow: 'hidden',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+        boxShadow: 'var(--shadow-sm)',
         cursor: 'pointer',
         flexShrink: 0,
+        display: 'flex',
+        flexDirection: 'column',
     },
     imageContainer: {
         position: 'relative',
-        height: '140px',
+        height: '150px',
         width: '100%',
     },
     image: {
@@ -64,49 +67,52 @@ const styles: { [key: string]: React.CSSProperties } = {
         position: 'absolute',
         top: '12px',
         right: '12px',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        padding: '4px 8px',
-        borderRadius: '20px',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        padding: '4px 10px',
+        borderRadius: 'var(--radius-full)',
         display: 'flex',
         alignItems: 'center',
-        gap: '4px',
-        backdropFilter: 'blur(4px)',
+        gap: '6px',
+        backdropFilter: 'blur(8px)',
+        boxShadow: 'var(--shadow-sm)',
     },
     favoriteBadge: {
         position: 'absolute',
         top: '12px',
         left: '12px',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         borderRadius: '50%',
         width: '32px',
         height: '32px',
-        backdropFilter: 'blur(4px)',
+        backdropFilter: 'blur(8px)',
+        boxShadow: 'var(--shadow-sm)',
         zIndex: 2,
     },
     ratingText: {
-        fontSize: '12px',
-        fontWeight: '700',
-        color: '#000000',
+        fontSize: '13px',
+        fontWeight: '800',
+        color: 'var(--color-text)',
     },
     info: {
-        padding: '12px',
+        padding: '16px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '4px',
+        gap: '6px',
     },
     name: {
         fontSize: '16px',
-        fontWeight: '700',
-        color: '#000000',
+        fontWeight: '800',
+        color: 'var(--color-text)',
         margin: 0,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        letterSpacing: '-0.3px',
     },
     cuisine: {
         fontSize: '13px',
-        color: '#FF9800',
-        fontWeight: '600',
+        color: 'var(--color-primary)',
+        fontWeight: '700',
         margin: 0,
     },
     addressRow: {
@@ -116,8 +122,8 @@ const styles: { [key: string]: React.CSSProperties } = {
         marginTop: '4px',
     },
     addressText: {
-        fontSize: '12px',
-        color: '#757575',
+        fontSize: '13px',
+        color: 'var(--color-text-muted)',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',

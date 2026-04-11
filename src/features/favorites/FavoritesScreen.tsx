@@ -59,7 +59,7 @@ const FavoritesScreen: React.FC = () => {
     const emptyState = (
         <div style={styles.emptyContainer}>
             <div style={styles.heartIconCircle}>
-                <Heart size={40} color="#BDBDBD" />
+                <Heart size={40} color="var(--color-text-muted)" />
             </div>
             <h2 style={styles.emptyTitle}>У вас пока нет избранного</h2>
             <p style={styles.emptySubtitle}>
@@ -152,7 +152,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     title: {
         fontSize: '28px',
         fontWeight: '800',
-        color: '#1A1A1A',
+        color: 'var(--color-text)',
         marginBottom: '24px',
         textAlign: 'left',
     },
@@ -195,12 +195,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     emptyTitle: {
         fontSize: '20px',
         fontWeight: '700',
-        color: '#1A1A1A',
+        color: 'var(--color-text)',
         margin: '0 0 12px 0',
     },
     emptySubtitle: {
         fontSize: '15px',
-        color: '#757575',
+        color: 'var(--color-text-muted)',
         margin: '0 0 32px 0',
         maxWidth: '300px',
         lineHeight: '1.5',
@@ -210,14 +210,14 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         gap: '8px',
         padding: '14px 28px',
-        backgroundColor: '#FF9800',
+        background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '16px',
+        borderRadius: 'var(--radius-full)',
         fontWeight: '700',
         fontSize: '16px',
         cursor: 'pointer',
-        boxShadow: '0 4px 12px rgba(255, 152, 0, 0.3)',
+        boxShadow: 'var(--shadow-primary)',
         transition: 'all 0.2s ease',
     },
     errorText: {
@@ -227,10 +227,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     retryButton: {
         padding: '12px 32px',
-        backgroundColor: '#FF9800',
+        background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '16px',
+        borderRadius: 'var(--radius-full)',
         fontWeight: '700',
         cursor: 'pointer',
     },

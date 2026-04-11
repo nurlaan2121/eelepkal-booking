@@ -33,7 +33,7 @@ const BookingListScreen: React.FC = () => {
 
     const emptyState = (
         <div style={styles.emptyContainer}>
-            <Inbox size={64} color="#BDBDBD" />
+            <Inbox size={64} color="var(--color-text-muted)" />
             <p style={styles.emptyText}>У вас нет бронирований</p>
         </div>
     );
@@ -98,7 +98,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     title: {
         fontSize: '24px',
         fontWeight: '800',
-        color: '#1A1A1A',
+        color: 'var(--color-text)',
         marginBottom: '24px',
         textAlign: 'center',
     },
@@ -123,20 +123,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     emptyText: {
         fontSize: '16px',
-        color: '#757575',
+        color: 'var(--color-text-muted)',
         fontWeight: '500',
     },
     errorText: {
         fontSize: '16px',
-        color: '#F44336',
+        color: 'var(--color-error)',
         fontWeight: '600',
     },
     retryButton: {
         padding: '10px 24px',
-        backgroundColor: '#FF9800',
+        background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '12px',
+        borderRadius: 'var(--radius-full)',
         fontWeight: '700',
         cursor: 'pointer',
     },

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import { Mail, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, ShieldCheck, ArrowRight, Loader2, MapPin } from 'lucide-react';
 
 const LoginForm: React.FC = () => {
     const navigate = useNavigate();
@@ -53,10 +53,10 @@ const LoginForm: React.FC = () => {
             <div style={styles.content}>
                 {/* Logo / Title Section */}
                 <div style={styles.header}>
-                    <div style={styles.logoPlaceholder}>
-                        <ShieldCheck size={48} color="#FF9800" />
+                    <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-md)', marginBottom: 16 }}>
+                        <MapPin size={32} color="#FFFFFF" />
                     </div>
-                    <h1 style={styles.title}>ElevAuto</h1>
+                    <h1 style={styles.title}>Ээлеп кал</h1>
                     <p style={styles.subtitle}>
                         {step === 1 ? 'Введите ваш email для входа' : 'Введите код подтверждения'}
                     </p>
@@ -136,10 +136,14 @@ const LoginForm: React.FC = () => {
                 ) : (
                     <div style={styles.footer}>
                         <p style={styles.footerText}>
-                            Нет аккаунта? <Link to="/register" style={styles.link}>Зарегистрируйтеся</Link>
+                            Нет аккаунта? <Link to="/register" style={styles.link}>Зарегистрируйтесь</Link>
                         </p>
                     </div>
                 )}
+
+                <div style={styles.trustBadgeWrapper}>
+                    <span className="trust-badge">Работаем по всему Кыргызстану</span>
+                </div>
             </div>
         </div>
     );
@@ -228,19 +232,25 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     button: {
         height: '58px',
-        backgroundColor: '#FF9800',
+        background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '15px',
-        fontSize: '20px',
-        fontWeight: '600',
+        borderRadius: 'var(--radius-full)',
+        fontSize: '18px',
+        fontWeight: '700',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: '12px',
-        boxShadow: '0 4px 6px rgba(255, 152, 0, 0.2)',
+        boxShadow: 'var(--shadow-primary)',
         marginTop: '12px',
+        transition: 'all 0.2s ease',
+    },
+    trustBadgeWrapper: {
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: '16px',
     },
     errorText: {
         color: '#C43B3B',

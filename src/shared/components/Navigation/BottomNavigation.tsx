@@ -17,13 +17,28 @@ const BottomNavigation: React.FC = () => {
                 <NavLink
                     key={item.path}
                     to={item.path}
-                    style={({ isActive }) => ({
-                        ...styles.navItem,
-                        color: isActive ? '#FF9800' : '#757575',
-                    })}
+                    style={{ textDecoration: 'none', flex: 1, display: 'flex', justifyContent: 'center' }}
                 >
-                    <item.icon size={24} />
-                    <span style={styles.label}>{item.label}</span>
+                    {({ isActive }) => (
+                        <div style={{
+                            ...styles.navItem,
+                            color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                        }}>
+                            <div style={{
+                                ...styles.iconWrapper,
+                                backgroundColor: isActive ? 'var(--color-primary-alpha)' : 'transparent',
+                            }}>
+                                <item.icon
+                                    size={24}
+                                    strokeWidth={isActive ? 2.5 : 2}
+                                />
+                            </div>
+                            <span style={{
+                                ...styles.label,
+                                fontWeight: isActive ? 700 : 500,
+                            }}>{item.label}</span>
+                        </div>
+                    )}
                 </NavLink>
             ))}
         </nav>
@@ -37,26 +52,35 @@ const styles: { [key: string]: React.CSSProperties } = {
         left: 0,
         right: 0,
         height: '65px',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--color-surface)',
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        borderTop: '1px solid #E0E0E0',
+        borderTop: '1px solid var(--color-border)',
         paddingBottom: 'env(safe-area-inset-bottom)',
         zIndex: 1000,
+        boxShadow: '0 -2px 10px rgba(0,0,0,0.02)',
     },
     navItem: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        textDecoration: 'none',
         gap: '4px',
-        flex: 1,
+        width: '100%',
+        transition: 'all 0.2s ease',
+    },
+    iconWrapper: {
+        padding: '4px 16px',
+        borderRadius: '16px',
+        transition: 'all 0.2s ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     label: {
-        fontSize: '12px',
-        fontWeight: '500',
+        fontSize: '11px',
+        transition: 'all 0.2s ease',
     },
 };
 
