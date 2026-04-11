@@ -19,3 +19,19 @@ export interface BookingDTO {
     etableTitle: string;
     etableType: string;
 }
+
+export interface BookingDetailsDTO {
+    bookingId: number;
+    venueId: number;
+    venueName: string;
+    address: string;
+    deposit: string;
+    bookingFullVisitTime: number;
+    tableTitle: string;
+    tableType: string;
+    tableInFloor: number;
+    countOfGuests: number;
+    bookingStatus: string;
+    bookingCreatedAt: number;
+    bookingCode: number;
+}

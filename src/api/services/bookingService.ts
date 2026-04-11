@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import { BookingDTO, BookingKind } from '../dto/bookingDto';
+import { BookingDTO, BookingKind, BookingDetailsDTO } from '../dto/bookingDto';
 
 export const bookingService = {
     /**
@@ -21,6 +21,16 @@ export const bookingService = {
                 limit
             }
         });
+        return response.data;
+    },
+
+    /**
+     * Get a single booking by its ID.
+     * 
+     * @param bookingId - The ID of the booking
+     */
+    getBookingById: async (bookingId: number | string): Promise<BookingDetailsDTO> => {
+        const response = await api.get<BookingDetailsDTO>(`/client-booking/get/${bookingId}`);
         return response.data;
     }
 };
