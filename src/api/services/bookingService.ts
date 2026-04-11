@@ -30,7 +30,17 @@ export const bookingService = {
      * @param bookingId - The ID of the booking
      */
     getBookingById: async (bookingId: number | string): Promise<BookingDetailsDTO> => {
-        const response = await api.get<BookingDetailsDTO>(`/client-booking/get/${bookingId}`);
-        return response.data;
+        console.log(`🚀 [getBookingById] START - ID: ${bookingId}`);
+        try {
+            const response = await api.get<BookingDetailsDTO>(`/client-booking/get/${bookingId}`);
+            console.log(`✅ [getBookingById] SUCCESS`, response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error(`🔥 [getBookingById] ERROR`, error);
+            if (error.response) {
+                console.error(`📉 STATUS: ${error.response.status}`, error.response.data);
+            }
+            throw error;
+        }
     }
 };
