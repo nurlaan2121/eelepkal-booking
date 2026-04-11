@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import BottomNavigation from '../components/Navigation/BottomNavigation';
 import Footer from '../components/Footer/Footer';
-import { MapPin } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
     const [scrolled, setScrolled] = useState(false);
@@ -23,9 +22,7 @@ const MainLayout: React.FC = () => {
                 borderBottomColor: scrolled ? 'transparent' : 'var(--color-border)'
             }}>
                 <div style={styles.logoWrapper}>
-                    <div style={styles.iconCircle}>
-                        <MapPin size={20} color="#FFFFFF" />
-                    </div>
+                    <img src="/logo.png" alt="Ээлеп кал" style={{ height: 36, width: 36, objectFit: 'contain' }} />
                     <h1 style={styles.title}>Ээлеп кал</h1>
                 </div>
             </header>

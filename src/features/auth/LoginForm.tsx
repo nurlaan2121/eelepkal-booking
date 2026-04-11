@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import { Mail, ShieldCheck, ArrowRight, Loader2, MapPin } from 'lucide-react';
+import { Mail, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 
 const LoginForm: React.FC = () => {
     const navigate = useNavigate();
@@ -53,9 +53,7 @@ const LoginForm: React.FC = () => {
             <div style={styles.content}>
                 {/* Logo / Title Section */}
                 <div style={styles.header}>
-                    <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-md)', marginBottom: 16 }}>
-                        <MapPin size={32} color="#FFFFFF" />
-                    </div>
+                    <img src="/logo.png" alt="Ээлеп кал" style={{ width: 72, height: 72, marginBottom: 16, objectFit: 'contain' }} />
                     <h1 style={styles.title}>Ээлеп кал</h1>
                     <p style={styles.subtitle}>
                         {step === 1 ? 'Введите ваш email для входа' : 'Введите код подтверждения'}
