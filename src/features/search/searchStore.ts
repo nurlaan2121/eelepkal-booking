@@ -15,6 +15,7 @@ const defaultFilters: VenueSearchRequest = {
     minRating: undefined,
     minAverageCheck: undefined,
     maxAverageCheck: undefined,
+    venueAmenitiesIds: [],
 };
 
 export const useSearchStore = create<SearchState>((set) => ({

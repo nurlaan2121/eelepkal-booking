@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchStore } from '../searchStore';
-import { X, Star } from 'lucide-react';
+import { X, Star, Check } from 'lucide-react';
+import { venueService } from '../../../api/services/venueService';
+import type { Amenity } from '../../../api/dto/venueDto';
 
 interface FilterModalProps {
     onClose: () => void;
@@ -11,6 +13,14 @@ const FilterModal: React.FC<FilterModalProps> = ({ onClose }) => {
 
     // Local state for UI responsiveness before applying
     const [localFilters, setLocalFilters] = useState(filters);
+    const [amenities, setAmenities] = useState<Amenity[]>([]);
+
+    useEffect(() => {
+        // Fetch amenities for the filter
+        venueService.getAllAmenities()
+            .then(data => setAmenities(data))
+            .catch(console.error);
+    }, []);
 
     const handleApply = () => {
         setFilters(localFilters);
@@ -23,7 +33,23 @@ const FilterModal: React.FC<FilterModalProps> = ({ onClose }) => {
             minRating: undefined,
             minAverageCheck: undefined,
             maxAverageCheck: undefined,
+            venueAmenitiesIds: [],
         });
+    };
+
+    const toggleAmenity = (id: number) => {
+        const currentSelected = localFilters.venueAmenitiesIds || [];
+        if (currentSelected.includes(id)) {
+            setLocalFilters({
+                ...localFilters,
+                venueAmenitiesIds: currentSelected.filter(aId => aId !== id)
+            });
+        } else {
+            setLocalFilters({
+                ...localFilters,
+                venueAmenitiesIds: [...currentSelected, id]
+            });
+        }
     };
 
     return (
@@ -44,7 +70,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ onClose }) => {
                             {[3, 4, 4.5, 5].map((val) => (
                                 <button
                                     key={val}
-                                    onClick={() => setLocalFilters({ ...localFilters, minRating: val })}
+                                    onClick={() => setLocalFilters({ ...localFilters, minRating: localFilters.minRating === val ? undefined : val })}
                                     style={{
                                         ...styles.filterOption,
                                         backgroundColor: localFilters.minRating === val ? '#FF9800' : '#F5F5F5',
@@ -79,6 +105,33 @@ const FilterModal: React.FC<FilterModalProps> = ({ onClose }) => {
                             />
                         </div>
                     </div>
+
+                    {/* Amenities Section */}
+                    {amenities.length > 0 && (
+                        <div style={styles.section}>
+                            <h3 style={styles.sectionTitle}>Удобства</h3>
+                            <div style={styles.amenitiesGrid}>
+                                {amenities.map((amenity) => {
+                                    const isSelected = (localFilters.venueAmenitiesIds || []).includes(amenity.id);
+                                    return (
+                                        <button
+                                            key={amenity.id}
+                                            onClick={() => toggleAmenity(amenity.id)}
+                                            style={{
+                                                ...styles.amenityChip,
+                                                backgroundColor: isSelected ? '#FFF3E0' : '#F5F5F5',
+                                                borderColor: isSelected ? '#FF9800' : 'transparent',
+                                                color: isSelected ? '#E65100' : '#424242',
+                                            }}
+                                        >
+                                            {isSelected && <Check size={14} color="#FF9800" style={{ marginRight: 4 }} />}
+                                            {amenity.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div style={styles.footer}>
@@ -104,6 +157,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     modal: {
         width: '100%',
+        maxHeight: '90vh',
         backgroundColor: '#FFFFFF',
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px',
@@ -112,6 +166,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         flexDirection: 'column',
         gap: '24px',
         animation: 'slideUp 0.3s ease-out',
+        overflowY: 'auto',
     },
     header: {
         display: 'flex',
@@ -159,6 +214,22 @@ const styles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         alignItems: 'center',
         gap: '6px',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+    },
+    amenitiesGrid: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '8px',
+    },
+    amenityChip: {
+        border: '1px solid',
+        borderRadius: '20px',
+        padding: '8px 16px',
+        fontSize: '14px',
+        fontWeight: '500',
+        display: 'flex',
+        alignItems: 'center',
         cursor: 'pointer',
         transition: 'all 0.2s',
     },

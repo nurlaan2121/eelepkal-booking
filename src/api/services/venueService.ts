@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse, FavoriteMenu, FavoriteVenue } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse, FavoriteMenu, FavoriteVenue, Amenity } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -47,12 +47,27 @@ export const venueService = {
         offset = 0,
         limit = 20
     ): Promise<RecommendedVenue[]> => {
-        const response = await api.post<RecommendedVenue[]>('/client-venue/search', {
-            ...filter,
+        const params = {
             word: word || undefined,
             offset,
             limit
+        };
+        const data = {
+            minRating: filter.minRating,
+            minAverageCheck: filter.minAverageCheck,
+            maxAverageCheck: filter.maxAverageCheck,
+            venueAmenitiesIds: filter.venueAmenitiesIds || [],
+        };
+        console.log("QUERY PARAMS:", params);
+        console.log("BODY:", data);
+        const response = await api.post<RecommendedVenue[]>('/client-venue/search', data, {
+            params
         });
+        return response.data;
+    },
+
+    getAllAmenities: async (): Promise<Amenity[]> => {
+        const response = await api.get<Amenity[]>('/dev/amenities/allForUpdate');
         return response.data;
     },
 

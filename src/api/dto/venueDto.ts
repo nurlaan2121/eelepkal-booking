@@ -80,6 +80,11 @@ export interface VenueSchedule {
 
 export type VenueAmenities = Record<string, string>;
 
+export interface Amenity {
+    id: number;
+    name: string;
+}
+
 export interface VenueContacts {
     email?: string;
     phoneNumber?: string;
