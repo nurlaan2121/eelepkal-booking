@@ -223,7 +223,11 @@ export const venueService = {
     uploadReceipt: async (file: File): Promise<S3Response> => {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await api.post<S3Response>('/s3', formData);
+        const response = await api.post<S3Response>('/s3', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         return response.data;
     },
 
