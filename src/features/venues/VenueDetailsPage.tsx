@@ -15,6 +15,7 @@ import VenueFilials from './components/VenueFilials';
 import VenuePayments from './components/VenuePayments';
 import VenueMenuSection from './components/VenueMenuSection';
 import VenueTablesSection from './components/VenueTablesSection';
+import AddReviewModal from './components/AddReviewModal';
 
 const VenueDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -35,6 +36,7 @@ const VenueDetailsPage: React.FC = () => {
     const conditionsQuery = useQuery({ queryKey: ['venueConditions', venueId], queryFn: () => venueService.getBookingConditions(venueId) });
 
     const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
+    const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
 
     const isLoading = basicQuery.isLoading;
     const error = basicQuery.error;
@@ -122,6 +124,11 @@ const VenueDetailsPage: React.FC = () => {
 
                 {activeTab === 'REVIEWS' && (
                     <div style={{ marginTop: '16px' }}>
+                        <div style={styles.reviewsHeader}>
+                            <button onClick={() => setIsAddReviewModalOpen(true)} style={styles.addReviewBtn}>
+                                Оставить отзыв
+                            </button>
+                        </div>
                         {reviewsQuery.isLoading ? (
                             <div style={styles.tabLoading}>Загрузка отзывов...</div>
                         ) : reviewsQuery.isError ? (
@@ -132,6 +139,17 @@ const VenueDetailsPage: React.FC = () => {
                             <VenueReviews reviews={reviewsQuery.data} />
                         )}
                     </div>
+                )}
+
+                {isAddReviewModalOpen && (
+                    <AddReviewModal
+                        venueId={venueId}
+                        onClose={() => setIsAddReviewModalOpen(false)}
+                        onSuccess={() => {
+                            setIsAddReviewModalOpen(false);
+                            reviewsQuery.refetch();
+                        }}
+                    />
                 )}
             </div>
         </div>
@@ -231,6 +249,22 @@ const styles: { [key: string]: React.CSSProperties } = {
         textAlign: 'center',
         padding: '40px 0',
         color: '#9E9E9E',
+    },
+    reviewsHeader: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginBottom: '16px',
+    },
+    addReviewBtn: {
+        backgroundColor: '#FF9800',
+        color: '#FFFFFF',
+        border: 'none',
+        borderRadius: '12px',
+        padding: '10px 16px',
+        fontSize: '14px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'background-color 0.2s',
     },
 };
 

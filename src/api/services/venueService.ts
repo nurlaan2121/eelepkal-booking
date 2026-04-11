@@ -1,5 +1,5 @@
 import api from '../instances/apiInstance';
-import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse, FavoriteMenu, FavoriteVenue, Amenity } from '../dto/venueDto';
+import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse, FavoriteMenu, FavoriteVenue, Amenity, ReviewRequest } from '../dto/venueDto';
 
 export const venueService = {
     // Get Categories (Cuisines)
@@ -134,6 +134,11 @@ export const venueService = {
             console.error("🔥 [getVenueReviews] ERROR", error);
             throw error;
         }
+    },
+
+    addVenueReview: async (venueId: string | number, data: ReviewRequest): Promise<any> => {
+        const response = await api.post(`/client-feedback/add/${venueId}`, data);
+        return response.data;
     },
 
     // 9. Filials

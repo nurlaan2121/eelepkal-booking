@@ -113,6 +113,11 @@ export interface VenueReview {
     isOwner: boolean;
 }
 
+export interface ReviewRequest {
+    text: string;
+    rating: number;
+}
+
 export interface VenueFilial {
     id: number;
     name: string;
