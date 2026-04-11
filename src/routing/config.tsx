@@ -7,6 +7,7 @@ import HomeScreen from '../features/home/HomeScreen';
 import SearchScreen from '../features/search/SearchScreen';
 import VenueDetailsPage from '../features/venues/VenueDetailsPage';
 import BookingListScreen from '../features/booking/BookingListScreen';
+import BookingDetailsPage from '../features/booking/BookingDetailsPage';
 
 export const router = createBrowserRouter([
     {
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
                     {
                         path: '/booking',
                         element: <BookingListScreen />,
+                    },
+                    {
+                        path: '/booking/:id',
+                        element: <BookingDetailsPage />,
                     },
                     {
                         path: '/favorites',

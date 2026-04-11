@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Calendar, Users, Home, Clock } from 'lucide-react';
 import { BookingDTO } from '../../../api/dto/bookingDto';
 import { formatTimestamp } from '../../../shared/utils/dateFormatter';
@@ -8,8 +9,10 @@ interface BookingCardProps {
 }
 
 const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
+    const navigate = useNavigate();
+
     return (
-        <div style={styles.card}>
+        <div style={styles.card} onClick={() => navigate(`/booking/${booking.bookingId}`)}>
             <div style={styles.imageContainer}>
                 <img src={booking.firstImageUrl} alt={booking.venueName} style={styles.image} />
                 <div style={styles.statusBadge(booking.bookingStatus)}>
@@ -70,6 +73,7 @@ const styles: { [key: string]: any } = {
         marginBottom: '20px',
         display: 'flex',
         flexDirection: 'column',
+        cursor: 'pointer',
     },
     imageContainer: {
         position: 'relative',
