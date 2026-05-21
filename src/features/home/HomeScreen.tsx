@@ -103,9 +103,9 @@ const HomeScreen: React.FC = () => {
                     <h2 className="section-title">Категории</h2>
                 </div>
                 {isLoadingCategories ? (
-                    <div style={styles.cuisinesGrid}>
+                    <div style={styles.horizontalScroll} className="hide-scrollbar">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                            <Skeleton key={i} height="100px" borderRadius="var(--radius-lg)" />
+                            <Skeleton key={i} width="100px" height="100px" borderRadius="var(--radius-lg)" />
                         ))}
                     </div>
                 ) : cuisinesQuery.isError ? (
@@ -113,8 +113,8 @@ const HomeScreen: React.FC = () => {
                         Не удалось загрузить категории
                     </div>
                 ) : Array.isArray(cuisinesQuery.data) && cuisinesQuery.data.length > 0 ? (
-                    <div style={styles.cuisinesGrid}>
-                        {cuisinesQuery.data.slice(0, 8).map((cuisine) => (
+                    <div style={styles.horizontalScroll} className="hide-scrollbar">
+                        {cuisinesQuery.data.map((cuisine) => (
                             <div
                                 key={cuisine.id}
                                 style={styles.cuisineItem}
@@ -357,10 +357,13 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         gap: '10px',
         backgroundColor: 'var(--color-surface)',
-        padding: '12px 8px',
+        padding: '12px 16px',
         borderRadius: 'var(--radius-md)',
         boxShadow: 'var(--shadow-sm)',
         cursor: 'pointer',
+        minWidth: '110px',
+        flexShrink: 0,
+        scrollSnapAlign: 'start',
     },
     cuisineIconWrapper: {
         width: '56px',
