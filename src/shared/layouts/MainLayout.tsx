@@ -28,20 +28,39 @@ const MainLayout: React.FC = () => {
                     // Double click
                     const clickedImg = target as HTMLImageElement;
 
-                    // Logic to find "related" images in the same section/container
                     const parent = target.parentElement;
                     let galleryImages: string[] = [];
                     let initialIndex = 0;
 
                     if (parent) {
-                        // Find all images in the same container or nearest section
-                        const container = target.closest('section') || parent;
-                        const allImgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+                        // 1. Try to find images in the nearest section or container with multiple images
+                        let container = target.closest('section') || parent;
+                        let allImgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
 
-                        // Filter out small icons or repetitive logos if needed
-                        // But for now, let's take all in the immediate context
-                        galleryImages = allImgs.map(img => img.src);
-                        initialIndex = allImgs.indexOf(clickedImg);
+                        // 2. If we only found one image, try a wider search (go up one more level)
+                        if (allImgs.length <= 1) {
+                            const widerContainer = container.parentElement;
+                            if (widerContainer) {
+                                allImgs = Array.from(widerContainer.querySelectorAll('img')) as HTMLImageElement[];
+                            }
+                        }
+
+                        // 3. Filter and Deduplicate
+                        // Important: some images might have same SRC but different sizes/query params
+                        // Also filter out very small icons (< 30px)
+                        const uniqueSrcs = new Set<string>();
+                        const filteredImgs: HTMLImageElement[] = [];
+
+                        allImgs.forEach(img => {
+                            if (img.naturalWidth > 0 && (img.naturalWidth < 30 || img.naturalHeight < 30)) return;
+                            if (!uniqueSrcs.has(img.src)) {
+                                uniqueSrcs.add(img.src);
+                                filteredImgs.push(img);
+                            }
+                        });
+
+                        galleryImages = filteredImgs.map(img => img.src);
+                        initialIndex = filteredImgs.findIndex(img => img.src === clickedImg.src);
                     }
 
                     if (galleryImages.length === 0) {
