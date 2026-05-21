@@ -161,7 +161,16 @@ const VenueDetailsPage: React.FC = () => {
                 <VenueHeader
                     venue={basic}
                     isFavorite={basic.favoriteForClient}
-                    onShare={() => { }}
+                    onShare={async () => {
+                        const shareUrl = window.location.href;
+                        const shareData = { title: basic.name, text: `Посмотри заведение ${basic.name} на Ээлеп кал!`, url: shareUrl };
+                        if (navigator.share) {
+                            try { await navigator.share(shareData); } catch { }
+                        } else {
+                            await navigator.clipboard.writeText(shareUrl);
+                            alert('Ссылка скопирована!');
+                        }
+                    }}
                 />
 
                 <div style={styles.tabs}>
