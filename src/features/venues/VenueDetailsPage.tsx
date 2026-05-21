@@ -35,14 +35,26 @@ const VenueDetailsPage: React.FC = () => {
     const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
     const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
     const [isAuthGuardOpen, setIsAuthGuardOpen] = React.useState(false);
+    const [guardAction, setGuardAction] = React.useState<'REVIEW' | 'BOOKING' | null>(null);
 
     const { isAuthenticated } = useAuthStore();
 
     const handleAddReviewClick = () => {
         if (!isAuthenticated) {
+            setGuardAction('REVIEW');
             setIsAuthGuardOpen(true);
         } else {
             setIsAddReviewModalOpen(true);
+        }
+    };
+
+    const handleStickyBookClick = () => {
+        if (!isAuthenticated) {
+            setGuardAction('BOOKING');
+            setIsAuthGuardOpen(true);
+        } else {
+            setActiveTab('BOOKING');
+            window.scrollTo({ top: 350, behavior: 'smooth' }); // Scroll to tabs
         }
     };
 
@@ -274,9 +286,27 @@ const VenueDetailsPage: React.FC = () => {
 
                 <AuthGuardModal
                     isOpen={isAuthGuardOpen}
-                    onClose={() => setIsAuthGuardOpen(false)}
-                    message="Войдите, чтобы оставить отзыв об этом заведении."
+                    onClose={() => {
+                        setIsAuthGuardOpen(false);
+                        setGuardAction(null);
+                    }}
+                    message={guardAction === 'BOOKING'
+                        ? "Войдите, чтобы забронировать столик в этом заведении."
+                        : "Войдите, чтобы оставить отзыв об этом заведении."}
                 />
+            </div>
+
+            {/* Sticky Mobile Footer CTA */}
+            <div style={styles.stickyFooter}>
+                <div style={styles.footerInfo}>
+                    <div style={styles.footerPrice}>
+                        <span style={styles.footerPriceLabel}>Средний чек:</span>
+                        <span style={styles.footerPriceValue}>{basic.averageCheck} сом</span>
+                    </div>
+                </div>
+                <button style={styles.stickyBookBtn} onClick={handleStickyBookClick}>
+                    Забронировать
+                </button>
             </div>
         </div>
     );
@@ -448,6 +478,47 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: '#424242',
         lineHeight: '1.5',
         margin: 0,
+    },
+    stickyFooter: {
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#FFFFFF',
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderTop: '1px solid #E0E0E0',
+        zIndex: 100,
+        boxShadow: '0 -4px 12px rgba(0,0,0,0.05)',
+        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
+    },
+    footerInfo: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    footerPriceLabel: {
+        fontSize: '12px',
+        color: '#757575',
+        fontWeight: '500',
+        display: 'block',
+    },
+    footerPriceValue: {
+        fontSize: '18px',
+        fontWeight: '800',
+        color: '#212121',
+    },
+    stickyBookBtn: {
+        backgroundColor: '#212121',
+        color: '#FFFFFF',
+        border: 'none',
+        borderRadius: '16px',
+        padding: '16px 32px',
+        fontSize: '16px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
     },
 };
 
