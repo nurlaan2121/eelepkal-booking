@@ -17,7 +17,14 @@ const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onShare })
     return (
         <div style={styles.header}>
             <div style={styles.mainImageContainer}>
-                <OptimizedImage src={activeImage} alt={venue.name} style={styles.mainImage} />
+                <OptimizedImage
+                    src={activeImage}
+                    alt={venue.name}
+                    style={styles.mainImage}
+                    data-gallery-id={venue.venueId}
+                    data-gallery-index={images.indexOf(activeImage)}
+                    data-gallery-srcs={JSON.stringify(images)}
+                />
 
                 <div style={styles.actionButtons}>
                     <button onClick={onShare} style={styles.iconButton}>
@@ -48,6 +55,9 @@ const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onShare })
                             border: activeImage === img ? '2px solid #FF9800' : '2px solid transparent'
                         }}
                         onClick={() => setActiveImage(img)}
+                        data-gallery-id={venue.venueId}
+                        data-gallery-index={idx}
+                        data-gallery-srcs={JSON.stringify(images)}
                     />
                 ))}
             </div>

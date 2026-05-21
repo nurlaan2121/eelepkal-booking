@@ -27,40 +27,47 @@ const MainLayout: React.FC = () => {
                 if (lastClick.target === target && timeDiff < 300) {
                     // Double click
                     const clickedImg = target as HTMLImageElement;
-
-                    const parent = target.parentElement;
                     let galleryImages: string[] = [];
                     let initialIndex = 0;
 
-                    if (parent) {
-                        // 1. Try to find images in the nearest section or container with multiple images
-                        let container = target.closest('section') || parent;
-                        let allImgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+                    // Strategy 1: Check for explicit data-gallery-srcs attribute (most reliable)
+                    // This is set by components like VenueHeader that know their gallery
+                    const gallerySrcsAttr = clickedImg.getAttribute('data-gallery-srcs');
+                    const galleryIndexAttr = clickedImg.getAttribute('data-gallery-index');
 
-                        // 2. If we only found one image, try a wider search (go up one more level)
-                        if (allImgs.length <= 1) {
-                            const widerContainer = container.parentElement;
-                            if (widerContainer) {
-                                allImgs = Array.from(widerContainer.querySelectorAll('img')) as HTMLImageElement[];
-                            }
+                    if (gallerySrcsAttr) {
+                        try {
+                            galleryImages = JSON.parse(gallerySrcsAttr);
+                            initialIndex = galleryIndexAttr ? parseInt(galleryIndexAttr, 10) : 0;
+                        } catch {
+                            galleryImages = [clickedImg.src];
                         }
+                    } else {
+                        // Strategy 2: DOM traversal - find sibling images in the same container
+                        const parent = target.parentElement;
+                        if (parent) {
+                            let container = target.closest('section') || parent;
+                            let allImgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
 
-                        // 3. Filter and Deduplicate
-                        // Important: some images might have same SRC but different sizes/query params
-                        // Also filter out very small icons (< 30px)
-                        const uniqueSrcs = new Set<string>();
-                        const filteredImgs: HTMLImageElement[] = [];
-
-                        allImgs.forEach(img => {
-                            if (img.naturalWidth > 0 && (img.naturalWidth < 30 || img.naturalHeight < 30)) return;
-                            if (!uniqueSrcs.has(img.src)) {
-                                uniqueSrcs.add(img.src);
-                                filteredImgs.push(img);
+                            if (allImgs.length <= 1) {
+                                const widerContainer = container.parentElement;
+                                if (widerContainer) {
+                                    allImgs = Array.from(widerContainer.querySelectorAll('img')) as HTMLImageElement[];
+                                }
                             }
-                        });
 
-                        galleryImages = filteredImgs.map(img => img.src);
-                        initialIndex = filteredImgs.findIndex(img => img.src === clickedImg.src);
+                            const uniqueSrcs = new Set<string>();
+                            const filteredImgs: HTMLImageElement[] = [];
+                            allImgs.forEach(img => {
+                                if (img.naturalWidth > 0 && (img.naturalWidth < 30 || img.naturalHeight < 30)) return;
+                                if (!uniqueSrcs.has(img.src)) {
+                                    uniqueSrcs.add(img.src);
+                                    filteredImgs.push(img);
+                                }
+                            });
+                            galleryImages = filteredImgs.map(img => img.src);
+                            initialIndex = filteredImgs.findIndex(img => img.src === clickedImg.src);
+                        }
                     }
 
                     if (galleryImages.length === 0) {
@@ -71,7 +78,6 @@ const MainLayout: React.FC = () => {
                     openImage(initialIndex, galleryImages);
                     setShowHint(false);
                 } else {
-                    // Single click - show hint
                     setShowHint(true);
                     setTimeout(() => setShowHint(false), 2000);
                 }
