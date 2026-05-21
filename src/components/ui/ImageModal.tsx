@@ -6,7 +6,7 @@ const ImageModal: React.FC = () => {
     const { isOpen, images, currentIndex, nextImage, prevImage, closeImage } = useImageStore();
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
-    const minSwipeDistance = 50;
+    const minSwipeDistance = 30;
 
     useEffect(() => {
         if (isOpen) {
@@ -163,6 +163,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
+        touchAction: 'none', // Prevents browser from handling swipe (scrolling)
     },
     image: {
         maxWidth: '100%',
