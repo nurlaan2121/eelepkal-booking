@@ -2,21 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, ScrollRestoration } from 'react-router-dom';
 import BottomNavigation from '../components/Navigation/BottomNavigation';
 import Footer from '../components/Footer/Footer';
+import ImageModal from '../../components/ui/ImageModal';
+import { useImageStore } from '../stores/imageStore';
 
 const MainLayout: React.FC = () => {
     const [scrolled, setScrolled] = useState(false);
+
+    const { openImage } = useImageStore();
 
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 10);
         };
+
+        const handleDoubleClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'IMG') {
+                const img = target as HTMLImageElement;
+                openImage(img.src);
+            }
+        };
+
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        window.addEventListener('dblclick', handleDoubleClick);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('dblclick', handleDoubleClick);
+        };
+    }, [openImage]);
 
     return (
         <div style={styles.container}>
             <ScrollRestoration />
+            <ImageModal />
             <header style={{
                 ...styles.header,
                 boxShadow: scrolled ? 'var(--shadow-sm)' : 'none',
