@@ -5,6 +5,8 @@ import { venueService } from '../../api/services/venueService';
 import VenueCard from './components/VenueCard';
 import { ChevronRight, Search, Clock, CheckCircle } from 'lucide-react';
 import Skeleton from '../../components/ui/Skeleton';
+import SEOManager from '../../shared/components/SEO/SEOManager';
+
 
 const HomeScreen: React.FC = () => {
     const navigate = useNavigate();
@@ -28,7 +30,12 @@ const HomeScreen: React.FC = () => {
 
     return (
         <div style={styles.container}>
+            <SEOManager
+                title="Главная"
+                description="Бронируйте столик онлайн в лучших заведениях Бишкека за 30 секунд. Рестораны, кафе, бары в одном приложении."
+            />
             {/* Hero Section */}
+
             <section style={styles.heroSection}>
                 <div style={styles.heroOverlay} />
                 <div style={styles.heroContent}>
@@ -40,6 +47,18 @@ const HomeScreen: React.FC = () => {
                             Забронировать столик
                             <ChevronRight size={18} />
                         </button>
+                        <button
+                            className="btn-secondary"
+                            style={{
+                                backgroundColor: 'transparent',
+                                border: '1px solid #FFF',
+                                color: '#FFF'
+                            }}
+                            onClick={() => navigate('/search')}
+                        >
+                            Все заведения
+                        </button>
+
                         <button
                             className="btn-primary"
                             style={{
@@ -93,7 +112,7 @@ const HomeScreen: React.FC = () => {
                     <div style={{ padding: '0 20px', color: 'var(--color-text-muted)', fontSize: '14px' }}>
                         Не удалось загрузить категории
                     </div>
-                ) : cuisinesQuery.data && cuisinesQuery.data.length > 0 ? (
+                ) : Array.isArray(cuisinesQuery.data) && cuisinesQuery.data.length > 0 ? (
                     <div style={styles.cuisinesGrid}>
                         {cuisinesQuery.data.slice(0, 8).map((cuisine) => (
                             <div
@@ -128,10 +147,12 @@ const HomeScreen: React.FC = () => {
                 <div style={styles.horizontalScroll} className="hide-scrollbar">
                     {recommendedQuery.isLoading ? (
                         [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 260, height: 220, borderRadius: 16 }} />)
-                    ) : (
-                        recommendedQuery.data?.map((venue) => (
+                    ) : Array.isArray(recommendedQuery.data) ? (
+                        recommendedQuery.data.map((venue) => (
                             <VenueCard key={venue.venueId} venue={venue} />
                         ))
+                    ) : (
+                        <div style={{ color: 'var(--color-text-muted)', padding: '20px' }}>Нет данных</div>
                     )}
                 </div>
             </section>
@@ -147,10 +168,12 @@ const HomeScreen: React.FC = () => {
                 <div style={styles.horizontalScroll} className="hide-scrollbar">
                     {ratingQuery.isLoading ? (
                         [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 260, height: 220, borderRadius: 16 }} />)
-                    ) : (
-                        ratingQuery.data?.map((venue) => (
+                    ) : Array.isArray(ratingQuery.data) ? (
+                        ratingQuery.data.map((venue) => (
                             <VenueCard key={venue.venueId} venue={venue} />
                         ))
+                    ) : (
+                        <div style={{ color: 'var(--color-text-muted)', padding: '20px' }}>Нет данных</div>
                     )}
                 </div>
             </section>
@@ -166,10 +189,12 @@ const HomeScreen: React.FC = () => {
                 <div style={styles.horizontalScroll} className="hide-scrollbar">
                     {openQuery.isLoading ? (
                         [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 260, height: 220, borderRadius: 16 }} />)
-                    ) : (
-                        openQuery.data?.map((venue) => (
+                    ) : Array.isArray(openQuery.data) ? (
+                        openQuery.data.map((venue) => (
                             <VenueCard key={venue.venueId} venue={venue} />
                         ))
+                    ) : (
+                        <div style={{ color: 'var(--color-text-muted)', padding: '20px' }}>Нет данных</div>
                     )}
                 </div>
             </section>

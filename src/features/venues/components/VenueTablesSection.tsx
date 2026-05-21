@@ -7,6 +7,8 @@ import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
 import { TableItem } from '../../../api/dto/venueDto';
 import TableDetailsModal from './TableDetailsModal';
 import BookingConfirmationModal from './BookingConfirmationModal';
+import AuthGuardModal from '../../auth/components/AuthGuardModal';
+import { useAuthStore } from '../../auth/authStore';
 
 interface VenueTablesSectionProps {
     venueId: string | number;
@@ -17,6 +19,9 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
     const [guests, setGuests] = React.useState(1);
     const [selectedTableId, setSelectedTableId] = React.useState<number | null>(null);
     const [bookingConfirmation, setBookingConfirmation] = React.useState<{ tableId: number, title: string } | null>(null);
+    const [isAuthGuardOpen, setIsAuthGuardOpen] = React.useState(false);
+
+    const { isAuthenticated } = useAuthStore();
 
     // Default to tomorrow 12:00
     const [selectedDate, setSelectedDate] = React.useState(() => {
@@ -196,7 +201,13 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                         <div
                             key={table.id}
                             style={styles.tableCard}
-                            onClick={() => setSelectedTableId(table.id)}
+                            onClick={() => {
+                                if (!isAuthenticated) {
+                                    setIsAuthGuardOpen(true);
+                                } else {
+                                    setSelectedTableId(table.id);
+                                }
+                            }}
                         >
                             <img src={table.image} alt={table.title} style={styles.tableImage} />
                             <div style={styles.tableInfo}>
@@ -219,7 +230,11 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                                 disabled={table.tableStatus === 'BUSY'}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setBookingConfirmation({ tableId: table.id, title: table.title });
+                                    if (!isAuthenticated) {
+                                        setIsAuthGuardOpen(true);
+                                    } else {
+                                        setBookingConfirmation({ tableId: table.id, title: table.title });
+                                    }
                                 }}
                             >
                                 {table.tableStatus === 'BUSY' ? 'Занят' : 'Бронь'}
@@ -263,6 +278,12 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                     }}
                 />
             )}
+
+            <AuthGuardModal
+                isOpen={isAuthGuardOpen}
+                onClose={() => setIsAuthGuardOpen(false)}
+                message="Войдите, чтобы забронировать столик в этом заведении."
+            />
         </div >
     );
 };

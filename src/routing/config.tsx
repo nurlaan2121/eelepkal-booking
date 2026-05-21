@@ -11,6 +11,13 @@ import BookingDetailsPage from '../features/booking/BookingDetailsPage';
 
 import ProfileScreen from '../features/profile/ProfileScreen';
 import FavoritesScreen from '../features/favorites/FavoritesScreen';
+import ErrorBoundary from '../components/ui/ErrorBoundary';
+
+const RootErrorBoundary = () => (
+    <ErrorBoundary>
+        <MainLayout />
+    </ErrorBoundary>
+);
 
 export const router = createBrowserRouter([
     {
@@ -22,23 +29,24 @@ export const router = createBrowserRouter([
         element: <RegistrationForm />,
     },
     {
-        element: <ProtectedRoute />,
+        element: <RootErrorBoundary />,
+        errorElement: <ErrorBoundary />,
         children: [
             {
-                element: <MainLayout />,
+                path: '/venues',
+                element: <HomeScreen />,
+            },
+            {
+                path: '/search',
+                element: <SearchScreen />,
+            },
+            {
+                path: '/venue/:id',
+                element: <VenueDetailsPage />,
+            },
+            {
+                element: <ProtectedRoute />,
                 children: [
-                    {
-                        path: '/venues',
-                        element: <HomeScreen />,
-                    },
-                    {
-                        path: '/search',
-                        element: <SearchScreen />,
-                    },
-                    {
-                        path: '/venue/:id',
-                        element: <VenueDetailsPage />,
-                    },
                     {
                         path: '/booking',
                         element: <BookingListScreen />,

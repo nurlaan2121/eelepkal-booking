@@ -65,7 +65,15 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // If refresh fails, force logout
         logout();
-        window.location.href = '/login';
+
+        // ONLY redirect to /login if the user is on a protected page
+        const publicPaths = ['/venues', '/search', '/venue/'];
+        const isPublicPath = publicPaths.some(path => window.location.pathname.startsWith(path));
+
+        if (!isPublicPath && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+          window.location.href = '/login';
+        }
+
         return Promise.reject(refreshError);
       }
     }

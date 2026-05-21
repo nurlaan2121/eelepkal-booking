@@ -6,6 +6,7 @@ import VenueCard from '../home/components/VenueCard';
 import { Search, Filter, SearchX } from 'lucide-react';
 import FilterModal from './components/FilterModal';
 import Skeleton from '../../components/ui/Skeleton';
+import SEOManager from '../../shared/components/SEO/SEOManager';
 
 const SearchScreen: React.FC = () => {
     const { query, filters, setQuery } = useSearchStore();
@@ -60,6 +61,11 @@ const SearchScreen: React.FC = () => {
 
     return (
         <div style={styles.container}>
+            <SEOManager
+                title={`Поиск заведений: ${query || 'Все заведения'}`}
+                description={`Найдите лучшие заведения по запросу ${query || 'рестораны Бишкека'}. Сортировка по рейтингу и кухне.`}
+                canonical="https://client.eelepkal.com/search"
+            />
             {/* Search Bar */}
             <div style={styles.header}>
                 <div style={styles.searchWrapper}>
@@ -92,11 +98,13 @@ const SearchScreen: React.FC = () => {
                     <div style={styles.center}>
                         <p style={styles.errorText}>Ошибка при поиске. Попробуйте снова.</p>
                     </div>
-                ) : results.length > 0 ? (
+                ) : Array.isArray(results) && results.length > 0 ? (
                     <>
                         <div className="responsive-grid">
                             {results.map((venue, index) => (
-                                <VenueCard key={`${venue.venueId}-${index}`} venue={venue} />
+                                venue && typeof venue === 'object' && 'venueId' in venue ? (
+                                    <VenueCard key={`${venue.venueId}-${index}`} venue={venue} />
+                                ) : null
                             ))}
                         </div>
 

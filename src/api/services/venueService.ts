@@ -1,4 +1,5 @@
 import api from '../instances/apiInstance';
+import { useAuthStore } from '../../features/auth/authStore';
 import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequest, TableDetails, TablesSchemaResponse, BookingConditions, VenueBasicInfo, VenueDetails, VenueSchedule, VenueAmenities, VenueContacts, PublicAdmin, VenueReview, VenueFilial, VenuePaymentDetails, MenuCategory, MenuItem, BookingRequest, BookingResponse, S3Response, VenueWorkingStatusResponse, FavoriteMenu, FavoriteVenue, Amenity, ReviewRequest } from '../dto/venueDto';
 
 export const venueService = {
@@ -12,7 +13,9 @@ export const venueService = {
 
     // Get Recommended Venues
     getRecommendedVenues: async (offset = 0, limit = 20): Promise<RecommendedVenue[]> => {
-        const response = await api.get<RecommendedVenue[]>('/client-venue/get-recommended', {
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? '/client-venue/get-recommended' : '/guest-venue/get-recommended';
+        const response = await api.get<RecommendedVenue[]>(endpoint, {
             params: { offset, limit }
         });
         return response.data;
@@ -52,6 +55,9 @@ export const venueService = {
         offset = 0,
         limit = 20
     ): Promise<RecommendedVenue[]> => {
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? '/client-venue/search' : '/guest-venue/search';
+
         const params = {
             word: word || undefined,
             offset,
@@ -63,9 +69,7 @@ export const venueService = {
             maxAverageCheck: filter.maxAverageCheck,
             venueAmenitiesIds: filter.venueAmenitiesIds || [],
         };
-        console.log("QUERY PARAMS:", params);
-        console.log("BODY:", data);
-        const response = await api.post<RecommendedVenue[]>('/client-venue/search', data, {
+        const response = await api.post<RecommendedVenue[]>(endpoint, data, {
             params
         });
         return response.data;
@@ -78,7 +82,9 @@ export const venueService = {
 
     // 1. Basic Information
     getVenueBasic: async (venueId: string | number): Promise<VenueBasicInfo> => {
-        const response = await api.get<VenueBasicInfo>(`/client-venue/venue-get-basic/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/venue-get-basic/${venueId}` : `/guest-venue/venue-get-basic/${venueId}`;
+        const response = await api.get<VenueBasicInfo>(endpoint);
         return response.data;
     },
 
@@ -168,7 +174,12 @@ export const venueService = {
 
     // 12. Menu Items by Category
     getMenuItemsByCategory: async (venueId: string | number, categoryId: number, offset = 0, limit = 10): Promise<MenuItem[]> => {
-        const response = await api.get<MenuItem[]>(`/client-menu/getByCategoryId/${venueId}/${categoryId}`, {
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated
+            ? `/client-menu/getByCategoryId/${venueId}/${categoryId}`
+            : `/guest-menu/getByCategoryId/${venueId}/${categoryId}`;
+
+        const response = await api.get<MenuItem[]>(endpoint, {
             params: { offset, limit }
         });
         return response.data;

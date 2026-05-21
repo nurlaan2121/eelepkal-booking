@@ -17,7 +17,11 @@ import VenueTablesSection from './components/VenueTablesSection';
 import AddReviewModal from './components/AddReviewModal';
 import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
 import Skeleton from '../../components/ui/Skeleton';
+import SEOManager from '../../shared/components/SEO/SEOManager';
+import AuthGuardModal from '../auth/components/AuthGuardModal';
+import { useAuthStore } from '../auth/authStore';
 import type { VenueReview } from '../../api/dto/venueDto';
+
 
 
 const REVIEWS_LIMIT = 10;
@@ -30,6 +34,17 @@ const VenueDetailsPage: React.FC = () => {
 
     const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
     const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
+    const [isAuthGuardOpen, setIsAuthGuardOpen] = React.useState(false);
+
+    const { isAuthenticated } = useAuthStore();
+
+    const handleAddReviewClick = () => {
+        if (!isAuthenticated) {
+            setIsAuthGuardOpen(true);
+        } else {
+            setIsAddReviewModalOpen(true);
+        }
+    };
 
     // Parallel data fetching using multiple useQuery calls
     const basicQuery = useQuery({
@@ -116,7 +131,14 @@ const VenueDetailsPage: React.FC = () => {
 
     return (
         <div style={styles.page}>
+            <SEOManager
+                title={basic.name}
+                description={`${basic.name} — забронируйте столик онлайн. Адрес: ${basic.address}. Средний чек: ${basic.averageCheck} сом.`}
+                ogImage={Object.values(basic.images)[0] || ''}
+                canonical={`https://client.eelepkal.com/venues/${venueId}`}
+            />
             <div style={styles.container}>
+
                 <header style={styles.header}>
                     <button onClick={() => navigate(-1)} style={styles.backButton}>
                         <ChevronLeft size={24} />
@@ -192,7 +214,7 @@ const VenueDetailsPage: React.FC = () => {
                 {activeTab === 'REVIEWS' && (
                     <div style={{ marginTop: '16px' }}>
                         <div style={styles.reviewsHeader}>
-                            <button onClick={() => setIsAddReviewModalOpen(true)} style={styles.addReviewBtn}>
+                            <button onClick={handleAddReviewClick} style={styles.addReviewBtn}>
                                 Оставить отзыв
                             </button>
                         </div>
@@ -249,6 +271,12 @@ const VenueDetailsPage: React.FC = () => {
                         }}
                     />
                 )}
+
+                <AuthGuardModal
+                    isOpen={isAuthGuardOpen}
+                    onClose={() => setIsAuthGuardOpen(false)}
+                    message="Войдите, чтобы оставить отзыв об этом заведении."
+                />
             </div>
         </div>
     );

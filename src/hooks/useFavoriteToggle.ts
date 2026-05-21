@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { venueService } from '../api/services/venueService';
 import { useFavoritesStore } from '../store/useFavoritesStore';
 import { useToastStore } from '../store/useToastStore';
+import { useAuthStore } from '../features/auth/authStore';
 
 interface UseFavoriteToggleProps {
     id: number;
@@ -63,14 +64,23 @@ export const useFavoriteToggle = ({ id, type, initialIsFavorite = false }: UseFa
         }
     });
 
+    const { isAuthenticated } = useAuthStore.getState();
+
     const toggle = (e?: React.MouseEvent) => {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        if (isLoadingFavourite) return;
+
+        if (!isAuthenticated) {
+            // Signal that a guest tried to toggle
+            return true;
+        }
+
+        if (isLoadingFavourite) return false;
         mutation.mutate(!isFavourite);
+        return false;
     };
 
-    return { isFavourite, isLoadingFavourite, toggle };
+    return { isFavourite, isLoadingFavourite, toggle, isAuthenticated };
 };
