@@ -287,6 +287,21 @@ input:focus {
   display: none;
 }
 
+/* ── Grid utilities ────────────────────────────────────────── */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
 /* ── Mobile responsive ───────────────────────────────────── */
 
 @media (max-width: 480px) {

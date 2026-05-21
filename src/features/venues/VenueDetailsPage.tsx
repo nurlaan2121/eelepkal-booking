@@ -16,7 +16,9 @@ import VenueMenuSection from './components/VenueMenuSection';
 import VenueTablesSection from './components/VenueTablesSection';
 import AddReviewModal from './components/AddReviewModal';
 import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
+import Skeleton from '../../components/ui/Skeleton';
 import type { VenueReview } from '../../api/dto/venueDto';
+
 
 const REVIEWS_LIMIT = 10;
 
@@ -26,26 +28,83 @@ const VenueDetailsPage: React.FC = () => {
 
     const venueId = id || '';
 
+    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
+    const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
+
     // Parallel data fetching using multiple useQuery calls
-    const basicQuery = useQuery({ queryKey: ['venueBasic', venueId], queryFn: () => venueService.getVenueBasic(venueId) });
-    const detailsQuery = useQuery({ queryKey: ['venueDetails', venueId], queryFn: () => venueService.getVenueDetails(venueId) });
-    const hoursQuery = useQuery({ queryKey: ['venueHours', venueId], queryFn: () => venueService.getVenueHours(venueId) });
-    const amenitiesQuery = useQuery({ queryKey: ['venueAmenities', venueId], queryFn: () => venueService.getVenueAmenities(venueId) });
-    const contactsQuery = useQuery({ queryKey: ['venueContacts', venueId], queryFn: () => venueService.getVenueContacts(venueId) });
-    const descriptionQuery = useQuery({ queryKey: ['venueDescription', venueId], queryFn: () => venueService.getVenueDescription(venueId) });
+    const basicQuery = useQuery({
+        queryKey: ['venueBasic', venueId],
+        queryFn: () => venueService.getVenueBasic(venueId),
+        staleTime: 5 * 60 * 1000 // 5 minutes
+    });
+
+    const isAboutTab = activeTab === 'ABOUT';
+
+    const detailsQuery = useQuery({
+        queryKey: ['venueDetails', venueId],
+        queryFn: () => venueService.getVenueDetails(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 5 * 60 * 1000
+    });
+
+    const hoursQuery = useQuery({
+        queryKey: ['venueHours', venueId],
+        queryFn: () => venueService.getVenueHours(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 10 * 60 * 1000
+    });
+
+    const amenitiesQuery = useQuery({
+        queryKey: ['venueAmenities', venueId],
+        queryFn: () => venueService.getVenueAmenities(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 30 * 60 * 1000
+    });
+
+    const contactsQuery = useQuery({
+        queryKey: ['venueContacts', venueId],
+        queryFn: () => venueService.getVenueContacts(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 30 * 60 * 1000
+    });
+
+    const descriptionQuery = useQuery({
+        queryKey: ['venueDescription', venueId],
+        queryFn: () => venueService.getVenueDescription(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 30 * 60 * 1000
+    });
+
+    const filialsQuery = useQuery({
+        queryKey: ['venueFilials', venueId],
+        queryFn: () => venueService.getVenueFilials(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 30 * 60 * 1000
+    });
+
+    const paymentsQuery = useQuery({
+        queryKey: ['venuePayments', venueId],
+        queryFn: () => venueService.getPaymentDetails(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 30 * 60 * 1000
+    });
+
+    const conditionsQuery = useQuery({
+        queryKey: ['venueConditions', venueId],
+        queryFn: () => venueService.getBookingConditions(venueId),
+        enabled: isAboutTab && !!venueId,
+        staleTime: 30 * 60 * 1000
+    });
+
     const reviewsQuery = useInfiniteQuery({
         queryKey: ['venueReviews', venueId],
         queryFn: ({ pageParam = 0 }) => venueService.getVenueReviews(venueId, pageParam, REVIEWS_LIMIT),
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) =>
             lastPage.length === REVIEWS_LIMIT ? allPages.length * REVIEWS_LIMIT : undefined,
+        enabled: activeTab === 'REVIEWS' && !!venueId,
     });
-    const filialsQuery = useQuery({ queryKey: ['venueFilials', venueId], queryFn: () => venueService.getVenueFilials(venueId) });
-    const paymentsQuery = useQuery({ queryKey: ['venuePayments', venueId], queryFn: () => venueService.getPaymentDetails(venueId) });
-    const conditionsQuery = useQuery({ queryKey: ['venueConditions', venueId], queryFn: () => venueService.getBookingConditions(venueId) });
 
-    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
-    const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
 
     const isLoading = basicQuery.isLoading;
     const error = basicQuery.error;
@@ -198,10 +257,16 @@ const VenueDetailsPage: React.FC = () => {
 const VenueSkeleton: React.FC = () => (
     <div style={styles.page}>
         <div style={styles.container}>
-            <div style={{ ...styles.skeleton, height: '300px', marginBottom: '24px' }} />
-            <div style={{ ...styles.skeleton, height: '24px', width: '60%', marginBottom: '16px' }} />
-            <div style={{ ...styles.skeleton, height: '100px', marginBottom: '16px' }} />
-            <div style={{ ...styles.skeleton, height: '80px', marginBottom: '16px' }} />
+            <Skeleton height="300px" borderRadius="24px" style={{ marginBottom: '24px', marginTop: '20px' }} />
+            <Skeleton width="60%" height="32px" style={{ marginBottom: '16px' }} />
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                <Skeleton width="100px" height="40px" borderRadius="20px" />
+                <Skeleton width="100px" height="40px" borderRadius="20px" />
+                <Skeleton width="100px" height="40px" borderRadius="20px" />
+            </div>
+            <Skeleton height="100px" borderRadius="24px" style={{ marginBottom: '16px' }} />
+            <Skeleton height="80px" borderRadius="24px" style={{ marginBottom: '16px' }} />
+            <Skeleton height="120px" borderRadius="24px" style={{ marginBottom: '16px' }} />
         </div>
     </div>
 );
@@ -250,11 +315,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontSize: '18px',
         color: '#F44336',
     },
-    skeleton: {
-        backgroundColor: '#F5F5F5',
-        borderRadius: '16px',
-        animation: 'pulse 1.5s infinite ease-in-out',
-    },
+
     tabs: {
         display: 'flex',
         borderBottom: '1px solid #E0E0E0',

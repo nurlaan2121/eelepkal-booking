@@ -42,8 +42,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
     card: {
-        minWidth: '250px',
-        maxWidth: '280px',
+        width: '100%',
         backgroundColor: 'var(--color-surface)',
         borderRadius: 'var(--radius-xl)',
         overflow: 'hidden',

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { venueService } from '../../api/services/venueService';
 import VenueCard from './components/VenueCard';
 import { ChevronRight, Search, Clock, CheckCircle } from 'lucide-react';
+import Skeleton from '../../components/ui/Skeleton';
 
 const HomeScreen: React.FC = () => {
     const navigate = useNavigate();
@@ -85,7 +86,7 @@ const HomeScreen: React.FC = () => {
                 {isLoadingCategories ? (
                     <div style={styles.cuisinesGrid}>
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                            <div key={i} className="skeleton" style={{ width: '100%', paddingBottom: '100%', borderRadius: 16 }} />
+                            <Skeleton key={i} height="100px" borderRadius="var(--radius-lg)" />
                         ))}
                     </div>
                 ) : (
@@ -101,6 +102,7 @@ const HomeScreen: React.FC = () => {
                     </div>
                 )}
             </section>
+
 
             {/* Recommended Section */}
             <section style={styles.section}>
@@ -169,9 +171,10 @@ const styles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: 'column',
         gap: '32px',
-        maxWidth: '900px',
+        maxWidth: '1200px',
         margin: '0 auto',
         width: '100%',
+        backgroundColor: 'var(--color-bg)',
     },
     heroSection: {
         position: 'relative',
@@ -306,7 +309,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     cuisinesGrid: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
         padding: '0 20px',
         gap: '16px',
     },

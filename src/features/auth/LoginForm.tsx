@@ -153,9 +153,10 @@ const styles: { [key: string]: React.CSSProperties } = {
         textAlign: 'center',
     },
     footerText: {
-        fontSize: '18px',
+        fontSize: '16px',
         color: '#000000',
     },
+
     link: {
         color: '#FF9800',
         fontWeight: '600',

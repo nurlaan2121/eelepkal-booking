@@ -3,8 +3,9 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchStore } from './searchStore';
 import { venueService } from '../../api/services/venueService';
 import VenueCard from '../home/components/VenueCard';
-import { Search, Filter, Loader2, SearchX } from 'lucide-react';
+import { Search, Filter, SearchX } from 'lucide-react';
 import FilterModal from './components/FilterModal';
+import Skeleton from '../../components/ui/Skeleton';
 
 const SearchScreen: React.FC = () => {
     const { query, filters, setQuery } = useSearchStore();
@@ -82,26 +83,34 @@ const SearchScreen: React.FC = () => {
             {/* Results */}
             <div style={styles.content}>
                 {isLoading && !isFetchingNextPage ? (
-                    <div style={styles.center}>
-                        <Loader2 size={40} color="var(--color-primary)" className="animate-spin" />
+                    <div className="responsive-grid">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <VenueCardSkeleton key={i} />
+                        ))}
                     </div>
                 ) : isError ? (
                     <div style={styles.center}>
                         <p style={styles.errorText}>Ошибка при поиске. Попробуйте снова.</p>
                     </div>
                 ) : results.length > 0 ? (
-                    <div style={styles.resultsGrid}>
-                        {results.map((venue, index) => (
-                            <VenueCard key={`${venue.venueId}-${index}`} venue={venue} />
-                        ))}
+                    <>
+                        <div className="responsive-grid">
+                            {results.map((venue, index) => (
+                                <VenueCard key={`${venue.venueId}-${index}`} venue={venue} />
+                            ))}
+                        </div>
 
                         {/* Loading trigger / indicator */}
                         <div ref={observerTarget} style={styles.loaderTarget}>
                             {isFetchingNextPage && (
-                                <Loader2 size={24} color="var(--color-primary)" className="animate-spin" />
+                                <div className="responsive-grid" style={{ width: '100%', marginTop: '16px' }}>
+                                    {[1, 2, 3].map((i) => (
+                                        <VenueCardSkeleton key={i} />
+                                    ))}
+                                </div>
                             )}
                         </div>
-                    </div>
+                    </>
                 ) : !isLoading ? (
                     <div style={styles.center}>
                         <SearchX size={64} color="var(--color-text-muted)" />
@@ -109,6 +118,7 @@ const SearchScreen: React.FC = () => {
                     </div>
                 ) : null}
             </div>
+
 
             {/* Filter Modal */}
             {isFilterOpen && (
@@ -118,11 +128,23 @@ const SearchScreen: React.FC = () => {
     );
 };
 
+const VenueCardSkeleton: React.FC = () => (
+    <div style={styles.cardSkeleton}>
+        <Skeleton height="150px" borderRadius="var(--radius-xl) var(--radius-xl) 0 0" />
+        <div style={{ padding: '16px' }}>
+            <Skeleton width="80%" height="20px" style={{ marginBottom: '8px' }} />
+            <Skeleton width="40%" height="14px" style={{ marginBottom: '12px' }} />
+            <Skeleton width="60%" height="14px" />
+        </div>
+    </div>
+);
+
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        backgroundColor: 'var(--color-bg)',
     },
     header: {
         padding: '16px 20px',
@@ -130,6 +152,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         position: 'sticky',
         top: 0,
         zIndex: 10,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
     },
     searchWrapper: {
         display: 'flex',
@@ -161,15 +184,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     content: {
         flex: 1,
-        padding: '0 20px 20px 20px',
+        padding: '20px',
     },
     center: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingTop: '32px',
+        paddingTop: '64px',
         gap: '16px',
+    },
+    cardSkeleton: {
+        backgroundColor: 'var(--color-surface)',
+        borderRadius: 'var(--radius-xl)',
+        overflow: 'hidden',
+        boxShadow: 'var(--shadow-sm)',
+        display: 'flex',
+        flexDirection: 'column',
     },
     resultsGrid: {
         display: 'flex',
@@ -186,11 +217,11 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '500',
     },
     loaderTarget: {
-        height: '40px',
+        minHeight: '40px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '16px 0',
+        width: '100%',
     },
 };
 
