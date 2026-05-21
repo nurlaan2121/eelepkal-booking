@@ -37,7 +37,7 @@ const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onShare })
             </div>
 
             <div style={styles.thumbGallery}>
-                {images.slice(0, 5).map((img, idx) => (
+                {images.map((img, idx) => (
                     <img
                         key={idx}
                         src={img}

@@ -42,7 +42,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
     card: {
-        width: '100%',
+        width: '240px',
         backgroundColor: 'var(--color-surface)',
         borderRadius: 'var(--radius-xl)',
         overflow: 'hidden',
@@ -51,10 +51,11 @@ const styles: { [key: string]: React.CSSProperties } = {
         flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
+        scrollSnapAlign: 'start',
     },
     imageContainer: {
         position: 'relative',
-        height: '150px',
+        height: '180px',
         width: '100%',
     },
     image: {

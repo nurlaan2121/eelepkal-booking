@@ -146,7 +146,7 @@ const HomeScreen: React.FC = () => {
                 </div>
                 <div style={styles.horizontalScroll} className="hide-scrollbar">
                     {recommendedQuery.isLoading ? (
-                        [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 260, height: 220, borderRadius: 16 }} />)
+                        [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 240, height: 260, borderRadius: 16 }} />)
                     ) : Array.isArray(recommendedQuery.data) ? (
                         recommendedQuery.data.map((venue) => (
                             <VenueCard key={venue.venueId} venue={venue} />
@@ -167,7 +167,7 @@ const HomeScreen: React.FC = () => {
                 </div>
                 <div style={styles.horizontalScroll} className="hide-scrollbar">
                     {ratingQuery.isLoading ? (
-                        [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 260, height: 220, borderRadius: 16 }} />)
+                        [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 240, height: 260, borderRadius: 16 }} />)
                     ) : Array.isArray(ratingQuery.data) ? (
                         ratingQuery.data.map((venue) => (
                             <VenueCard key={venue.venueId} venue={venue} />
@@ -188,7 +188,7 @@ const HomeScreen: React.FC = () => {
                 </div>
                 <div style={styles.horizontalScroll} className="hide-scrollbar">
                     {openQuery.isLoading ? (
-                        [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 260, height: 220, borderRadius: 16 }} />)
+                        [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ minWidth: 240, height: 260, borderRadius: 16 }} />)
                     ) : Array.isArray(openQuery.data) ? (
                         openQuery.data.map((venue) => (
                             <VenueCard key={venue.venueId} venue={venue} />
