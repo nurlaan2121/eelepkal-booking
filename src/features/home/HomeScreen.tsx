@@ -5,6 +5,7 @@ import { venueService } from '../../api/services/venueService';
 import VenueCard from './components/VenueCard';
 import { ChevronRight, Search, Clock, CheckCircle } from 'lucide-react';
 import Skeleton from '../../components/ui/Skeleton';
+import OptimizedImage from '../../components/ui/OptimizedImage';
 import SEOManager from '../../shared/components/SEO/SEOManager';
 
 
@@ -122,7 +123,11 @@ const HomeScreen: React.FC = () => {
                                 onClick={() => navigate(`/search?cuisine=${encodeURIComponent(cuisine.name)}`)}
                             >
                                 <div style={styles.cuisineIconWrapper}>
-                                    <img src={cuisine.imageUrl} alt={cuisine.name} style={styles.cuisineImage} />
+                                    <OptimizedImage
+                                        src={cuisine.imageUrl}
+                                        alt={cuisine.name}
+                                        style={styles.cuisineImage}
+                                    />
                                 </div>
                                 <span style={styles.cuisineLabel}>{cuisine.name}</span>
                             </div>

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Star, MapPin } from 'lucide-react';
 import type { RecommendedVenue } from '../../../api/dto/venueDto';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 import FavoriteButton from '../../../components/ui/FavoriteButton';
 
 interface VenueCardProps {
@@ -14,7 +15,12 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
     return (
         <div style={styles.card} className="card-hover" onClick={() => navigate(`/venue/${venue.venueId}`)}>
             <div style={styles.imageContainer}>
-                <img src={venue.firstImageUrl} alt={venue.venueName} style={styles.image} />
+                <OptimizedImage
+                    src={venue.firstImageUrl}
+                    alt={venue.venueName}
+                    style={styles.image}
+                    loading="lazy"
+                />
                 <div style={styles.ratingBadge}>
                     <Star size={14} color="#FFD700" fill="#FFD700" />
                     <span style={styles.ratingText}>{venue.rating.toFixed(1)}</span>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, Share2 } from 'lucide-react';
 import type { VenueBasicInfo } from '../../../api/dto/venueDto';
 import FavoriteButton from '../../../components/ui/FavoriteButton';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface VenueHeaderProps {
     venue: VenueBasicInfo;
@@ -16,7 +17,7 @@ const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onShare })
     return (
         <div style={styles.header}>
             <div style={styles.mainImageContainer}>
-                <img src={activeImage} alt={venue.name} style={styles.mainImage} />
+                <OptimizedImage src={activeImage} alt={venue.name} style={styles.mainImage} />
 
                 <div style={styles.actionButtons}>
                     <button onClick={onShare} style={styles.iconButton}>
@@ -38,7 +39,7 @@ const VenueHeader: React.FC<VenueHeaderProps> = ({ venue, isFavorite, onShare })
 
             <div style={styles.thumbGallery}>
                 {images.map((img, idx) => (
-                    <img
+                    <OptimizedImage
                         key={idx}
                         src={img}
                         alt={`${venue.name} thumb ${idx}`}
