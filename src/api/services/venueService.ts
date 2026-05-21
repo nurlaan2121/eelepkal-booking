@@ -3,7 +3,7 @@ import type { Cuisine, RecommendedVenue, FavoriteToggleResponse, VenueSearchRequ
 
 export const venueService = {
     // Get Categories (Cuisines)
-    getAllCuisines: async (offset = 0, limit = 4): Promise<Cuisine[]> => {
+    getAllCuisines: async (offset = 0, limit = 8): Promise<Cuisine[]> => {
         const response = await api.get<Cuisine[]>('/dev/cuisine/all', {
             params: { offset, limit }
         });

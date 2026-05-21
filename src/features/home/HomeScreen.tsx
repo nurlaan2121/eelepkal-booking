@@ -89,16 +89,29 @@ const HomeScreen: React.FC = () => {
                             <Skeleton key={i} height="100px" borderRadius="var(--radius-lg)" />
                         ))}
                     </div>
-                ) : (
+                ) : cuisinesQuery.isError ? (
+                    <div style={{ padding: '0 20px', color: 'var(--color-text-muted)', fontSize: '14px' }}>
+                        Не удалось загрузить категории
+                    </div>
+                ) : cuisinesQuery.data && cuisinesQuery.data.length > 0 ? (
                     <div style={styles.cuisinesGrid}>
-                        {cuisinesQuery.data?.slice(0, 8).map((cuisine) => (
-                            <div key={cuisine.id} style={styles.cuisineItem} className="card-hover">
+                        {cuisinesQuery.data.slice(0, 8).map((cuisine) => (
+                            <div
+                                key={cuisine.id}
+                                style={styles.cuisineItem}
+                                className="card-hover"
+                                onClick={() => navigate(`/search?cuisine=${encodeURIComponent(cuisine.name)}`)}
+                            >
                                 <div style={styles.cuisineIconWrapper}>
                                     <img src={cuisine.imageUrl} alt={cuisine.name} style={styles.cuisineImage} />
                                 </div>
                                 <span style={styles.cuisineLabel}>{cuisine.name}</span>
                             </div>
                         ))}
+                    </div>
+                ) : (
+                    <div style={{ padding: '0 20px', color: 'var(--color-text-muted)', fontSize: '14px' }}>
+                        Категории не найдены
                     </div>
                 )}
             </section>
@@ -322,6 +335,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         padding: '12px 8px',
         borderRadius: 'var(--radius-md)',
         boxShadow: 'var(--shadow-sm)',
+        cursor: 'pointer',
     },
     cuisineIconWrapper: {
         width: '56px',
