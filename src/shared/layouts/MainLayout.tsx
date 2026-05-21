@@ -26,7 +26,30 @@ const MainLayout: React.FC = () => {
 
                 if (lastClick.target === target && timeDiff < 300) {
                     // Double click
-                    openImage((target as HTMLImageElement).src);
+                    const clickedImg = target as HTMLImageElement;
+
+                    // Logic to find "related" images in the same section/container
+                    const parent = target.parentElement;
+                    let galleryImages: string[] = [];
+                    let initialIndex = 0;
+
+                    if (parent) {
+                        // Find all images in the same container or nearest section
+                        const container = target.closest('section') || parent;
+                        const allImgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+
+                        // Filter out small icons or repetitive logos if needed
+                        // But for now, let's take all in the immediate context
+                        galleryImages = allImgs.map(img => img.src);
+                        initialIndex = allImgs.indexOf(clickedImg);
+                    }
+
+                    if (galleryImages.length === 0) {
+                        galleryImages = [clickedImg.src];
+                        initialIndex = 0;
+                    }
+
+                    openImage(initialIndex, galleryImages);
                     setShowHint(false);
                 } else {
                     // Single click - show hint
