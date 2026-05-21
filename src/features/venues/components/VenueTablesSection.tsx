@@ -96,30 +96,33 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
         <div style={styles.container}>
             <div style={styles.bookingHeader}>
                 <div style={styles.pickerRow}>
-                    <div style={styles.picker}>
+                    <div style={styles.picker} onClick={() => !isAuthenticated && setIsAuthGuardOpen(true)}>
                         <Calendar size={18} color="#FF9800" />
                         <input
                             type="date"
                             value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            style={styles.input}
+                            onChange={(e) => isAuthenticated && setSelectedDate(e.target.value)}
+                            style={{ ...styles.input, pointerEvents: isAuthenticated ? 'auto' : 'none' }}
+                            readOnly={!isAuthenticated}
                         />
                     </div>
-                    <div style={styles.picker}>
+                    <div style={styles.picker} onClick={() => !isAuthenticated && setIsAuthGuardOpen(true)}>
                         <Clock size={18} color="#FF9800" />
                         <input
                             type="time"
                             value={selectedTime}
-                            onChange={(e) => setSelectedTime(e.target.value)}
-                            style={styles.input}
+                            onChange={(e) => isAuthenticated && setSelectedTime(e.target.value)}
+                            style={{ ...styles.input, pointerEvents: isAuthenticated ? 'auto' : 'none' }}
+                            readOnly={!isAuthenticated}
                         />
                     </div>
-                    <div style={styles.picker}>
+                    <div style={styles.picker} onClick={() => !isAuthenticated && setIsAuthGuardOpen(true)}>
                         <Users size={18} color="#FF9800" />
                         <select
                             value={guests}
-                            onChange={(e) => setGuests(Number(e.target.value))}
-                            style={styles.select}
+                            onChange={(e) => isAuthenticated && setGuests(Number(e.target.value))}
+                            style={{ ...styles.select, pointerEvents: isAuthenticated ? 'auto' : 'none' }}
+                            disabled={!isAuthenticated}
                         >
                             {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20].map(n => (
                                 <option key={n} value={n}>{n} чел.</option>
@@ -158,7 +161,13 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                     {categories.map((cat) => (
                         <button
                             key={cat.id}
-                            onClick={() => setFloor(cat.id)}
+                            onClick={() => {
+                                if (!isAuthenticated) {
+                                    setIsAuthGuardOpen(true);
+                                } else {
+                                    setFloor(cat.id);
+                                }
+                            }}
                             style={{
                                 ...styles.floorChip,
                                 backgroundColor: floor === cat.id ? '#FF9800' : '#F5F5F5',
