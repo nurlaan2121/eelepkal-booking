@@ -4,9 +4,12 @@ import BottomNavigation from '../components/Navigation/BottomNavigation';
 import Footer from '../components/Footer/Footer';
 import ImageModal from '../../components/ui/ImageModal';
 import { useImageStore } from '../stores/imageStore';
+import { ZoomIn } from 'lucide-react';
 
 const MainLayout: React.FC = () => {
     const [scrolled, setScrolled] = useState(false);
+    const [showHint, setShowHint] = useState(false);
+    const [lastClick, setLastClick] = useState({ time: 0, target: null as HTMLElement | null });
 
     const { openImage } = useImageStore();
 
@@ -15,22 +18,34 @@ const MainLayout: React.FC = () => {
             setScrolled(window.scrollY > 10);
         };
 
-        const handleDoubleClick = (e: MouseEvent) => {
+        const handleClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             if (target.tagName === 'IMG') {
-                const img = target as HTMLImageElement;
-                openImage(img.src);
+                const now = Date.now();
+                const timeDiff = now - lastClick.time;
+
+                if (lastClick.target === target && timeDiff < 300) {
+                    // Double click
+                    openImage((target as HTMLImageElement).src);
+                    setShowHint(false);
+                } else {
+                    // Single click - show hint
+                    setShowHint(true);
+                    setTimeout(() => setShowHint(false), 2000);
+                }
+                setLastClick({ time: now, target });
             }
         };
 
         window.addEventListener('scroll', handleScroll);
-        window.addEventListener('dblclick', handleDoubleClick);
+        // Using capture phase to ensure we catch clicks even if propagation is stopped
+        window.addEventListener('click', handleClick, true);
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('dblclick', handleDoubleClick);
+            window.removeEventListener('click', handleClick, true);
         };
-    }, [openImage]);
+    }, [openImage, lastClick]);
 
     return (
         <div style={styles.container}>
@@ -50,6 +65,13 @@ const MainLayout: React.FC = () => {
             <main style={styles.main}>
                 <Outlet />
             </main>
+
+            {showHint && (
+                <div style={styles.hintToast} className="animate-fade-in">
+                    <ZoomIn size={16} />
+                    <span>Нажмите два раза для просмотра в полном размере</span>
+                </div>
+            )}
 
             <Footer />
             <BottomNavigation />
@@ -104,6 +126,27 @@ const styles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'var(--color-bg)',
+    },
+    hintToast: {
+        position: 'fixed',
+        bottom: '80px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        color: '#FFFFFF',
+        padding: '10px 20px',
+        borderRadius: 'var(--radius-full)',
+        fontSize: '13px',
+        fontWeight: '600',
+        zIndex: 1500,
+        pointerEvents: 'none',
+        boxShadow: 'var(--shadow-lg)',
+        whiteSpace: 'nowrap',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        backdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
     },
 };
 
