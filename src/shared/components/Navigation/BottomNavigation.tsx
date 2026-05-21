@@ -1,15 +1,38 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, Search, Calendar, Heart, User } from 'lucide-react';
+import { useAuthStore } from '../../../features/auth/authStore';
+import AuthGuardModal from '../../../features/auth/components/AuthGuardModal';
 
 const BottomNavigation: React.FC = () => {
+    const { isAuthenticated } = useAuthStore();
+    const [isGuardOpen, setIsGuardOpen] = React.useState(false);
+    const [pendingPath, setPendingPath] = React.useState<string | null>(null);
+
     const navItems = [
-        { path: '/venues', icon: Home, label: 'Главная' },
-        { path: '/search', icon: Search, label: 'Поиск' },
-        { path: '/booking', icon: Calendar, label: 'Бронь' },
-        { path: '/favorites', icon: Heart, label: 'Избранное' },
-        { path: '/profile', icon: User, label: 'Профиль' },
+        { path: '/venues', icon: Home, label: 'Главная', protected: false },
+        { path: '/search', icon: Search, label: 'Поиск', protected: false },
+        { path: '/booking', icon: Calendar, label: 'Бронь', protected: true },
+        { path: '/favorites', icon: Heart, label: 'Избранное', protected: true },
+        { path: '/profile', icon: User, label: 'Профиль', protected: true },
     ];
+
+    const handleNavClick = (e: React.MouseEvent, path: string, isProtected: boolean) => {
+        if (isProtected && !isAuthenticated) {
+            e.preventDefault();
+            e.stopPropagation();
+            setPendingPath(path);
+            setIsGuardOpen(true);
+            return;
+        }
+    };
+
+    const getGuardMessage = () => {
+        if (pendingPath === '/profile') return "Войдите, чтобы просмотреть свой профиль.";
+        if (pendingPath === '/favorites') return "Войдите, чтобы просмотреть сохраненные заведения.";
+        if (pendingPath === '/booking') return "Войдите, чтобы управлять вашими бронированиями.";
+        return "Пожалуйста, войдите в систему, чтобы продолжить.";
+    };
 
     return (
         <nav style={styles.nav}>
@@ -17,6 +40,7 @@ const BottomNavigation: React.FC = () => {
                 <NavLink
                     key={item.path}
                     to={item.path}
+                    onClick={(e) => handleNavClick(e, item.path, item.protected)}
                     style={{ textDecoration: 'none', flex: 1, display: 'flex', justifyContent: 'center' }}
                 >
                     {({ isActive }) => (
@@ -41,6 +65,12 @@ const BottomNavigation: React.FC = () => {
                     )}
                 </NavLink>
             ))}
+
+            <AuthGuardModal
+                isOpen={isGuardOpen}
+                onClose={() => setIsGuardOpen(false)}
+                message={getGuardMessage()}
+            />
         </nav>
     );
 };

@@ -23,7 +23,9 @@ export const venueService = {
 
     // Get Open Now Venues
     getOpenVenues: async (offset = 0, limit = 20): Promise<RecommendedVenue[]> => {
-        const response = await api.get<RecommendedVenue[]>('/client-venue/get-opening', {
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? '/client-venue/get-opening' : '/guest-venue/get-opening';
+        const response = await api.get<RecommendedVenue[]>(endpoint, {
             params: { offset, limit }
         });
         return response.data;
@@ -31,7 +33,9 @@ export const venueService = {
 
     // Get Top Rated Venues
     getTopRatedVenues: async (offset = 0, limit = 20): Promise<RecommendedVenue[]> => {
-        const response = await api.get<RecommendedVenue[]>('/client-venue/get-rating', {
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? '/client-venue/get-rating' : '/guest-venue/get-rating';
+        const response = await api.get<RecommendedVenue[]>(endpoint, {
             params: { offset, limit }
         });
         return response.data;
@@ -90,7 +94,9 @@ export const venueService = {
 
     // 2. Details (main block)
     getVenueDetails: async (venueId: string | number): Promise<VenueDetails> => {
-        const response = await api.get<VenueDetails>(`/client-venue/venue-get-details/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/venue-get-details/${venueId}` : `/guest-venue/venue-get-details/${venueId}`;
+        const response = await api.get<VenueDetails>(endpoint);
         return response.data;
     },
 
@@ -104,39 +110,51 @@ export const venueService = {
     },
 
     getVenueHours: async (venueId: string | number): Promise<VenueSchedule> => {
-        const response = await api.get<VenueSchedule>(`/client-venue/get-hours/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/get-hours/${venueId}` : `/guest-venue/get-hours/${venueId}`;
+        const response = await api.get<VenueSchedule>(endpoint);
         return response.data;
     },
 
     // 4. Amenities
     getVenueAmenities: async (venueId: string | number): Promise<VenueAmenities> => {
-        const response = await api.get<VenueAmenities>(`/client-venue/get-amenities/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/get-amenities/${venueId}` : `/guest-venue/get-amenities/${venueId}`;
+        const response = await api.get<VenueAmenities>(endpoint);
         return response.data;
     },
 
     // 5. Contacts
     getVenueContacts: async (venueId: string | number): Promise<VenueContacts> => {
-        const response = await api.get<VenueContacts>(`/client-venue/get-contacts/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/get-contacts/${venueId}` : `/guest-venue/get-contacts/${venueId}`;
+        const response = await api.get<VenueContacts>(endpoint);
         return response.data;
     },
 
     // 6. Public Admin
     getVenueAdmin: async (venueId: string | number): Promise<PublicAdmin> => {
-        const response = await api.get<PublicAdmin>(`/client-venue/get-public-admin/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/get-public-admin/${venueId}` : `/guest-venue/get-public-admin/${venueId}`;
+        const response = await api.get<PublicAdmin>(endpoint);
         return response.data;
     },
 
     // 7. Description
     getVenueDescription: async (venueId: string | number): Promise<string> => {
-        const response = await api.get<string>(`/client-venue/get-description/${venueId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/get-description/${venueId}` : `/guest-venue/get-description/${venueId}`;
+        const response = await api.get<string>(endpoint);
         return response.data;
     },
 
     // 8. Feedbacks
     getVenueReviews: async (venueId: string | number, offset = 0, limit = 20): Promise<VenueReview[]> => {
-        console.log("🚀 [getVenueReviews] START", { venueId, offset, limit });
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/feedbacks/${venueId}` : `/guest-venue/feedbacks/${venueId}`;
+        console.log("🚀 [getVenueReviews] START", { venueId, offset, limit, endpoint });
         try {
-            const response = await api.get<VenueReview[]>(`/client-venue/feedbacks/${venueId}`, {
+            const response = await api.get<VenueReview[]>(endpoint, {
                 params: { offset, limit }
             });
             console.log("✅ [getVenueReviews] SUCCESS", response.data);
@@ -154,7 +172,9 @@ export const venueService = {
 
     // 9. Filials
     getVenueFilials: async (venueId: string | number, offset = 0, limit = 20): Promise<VenueFilial[]> => {
-        const response = await api.get<VenueFilial[]>(`/client-venue/get-filials/${venueId}`, {
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-venue/get-filials/${venueId}` : `/guest-venue/get-filials/${venueId}`;
+        const response = await api.get<VenueFilial[]>(endpoint, {
             params: { offset, limit }
         });
         return response.data;
@@ -187,7 +207,9 @@ export const venueService = {
 
     // 12b. Menu Item Details
     getMenuItemById: async (menuId: number | string): Promise<MenuItem> => {
-        const response = await api.get<MenuItem>(`/client-menu/get/${menuId}`);
+        const { isAuthenticated } = useAuthStore.getState();
+        const endpoint = isAuthenticated ? `/client-menu/get/${menuId}` : `/guest-menu/get/${menuId}`;
+        const response = await api.get<MenuItem>(endpoint);
         return response.data;
     },
 
