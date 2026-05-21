@@ -481,7 +481,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     stickyFooter: {
         position: 'fixed',
-        bottom: 0,
+        bottom: '65px',
         left: 0,
         right: 0,
         backgroundColor: '#FFFFFF',
@@ -492,7 +492,6 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderTop: '1px solid #E0E0E0',
         zIndex: 100,
         boxShadow: '0 -4px 12px rgba(0,0,0,0.05)',
-        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
     },
     footerInfo: {
         display: 'flex',

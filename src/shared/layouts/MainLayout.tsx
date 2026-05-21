@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 import BottomNavigation from '../components/Navigation/BottomNavigation';
 import Footer from '../components/Footer/Footer';
 
@@ -16,6 +16,7 @@ const MainLayout: React.FC = () => {
 
     return (
         <div style={styles.container}>
+            <ScrollRestoration />
             <header style={{
                 ...styles.header,
                 boxShadow: scrolled ? 'var(--shadow-sm)' : 'none',

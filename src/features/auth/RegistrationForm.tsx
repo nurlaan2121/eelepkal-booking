@@ -120,6 +120,16 @@ const RegistrationForm: React.FC = () => {
                             </>
                         )}
                     </button>
+
+                    {step === 1 && (
+                        <button
+                            type="button"
+                            onClick={() => navigate('/venues')}
+                            style={styles.secondaryButton}
+                        >
+                            Войти как гость
+                        </button>
+                    )}
                 </form>
 
                 {/* Footer */}
@@ -229,6 +239,20 @@ const styles: { [key: string]: React.CSSProperties } = {
         gap: '12px',
         boxShadow: 'var(--shadow-primary)',
         marginTop: '12px',
+        transition: 'all 0.2s ease',
+    },
+    secondaryButton: {
+        height: '58px',
+        background: 'transparent',
+        color: 'var(--color-primary)',
+        border: '2px solid var(--color-primary)',
+        borderRadius: 'var(--radius-full)',
+        fontSize: '18px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         transition: 'all 0.2s ease',
     },
     trustBadgeWrapper: {
