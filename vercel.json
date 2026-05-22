@@ -133,6 +133,18 @@
             "destination": "/api/proxy"
         },
         {
+            "source": "/(sitemap\\.xml|robots\\.txt|google.*\\.html)",
+            "destination": "/$1"
+        },
+        {
+            "source": "/assets/(.*)",
+            "destination": "/assets/$1"
+        },
+        {
+            "source": "/logo\\.png",
+            "destination": "/logo.png"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
