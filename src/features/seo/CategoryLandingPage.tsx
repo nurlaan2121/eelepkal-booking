@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQueries, useInfiniteQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { venueService } from '../../api/services/venueService';
 import VenueCard from '../home/components/VenueCard';
