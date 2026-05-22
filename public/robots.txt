@@ -1,4 +1,30 @@
 User-agent: *
-Allow: /
+
+# Allow guest-accessible public pages
+Allow: /$
+Allow: /venues
+Allow: /venues/
+Allow: /venue/
+Allow: /search
+Allow: /restaurants-bishkek
+Allow: /cafe-bishkek
+Allow: /lounge-bishkek
+Allow: /chayhana-bishkek
+Allow: /cabins-bishkek
+
+# Block private/auth/user routes
+Disallow: /login
+Disallow: /register
+Disallow: /booking
+Disallow: /booking/
+Disallow: /favorites
+Disallow: /favorites/
+Disallow: /profile
+Disallow: /profile/
+Disallow: /api/
+Disallow: /settings
+
+# Block search query URLs (dynamic, non-canonical)
+Disallow: /search?
 
 Sitemap: https://client.eelepkal.com/sitemap.xml

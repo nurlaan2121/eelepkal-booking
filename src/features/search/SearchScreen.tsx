@@ -62,9 +62,10 @@ const SearchScreen: React.FC = () => {
     return (
         <div style={styles.container}>
             <SEOManager
-                title={`Поиск заведений: ${query || 'Все заведения'}`}
-                description={`Найдите лучшие заведения по запросу ${query || 'рестораны Бишкека'}. Сортировка по рейтингу и кухне.`}
+                title="Поиск заведений Бишкека"
+                description="Поиск ресторанов, кафе и заведений Бишкека. Найдите заведение по названию, кухне или рейтингу."
                 canonical="https://client.eelepkal.com/search"
+                noIndex={true}
             />
             {/* Search Bar */}
             <div style={styles.header}>

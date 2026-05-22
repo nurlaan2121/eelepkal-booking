@@ -141,13 +141,69 @@ const VenueDetailsPage: React.FC = () => {
 
     const basic = basicQuery.data;
 
+    // Build rich Schema.org JSON-LD for the venue
+    const venueSchema = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': ['Restaurant', 'LocalBusiness'],
+                '@id': `https://client.eelepkal.com/venue/${venueId}#venue`,
+                name: basic.name,
+                description: `${basic.name} — забронируйте столик онлайн через Ээлеп кал. Адрес: ${basic.address}. Средний чек: ${basic.averageCheck} сом.`,
+                url: `https://client.eelepkal.com/venue/${venueId}`,
+                image: Object.values(basic.images)[0] || 'https://client.eelepkal.com/logo.png',
+                address: {
+                    '@type': 'PostalAddress',
+                    streetAddress: basic.address,
+                    addressLocality: 'Бишкек',
+                    addressCountry: 'KG',
+                },
+                ...(basic.rating > 0 ? {
+                    aggregateRating: {
+                        '@type': 'AggregateRating',
+                        ratingValue: basic.rating.toFixed(1),
+                        bestRating: '5',
+                        worstRating: '1',
+                        ratingCount: '1',
+                    }
+                } : {}),
+                priceRange: basic.averageCheck ? `${basic.averageCheck} сом` : undefined,
+                servesCuisine: 'Кыргызская, Восточная',
+                currenciesAccepted: 'KGS',
+                hasMap: `https://maps.google.com/?q=${encodeURIComponent(basic.address + ', Бишкек')}`,
+                openingHours: basic.todayWorkingHours || undefined,
+                potentialAction: {
+                    '@type': 'ReserveAction',
+                    target: `https://client.eelepkal.com/venue/${venueId}`,
+                    result: {
+                        '@type': 'Reservation',
+                        name: `Бронирование столика в ${basic.name}`,
+                    },
+                },
+            },
+            {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://client.eelepkal.com/' },
+                    { '@type': 'ListItem', position: 2, name: 'Заведения', item: 'https://client.eelepkal.com/venues' },
+                    { '@type': 'ListItem', position: 3, name: basic.name, item: `https://client.eelepkal.com/venue/${venueId}` },
+                ],
+            },
+        ],
+    };
+
+    const seoDescription = `${basic.name} — забронируйте столик онлайн через Ээлеп кал. Адрес: ${basic.address}. Средний чек: ${basic.averageCheck} сом. Рейтинг: ${basic.rating.toFixed(1)}. Онлайн бронь без звонков.`;
+    const seoKeywords = `${basic.name}, ${basic.name} Бишкек, ${basic.name} онлайн бронь, забронировать столик ${basic.name}, ${basic.name} бронирование, ${basic.name} меню, ${basic.name} отзывы, ресторан Бишкек онлайн бронь`;
+
     return (
         <div style={styles.page}>
             <SEOManager
-                title={basic.name}
-                description={`${basic.name} — забронируйте столик онлайн. Адрес: ${basic.address}. Средний чек: ${basic.averageCheck} сом.`}
+                title={`${basic.name} — онлайн бронирование столика`}
+                description={seoDescription}
+                keywords={seoKeywords}
                 ogImage={Object.values(basic.images)[0] || ''}
-                canonical={`https://client.eelepkal.com/venues/${venueId}`}
+                canonical={`https://client.eelepkal.com/venue/${venueId}`}
+                schema={venueSchema}
             />
             <div style={styles.container}>
 
@@ -157,6 +213,15 @@ const VenueDetailsPage: React.FC = () => {
                     </button>
                     <span style={styles.headerTitle}>Детали заведения</span>
                 </header>
+
+                {/* SEO Breadcrumbs */}
+                <nav aria-label="breadcrumb" style={styles.breadcrumb}>
+                    <a href="/" style={styles.breadcrumbLink}>Главная</a>
+                    <span style={styles.breadcrumbSep}> / </span>
+                    <a href="/venues" style={styles.breadcrumbLink}>Заведения</a>
+                    <span style={styles.breadcrumbSep}> / </span>
+                    <span style={styles.breadcrumbCurrent}>{basic.name}</span>
+                </nav>
 
                 <VenueHeader
                     venue={basic}
@@ -527,6 +592,30 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '700',
         cursor: 'pointer',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    },
+    breadcrumb: {
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        padding: '8px 0 4px',
+        fontSize: '12px',
+    },
+    breadcrumbLink: {
+        color: '#FF9800',
+        textDecoration: 'none',
+        fontWeight: '500',
+    },
+    breadcrumbSep: {
+        color: '#BDBDBD',
+        margin: '0 4px',
+    },
+    breadcrumbCurrent: {
+        color: '#757575',
+        fontWeight: '500',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        maxWidth: '160px',
     },
 };
 

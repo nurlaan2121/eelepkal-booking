@@ -3,27 +3,153 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Ээлеп кал | Бронирование заведений в Кыргызстане</title>
+
+  <!-- Favicon + App Icons -->
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+  <meta name="theme-color" content="#FF6B35" />
+
+  <!-- Primary SEO -->
+  <title>Ээлеп кал | Онлайн бронирование столиков в Кыргызстане</title>
   <meta name="description"
-    content="Найдите и забронируйте лучшие рестораны, кафе и заведения Кыргызстана онлайн за 30 секунд. Удобный поиск по кухне и рейтингу." />
+    content="Ээлеп кал — онлайн бронирование столиков в ресторанах, кафе, чайханах и lounge Бишкека. Забронируйте столик за 30 секунд без звонков. Лучшие заведения Кыргызстана." />
+  <meta name="keywords"
+    content="онлайн бронь столика, бронирование ресторана Бишкек, забронировать столик Бишкек, кафе Бишкек онлайн, ресторан Бишкек, чайхана Бишкек, lounge Бишкек, Ээлеп кал, eelepkal, eelep kal, столик брондоо, онлайн брондоо Бишкек" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Ээлеп кал" />
   <meta name="google" content="notranslate" />
 
-  <!-- Open Graph / Social Media -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Ээлеп кал | Бронирование заведений в Кыргызстане" />
-  <meta property="og:description"
-    content="Лучшие заведения Бишкека в одном приложении. Выбирайте, бронируйте и наслаждайтесь." />
-  <meta property="og:image" content="https://client.eelepkal.com/logo.png" />
-  <meta property="og:url" content="https://client.eelepkal.com/" />
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="google09f4487dc00a002d" />
 
+  <!-- Yandex Site Verification -->
+  <!-- <meta name="yandex-verification" content="REPLACE_WITH_YANDEX_CODE" /> -->
+
+  <!-- hreflang for Russian and Kyrgyz audiences -->
+  <link rel="alternate" hreflang="ru" href="https://client.eelepkal.com/" />
+  <link rel="alternate" hreflang="ky" href="https://client.eelepkal.com/" />
+  <link rel="alternate" hreflang="x-default" href="https://client.eelepkal.com/" />
+
+  <!-- Canonical -->
   <link rel="canonical" href="https://client.eelepkal.com/" />
 
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ээлеп кал" />
+  <meta property="og:title" content="Ээлеп кал | Онлайн бронирование столиков в Кыргызстане" />
+  <meta property="og:description"
+    content="Бронируйте столики в ресторанах, кафе, чайханах и lounge Бишкека онлайн без звонков. Быстро, удобно, бесплатно." />
+  <meta property="og:image" content="https://client.eelepkal.com/logo.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ээлеп кал — онлайн бронирование столиков в Бишкеке" />
+  <meta property="og:url" content="https://client.eelepkal.com/" />
+  <meta property="og:locale" content="ru_KG" />
+  <meta property="og:locale:alternate" content="ky_KG" />
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ээлеп кал | Онлайн бронирование столиков в Кыргызстане" />
+  <meta name="twitter:description"
+    content="Бронируйте столики в ресторанах, кафе, чайханах и lounge Бишкека онлайн без звонков." />
+  <meta name="twitter:image" content="https://client.eelepkal.com/logo.png" />
+  <meta name="twitter:site" content="@eelepkal" />
+
+  <!-- JSON-LD: WebSite + Organization + SiteLinksSearchBox -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://client.eelepkal.com/#website",
+        "url": "https://client.eelepkal.com/",
+        "name": "Ээлеп кал",
+        "description": "Онлайн бронирование столиков в ресторанах, кафе, чайханах и lounge Кыргызстана",
+        "inLanguage": ["ru", "ky"],
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://client.eelepkal.com/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://client.eelepkal.com/#organization",
+        "name": "Ээлеп кал",
+        "alternateName": ["Eelep kal", "eelepkal", "Ээлепкал"],
+        "url": "https://client.eelepkal.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://client.eelepkal.com/logo.png",
+          "width": 200,
+          "height": 200
+        },
+        "description": "Платформа онлайн бронирования столиков в ресторанах, кафе, чайханах и lounge Кыргызстана",
+        "areaServed": {
+          "@type": "City",
+          "name": "Бишкек",
+          "containedInPlace": {
+            "@type": "Country",
+            "name": "Кыргызстан"
+          }
+        },
+        "serviceType": "Онлайн бронирование столиков"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- DNS Prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://images.unsplash.com" />
+  <!-- Preload logo for LCP -->
+  <link rel="preload" as="image" href="/logo.png" />
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- noscript fallback: visible to crawlers that don't execute JS -->
+    <noscript>
+      <style>
+        .noscript-container {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 40px auto;
+          padding: 20px;
+        }
+
+        .noscript-container h1 {
+          color: #FF6B35;
+        }
+
+        .noscript-container a {
+          color: #FF6B35;
+        }
+      </style>
+      <div class="noscript-container">
+        <h1>Ээлеп кал — Онлайн бронирование столиков в Кыргызстане</h1>
+        <p>Бронируйте столики в лучших ресторанах, кафе, чайханах и lounge Бишкека онлайн без звонков.</p>
+        <p>Для использования сайта необходим JavaScript. Пожалуйста, включите JavaScript в настройках браузера.</p>
+        <nav>
+          <ul>
+            <li><a href="/venues">Все заведения</a></li>
+            <li><a href="/restaurants-bishkek">Рестораны Бишкека</a></li>
+            <li><a href="/cafe-bishkek">Кафе Бишкека</a></li>
+            <li><a href="/chayhana-bishkek">Чайханы Бишкека</a></li>
+            <li><a href="/lounge-bishkek">Lounge Бишкека</a></li>
+            <li><a href="/cabins-bishkek">Кабинки в ресторанах Бишкека</a></li>
+          </ul>
+        </nav>
+      </div>
+    </noscript>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

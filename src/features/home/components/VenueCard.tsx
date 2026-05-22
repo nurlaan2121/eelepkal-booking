@@ -13,7 +13,16 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
     const navigate = useNavigate();
 
     return (
-        <div style={styles.card} className="card-hover" onClick={() => navigate(`/venue/${venue.venueId}`)}>
+        <a
+            href={`/venue/${venue.venueId}`}
+            style={{ ...styles.card, textDecoration: 'none' }}
+            className="card-hover"
+            onClick={(e) => {
+                e.preventDefault();
+                navigate(`/venue/${venue.venueId}`);
+            }}
+            aria-label={`Открыть ${venue.venueName} — онлайн бронь`}
+        >
             <div style={styles.imageContainer}>
                 <OptimizedImage
                     src={venue.firstImageUrl}
@@ -42,7 +51,7 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue }) => {
                     <span style={styles.addressText}>{venue.address}</span>
                 </div>
             </div>
-        </div>
+        </a>
     );
 };
 
