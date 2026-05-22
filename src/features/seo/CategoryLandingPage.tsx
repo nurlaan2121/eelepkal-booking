@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useQueries, useInfiniteQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { venueService } from '../../api/services/venueService';
 import VenueCard from '../home/components/VenueCard';
@@ -38,16 +38,33 @@ interface CategoryLandingPageProps {
 const CategoryLandingPage: React.FC<CategoryLandingPageProps> = ({ config }) => {
     const navigate = useNavigate();
 
-    const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-        queryKey: ['categoryPage', config.slug],
-        queryFn: ({ pageParam = 0 }) =>
-            venueService.searchVenues(config.categoryName, {}, pageParam, 20),
-        initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) =>
-            lastPage.length === 20 ? allPages.length * 20 : undefined,
+    // Use the working APIs that actually return data (not search by category name)
+    const [recommendedQuery, topRatedQuery, openQuery] = useQueries({
+        queries: [
+            { queryKey: ['categoryRecommended', config.slug], queryFn: () => venueService.getRecommendedVenues(0, 50) },
+            { queryKey: ['categoryTopRated', config.slug], queryFn: () => venueService.getTopRatedVenues(0, 50) },
+            { queryKey: ['categoryOpen', config.slug], queryFn: () => venueService.getOpenVenues(0, 50) },
+        ]
     });
 
-    const venues = data?.pages.flat() || [];
+    // Merge and deduplicate venues from all sources
+    const allVenues = React.useMemo(() => {
+        const venueMap = new Map();
+        
+        [recommendedQuery.data, topRatedQuery.data, openQuery.data].forEach(venues => {
+            if (Array.isArray(venues)) {
+                venues.forEach(v => {
+                    if (v && typeof v === 'object' && 'venueId' in v) {
+                        venueMap.set(v.venueId, v);
+                    }
+                });
+            }
+        });
+        
+        return Array.from(venueMap.values());
+    }, [recommendedQuery.data, topRatedQuery.data, openQuery.data]);
+
+    const isLoading = recommendedQuery.isLoading || topRatedQuery.isLoading || openQuery.isLoading;
 
     // Breadcrumb JSON-LD
     const breadcrumbSchema = {
@@ -127,27 +144,14 @@ const CategoryLandingPage: React.FC<CategoryLandingPageProps> = ({ config }) => 
                             </div>
                         ))}
                     </div>
-                ) : venues.length > 0 ? (
-                    <>
-                        <div className="responsive-grid">
-                            {venues.map((venue, idx) => (
-                                venue && typeof venue === 'object' && 'venueId' in venue ? (
-                                    <VenueCard key={`${venue.venueId}-${idx}`} venue={venue} />
-                                ) : null
-                            ))}
-                        </div>
-                        {hasNextPage && (
-                            <div style={styles.loadMoreWrap}>
-                                <button
-                                    onClick={() => fetchNextPage()}
-                                    disabled={isFetchingNextPage}
-                                    style={styles.loadMoreBtn}
-                                >
-                                    {isFetchingNextPage ? 'Загрузка...' : 'Показать ещё'}
-                                </button>
-                            </div>
-                        )}
-                    </>
+                ) : allVenues.length > 0 ? (
+                    <div className="responsive-grid">
+                        {allVenues.map((venue, idx) => (
+                            venue && typeof venue === 'object' && 'venueId' in venue ? (
+                                <VenueCard key={`${venue.venueId}-${idx}`} venue={venue} />
+                            ) : null
+                        ))}
+                    </div>
                 ) : (
                     <p style={styles.empty}>
                         Заведения скоро появятся. Пока посмотрите{' '}
