@@ -17,6 +17,7 @@ const ProfileScreen: React.FC = () => {
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [originalImageUrl, setOriginalImageUrl] = useState<string | null | undefined>(null);
+    const [imageAction, setImageAction] = useState<'unchanged' | 'uploaded' | 'removed'>('unchanged');
     const { logout } = useAuthStore();
 
     // Form state
@@ -71,6 +72,7 @@ const ProfileScreen: React.FC = () => {
 
         // Save original imageUrl to detect changes
         setOriginalImageUrl(profile.imageUrl);
+        setImageAction('unchanged'); // Reset action state
 
         setFormData({
             imageUrl: profile.imageUrl || undefined,
@@ -90,6 +92,7 @@ const ProfileScreen: React.FC = () => {
         setSaveSuccess(false);
         setSaveError(null);
         setOriginalImageUrl(null);
+        setImageAction('unchanged');
     };
 
     const handleInputChange = (field: keyof ProfileUpdateRequest, value: string) => {
@@ -124,6 +127,8 @@ const ProfileScreen: React.FC = () => {
                 ...prev,
                 imageUrl: response.url,
             }));
+            setImageAction('uploaded'); // Mark as uploaded
+            console.log('📸 Photo uploaded successfully');
         } catch (err: any) {
             console.error('Failed to upload photo:', err);
             setUploadError(err.response?.data?.message || 'Не удалось загрузить фото');
@@ -177,28 +182,18 @@ const ProfileScreen: React.FC = () => {
                 updateData.gender = formData.gender;
             }
             
-            // Smart imageUrl update - only include if it actually changed
-            // Normalize values: treat null, undefined, and '' as equivalent (no photo)
-            const normalizeUrl = (url: string | null | undefined) => url || '';
-            const originalNormalized = normalizeUrl(originalImageUrl);
-            const currentNormalized = normalizeUrl(formData.imageUrl);
-            
-            const imageUrlChanged = originalNormalized !== currentNormalized;
-            
-            if (imageUrlChanged) {
-                updateData.imageUrl = currentNormalized;
-                console.log('✅ Image URL changed:', {
-                    original: originalImageUrl,
-                    originalNormalized,
-                    new: formData.imageUrl,
-                    currentNormalized,
-                    willSend: updateData.imageUrl
-                });
+            // Smart imageUrl update - use action tracking instead of string comparison
+            if (imageAction === 'uploaded') {
+                // User uploaded a new photo
+                updateData.imageUrl = formData.imageUrl || '';
+                console.log('📸 Photo UPLOADED - sending new URL:', updateData.imageUrl);
+            } else if (imageAction === 'removed') {
+                // User removed their photo
+                updateData.imageUrl = '';
+                console.log('🗑️ Photo REMOVED - sending empty string');
             } else {
-                console.log('⏭️ Image URL not changed, skipping', {
-                    original: originalNormalized,
-                    current: currentNormalized
-                });
+                // User didn't change the photo
+                console.log('⏭️ Photo UNCHANGED - not including in request');
             }
 
             console.log('Sending profile update:', JSON.stringify(updateData, null, 2));
@@ -368,7 +363,11 @@ const ProfileScreen: React.FC = () => {
                                         {formData.imageUrl && (
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData(prev => ({ ...prev, imageUrl: undefined }))}
+                                                onClick={() => {
+                                                    setFormData(prev => ({ ...prev, imageUrl: undefined }));
+                                                    setImageAction('removed'); // Mark as removed
+                                                    console.log('🗑️ Photo removed');
+                                                }}
                                                 disabled={isUploading}
                                                 style={styles.removeButton}
                                             >
