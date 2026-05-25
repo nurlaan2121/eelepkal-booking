@@ -16,11 +16,12 @@ export const formatToBackendDateTime = (date: string, time: string): string => {
  * Formats a numeric timestamp into a readable date and time string.
  * Example result: 11.04.2026 13:12
  * 
- * @param timestamp - The numeric timestamp in milliseconds
+ * @param timestamp - The numeric timestamp in seconds (Unix timestamp)
  * @returns Formatted date string
  */
 export const formatTimestamp = (timestamp: number): string => {
-    const date = new Date(timestamp);
+    // Server returns timestamps in seconds, but JavaScript Date expects milliseconds
+    const date = new Date(timestamp * 1000);
     return date.toLocaleDateString('ru-RU', {
         day: '2-digit',
         month: '2-digit',
