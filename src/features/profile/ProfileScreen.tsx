@@ -3,7 +3,7 @@ import { profileService } from '../../api/services/profileService';
 import { ProfileResponse, ProfileUpdateRequest } from '../../api/dto/profile';
 import './ProfileScreen.css';
 import { useAuthStore } from '../auth/authStore';
-import { X, Save, Camera, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Save, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const ProfileScreen: React.FC = () => {
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
