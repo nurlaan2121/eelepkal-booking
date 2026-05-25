@@ -229,3 +229,12 @@ select:focus {
 button:hover:not(:disabled) {
     opacity: 0.9;
 }
+
+.uploadButton:hover:not(:disabled) {
+    background-color: #F57C00 !important;
+    transform: translateY(-1px);
+}
+
+.removeButton:hover:not(:disabled) {
+    background-color: #fecaca !important;
+}

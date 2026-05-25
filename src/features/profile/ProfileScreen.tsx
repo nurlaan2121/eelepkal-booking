@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { profileService } from '../../api/services/profileService';
 import { ProfileResponse, ProfileUpdateRequest } from '../../api/dto/profile';
 import './ProfileScreen.css';
 import { useAuthStore } from '../auth/authStore';
-import { X, Save, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Save, Loader2, CheckCircle2, AlertCircle, Upload, User } from 'lucide-react';
 
 const ProfileScreen: React.FC = () => {
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
@@ -13,10 +13,15 @@ const ProfileScreen: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
     const { logout } = useAuthStore();
 
     // Form state
     const [formData, setFormData] = useState<ProfileUpdateRequest>({});
+    
+    // File input ref
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -86,6 +91,43 @@ const ProfileScreen: React.FC = () => {
             ...prev,
             [field]: value,
         }));
+    };
+
+    const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setUploadError('Пожалуйста, выберите изображение');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setUploadError('Размер файла не должен превышать 5MB');
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadError(null);
+
+        try {
+            const response = await profileService.uploadProfilePhoto(file);
+            setFormData(prev => ({
+                ...prev,
+                imageUrl: response.url,
+            }));
+        } catch (err: any) {
+            console.error('Failed to upload photo:', err);
+            setUploadError(err.response?.data?.message || 'Не удалось загрузить фото');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
     };
 
     const handleSave = async () => {
@@ -234,6 +276,59 @@ const ProfileScreen: React.FC = () => {
 
                         {/* Form */}
                         <div style={styles.form}>
+                            {/* Photo Upload */}
+                            <div style={styles.photoUploadSection}>
+                                <label style={styles.label}>Фото профиля</label>
+                                <div style={styles.photoUploadContainer}>
+                                    <div style={styles.photoPreview}>
+                                        {formData.imageUrl ? (
+                                            <img src={formData.imageUrl} alt="Profile" style={styles.photoPreviewImage} />
+                                        ) : (
+                                            <User size={48} color="#9ca3af" />
+                                        )}
+                                        {isUploading && (
+                                            <div style={styles.photoUploadOverlay}>
+                                                <Loader2 size={24} style={{ animation: 'spin 1s linear infinite', color: '#FF9800' }} />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={styles.photoUploadButtons}>
+                                        <button
+                                            type="button"
+                                            onClick={triggerFileInput}
+                                            disabled={isUploading}
+                                            style={styles.uploadButton}
+                                        >
+                                            <Upload size={16} />
+                                            {isUploading ? 'Загрузка...' : 'Загрузить фото'}
+                                        </button>
+                                        {formData.imageUrl && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ ...prev, imageUrl: undefined }))}
+                                                disabled={isUploading}
+                                                style={styles.removeButton}
+                                            >
+                                                Удалить
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handlePhotoUpload}
+                                    style={{ display: 'none' }}
+                                />
+                                {uploadError && (
+                                    <div style={styles.uploadError}>
+                                        <AlertCircle size={14} color="#ef4444" />
+                                        <span>{uploadError}</span>
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Name */}
                             <div style={styles.formGroup}>
                                 <label style={styles.label}>Имя *</label>
@@ -278,6 +373,9 @@ const ProfileScreen: React.FC = () => {
                                     value={formData.dateOfBirth || ''}
                                     onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                                     style={styles.input}
+                                    min="1940-01-01"
+                                    max="2010-12-31"
+                                    placeholder="Выберите дату"
                                 />
                             </div>
 
@@ -294,18 +392,6 @@ const ProfileScreen: React.FC = () => {
                                     <option value="FEMALE">Женский</option>
                                     <option value="OTHER">Другой</option>
                                 </select>
-                            </div>
-
-                            {/* Image URL */}
-                            <div style={styles.formGroup}>
-                                <label style={styles.label}>URL аватара</label>
-                                <input
-                                    type="url"
-                                    value={formData.imageUrl || ''}
-                                    onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                                    style={styles.input}
-                                    placeholder="https://example.com/avatar.jpg"
-                                />
                             </div>
                         </div>
 
@@ -425,6 +511,89 @@ const styles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         flexDirection: 'column' as const,
         gap: '20px',
+    },
+    photoUploadSection: {
+        display: 'flex',
+        flexDirection: 'column' as const,
+        gap: '12px',
+    },
+    photoUploadContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+    },
+    photoPreview: {
+        width: '80px',
+        height: '80px',
+        borderRadius: '50%',
+        backgroundColor: '#f3f4f6',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        position: 'relative' as const,
+        border: '3px solid #e5e7eb',
+    },
+    photoPreviewImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover' as const,
+    },
+    photoUploadOverlay: {
+        position: 'absolute' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    photoUploadButtons: {
+        display: 'flex',
+        flexDirection: 'column' as const,
+        gap: '8px',
+        flex: 1,
+    },
+    uploadButton: {
+        padding: '10px 16px',
+        backgroundColor: '#FF9800',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '10px',
+        fontSize: '13px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '6px',
+        transition: 'all 0.2s',
+        fontFamily: 'inherit',
+    },
+    removeButton: {
+        padding: '8px 16px',
+        backgroundColor: '#fee2e2',
+        color: '#ef4444',
+        border: 'none',
+        borderRadius: '10px',
+        fontSize: '13px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        fontFamily: 'inherit',
+    },
+    uploadError: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '8px 12px',
+        backgroundColor: '#fef2f2',
+        borderRadius: '8px',
+        color: '#991b1b',
+        fontSize: '12px',
+        fontWeight: '500',
     },
     formGroup: {
         display: 'flex',
