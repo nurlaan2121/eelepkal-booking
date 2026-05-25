@@ -16,7 +16,6 @@ const ProfileScreen: React.FC = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const [originalImageUrl, setOriginalImageUrl] = useState<string | null | undefined>(null);
     const [imageAction, setImageAction] = useState<'unchanged' | 'uploaded' | 'removed'>('unchanged');
     const { logout } = useAuthStore();
 
@@ -70,9 +69,8 @@ const ProfileScreen: React.FC = () => {
             ? `${profile.dateOfBirth[0]}-${String(profile.dateOfBirth[1]).padStart(2, '0')}-${String(profile.dateOfBirth[2]).padStart(2, '0')}`
             : undefined;
 
-        // Save original imageUrl to detect changes
-        setOriginalImageUrl(profile.imageUrl);
-        setImageAction('unchanged'); // Reset action state
+        // Reset action state
+        setImageAction('unchanged');
 
         setFormData({
             imageUrl: profile.imageUrl || undefined,
@@ -91,7 +89,6 @@ const ProfileScreen: React.FC = () => {
         setIsEditModalOpen(false);
         setSaveSuccess(false);
         setSaveError(null);
-        setOriginalImageUrl(null);
         setImageAction('unchanged');
     };
 
