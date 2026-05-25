@@ -178,16 +178,27 @@ const ProfileScreen: React.FC = () => {
             }
             
             // Smart imageUrl update - only include if it actually changed
-            const imageUrlChanged = formData.imageUrl !== originalImageUrl;
+            // Normalize values: treat null, undefined, and '' as equivalent (no photo)
+            const normalizeUrl = (url: string | null | undefined) => url || '';
+            const originalNormalized = normalizeUrl(originalImageUrl);
+            const currentNormalized = normalizeUrl(formData.imageUrl);
+            
+            const imageUrlChanged = originalNormalized !== currentNormalized;
+            
             if (imageUrlChanged) {
-                updateData.imageUrl = formData.imageUrl || '';
+                updateData.imageUrl = currentNormalized;
                 console.log('✅ Image URL changed:', {
                     original: originalImageUrl,
+                    originalNormalized,
                     new: formData.imageUrl,
+                    currentNormalized,
                     willSend: updateData.imageUrl
                 });
             } else {
-                console.log('⏭️ Image URL not changed, skipping');
+                console.log('⏭️ Image URL not changed, skipping', {
+                    original: originalNormalized,
+                    current: currentNormalized
+                });
             }
 
             console.log('Sending profile update:', JSON.stringify(updateData, null, 2));
