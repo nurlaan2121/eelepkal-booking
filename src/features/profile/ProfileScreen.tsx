@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { profileService } from '../../api/services/profileService';
-import { ProfileResponse } from '../../api/dto/profile';
+import { ProfileResponse, ProfileUpdateRequest } from '../../api/dto/profile';
 import './ProfileScreen.css';
 import { useAuthStore } from '../auth/authStore';
+import { X, Save, Camera, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const ProfileScreen: React.FC = () => {
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
     const { logout } = useAuthStore();
+
+    // Form state
+    const [formData, setFormData] = useState<ProfileUpdateRequest>({});
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -43,6 +51,71 @@ const ProfileScreen: React.FC = () => {
             case 'FEMALE': return 'Женский';
             case 'OTHER': return 'Другой';
             default: return gender;
+        }
+    };
+
+    const openEditModal = () => {
+        if (!profile) return;
+        
+        // Convert dateOfBirth array to YYYY-MM-DD string
+        const dateOfBirthString = profile.dateOfBirth
+            ? `${profile.dateOfBirth[0]}-${String(profile.dateOfBirth[1]).padStart(2, '0')}-${String(profile.dateOfBirth[2]).padStart(2, '0')}`
+            : undefined;
+
+        setFormData({
+            imageUrl: profile.imageUrl || undefined,
+            name: profile.name,
+            email: profile.email,
+            phoneNumber: profile.phoneNumber || undefined,
+            dateOfBirth: dateOfBirthString,
+            gender: profile.gender || undefined,
+        });
+        setSaveSuccess(false);
+        setSaveError(null);
+        setIsEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
+        setSaveSuccess(false);
+        setSaveError(null);
+    };
+
+    const handleInputChange = (field: keyof ProfileUpdateRequest, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        setSaveError(null);
+        setSaveSuccess(false);
+
+        try {
+            // Filter out undefined values
+            const updateData: ProfileUpdateRequest = {};
+            Object.keys(formData).forEach(key => {
+                const k = key as keyof ProfileUpdateRequest;
+                if (formData[k] !== undefined && formData[k] !== '') {
+                    (updateData as any)[k] = formData[k];
+                }
+            });
+
+            const updatedProfile = await profileService.updateProfile(updateData);
+            setProfile(updatedProfile);
+            setSaveSuccess(true);
+            
+            // Close modal after 1.5 seconds
+            setTimeout(() => {
+                closeEditModal();
+            }, 1500);
+        } catch (err: any) {
+            console.error('Failed to update profile:', err);
+            setSaveError(err.response?.data?.message || 'Не удалось обновить профиль');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -88,6 +161,9 @@ const ProfileScreen: React.FC = () => {
                 </div>
                 <h2 className="profile-name">{profile?.name}</h2>
                 <div className="profile-email-badge">{profile?.email}</div>
+                <button className="edit-profile-button" onClick={openEditModal}>
+                    Редактировать профиль
+                </button>
             </div>
 
             <div className="info-cards-grid">
@@ -127,8 +203,291 @@ const ProfileScreen: React.FC = () => {
             <button className="logout-button" onClick={() => logout()}>
                 Выйти из аккаунта
             </button>
+
+            {/* Edit Profile Modal */}
+            {isEditModalOpen && (
+                <div style={styles.modalOverlay} onClick={closeEditModal}>
+                    <div style={styles.modal} onClick={e => e.stopPropagation()}>
+                        {/* Header */}
+                        <div style={styles.modalHeader}>
+                            <h2 style={styles.modalTitle}>Редактировать профиль</h2>
+                            <button onClick={closeEditModal} style={styles.closeButton}>
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        {/* Success Message */}
+                        {saveSuccess && (
+                            <div style={styles.successMessage}>
+                                <CheckCircle2 size={20} color="#22c55e" />
+                                <span>Профиль успешно обновлен!</span>
+                            </div>
+                        )}
+
+                        {/* Error Message */}
+                        {saveError && (
+                            <div style={styles.errorMessage}>
+                                <AlertCircle size={20} color="#ef4444" />
+                                <span>{saveError}</span>
+                            </div>
+                        )}
+
+                        {/* Form */}
+                        <div style={styles.form}>
+                            {/* Name */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Имя *</label>
+                                <input
+                                    type="text"
+                                    value={formData.name || ''}
+                                    onChange={(e) => handleInputChange('name', e.target.value)}
+                                    style={styles.input}
+                                    placeholder="Введите имя"
+                                />
+                            </div>
+
+                            {/* Email */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Email *</label>
+                                <input
+                                    type="email"
+                                    value={formData.email || ''}
+                                    onChange={(e) => handleInputChange('email', e.target.value)}
+                                    style={styles.input}
+                                    placeholder="example@mail.com"
+                                />
+                            </div>
+
+                            {/* Phone */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Телефон</label>
+                                <input
+                                    type="tel"
+                                    value={formData.phoneNumber || ''}
+                                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                    style={styles.input}
+                                    placeholder="+996 XXX XXX XXX"
+                                />
+                            </div>
+
+                            {/* Date of Birth */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Дата рождения</label>
+                                <input
+                                    type="date"
+                                    value={formData.dateOfBirth || ''}
+                                    onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                                    style={styles.input}
+                                />
+                            </div>
+
+                            {/* Gender */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Пол</label>
+                                <select
+                                    value={formData.gender || ''}
+                                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                                    style={styles.select}
+                                >
+                                    <option value="">Не указано</option>
+                                    <option value="MALE">Мужской</option>
+                                    <option value="FEMALE">Женский</option>
+                                    <option value="OTHER">Другой</option>
+                                </select>
+                            </div>
+
+                            {/* Image URL */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>URL аватара</label>
+                                <input
+                                    type="url"
+                                    value={formData.imageUrl || ''}
+                                    onChange={(e) => handleInputChange('imageUrl', e.target.value)}
+                                    style={styles.input}
+                                    placeholder="https://example.com/avatar.jpg"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Footer Buttons */}
+                        <div style={styles.modalFooter}>
+                            <button
+                                onClick={closeEditModal}
+                                style={styles.cancelButton}
+                                disabled={isSaving}
+                            >
+                                Отмена
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                style={{
+                                    ...styles.saveButton,
+                                    opacity: isSaving ? 0.7 : 1,
+                                }}
+                                disabled={isSaving}
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                                        Сохранение...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save size={18} />
+                                        Сохранить
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 export default ProfileScreen;
+
+// Modal Styles
+const styles: { [key: string]: React.CSSProperties } = {
+    modalOverlay: {
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 3000,
+        padding: '20px',
+        backdropFilter: 'blur(4px)',
+    },
+    modal: {
+        backgroundColor: '#ffffff',
+        borderRadius: '24px',
+        width: '100%',
+        maxWidth: '500px',
+        maxHeight: '90vh',
+        overflow: 'auto',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+    },
+    modalHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '24px',
+        borderBottom: '1px solid #f0f0f0',
+    },
+    modalTitle: {
+        fontSize: '20px',
+        fontWeight: '700',
+        color: '#111827',
+        margin: 0,
+    },
+    closeButton: {
+        border: 'none',
+        backgroundColor: 'transparent',
+        cursor: 'pointer',
+        padding: '8px',
+        borderRadius: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#6b7280',
+        transition: 'all 0.2s',
+    },
+    successMessage: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '16px 24px',
+        backgroundColor: '#f0fdf4',
+        borderBottom: '1px solid #bbf7d0',
+        color: '#166534',
+        fontSize: '14px',
+        fontWeight: '600',
+    },
+    errorMessage: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '16px 24px',
+        backgroundColor: '#fef2f2',
+        borderBottom: '1px solid #fecaca',
+        color: '#991b1b',
+        fontSize: '14px',
+        fontWeight: '600',
+    },
+    form: {
+        padding: '24px',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        gap: '20px',
+    },
+    formGroup: {
+        display: 'flex',
+        flexDirection: 'column' as const,
+        gap: '8px',
+    },
+    label: {
+        fontSize: '14px',
+        fontWeight: '600',
+        color: '#374151',
+    },
+    input: {
+        padding: '12px 16px',
+        border: '1px solid #e5e7eb',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontFamily: 'inherit',
+        outline: 'none',
+        transition: 'all 0.2s',
+        backgroundColor: '#fafafa',
+    },
+    select: {
+        padding: '12px 16px',
+        border: '1px solid #e5e7eb',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontFamily: 'inherit',
+        outline: 'none',
+        backgroundColor: '#fafafa',
+        cursor: 'pointer',
+    },
+    modalFooter: {
+        display: 'flex',
+        gap: '12px',
+        padding: '24px',
+        borderTop: '1px solid #f0f0f0',
+    },
+    cancelButton: {
+        flex: 1,
+        padding: '12px 24px',
+        backgroundColor: '#f3f4f6',
+        color: '#374151',
+        border: 'none',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+    },
+    saveButton: {
+        flex: 1,
+        padding: '12px 24px',
+        backgroundColor: '#FF9800',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+        transition: 'all 0.2s',
+    },
+};

@@ -78,17 +78,17 @@ export const translateTableType = (type: string): string => {
  */
 export const translateNotificationType = (type: string): string => {
     const typeMap: Record<string, string> = {
-        'PROMO': 'АКЦИЯ',
-        'INFO': 'ИНФО',
-        'BOOKING': 'БРОНЬ',
-        'SYSTEM': 'СИСТЕМА',
-        'ALERT': 'ВАЖНО',
-        'CANCELLED': 'ОТМЕНЕНО',
-        'ACCEPTED': 'ПОДТВЕРЖДЕНО',
-        'WAITING': 'В ОЖИДАНИИ',
-        'PENDING': 'В ОЖИДАНИИ',
-        'APPROVED': 'ПОДТВЕРЖДЕНО',
-        'REJECTED': 'ОТКЛОНЕНО'
+        'Promo': 'Акция',
+        'Info': 'Инфо',
+        'Booking': 'Бронь',
+        'System': 'Система',
+        'Alert': 'Важно',
+        'Cancelled': 'Отменено',
+        'Accepted': 'Подтверждено',
+        'Waiting': 'В ожидании',
+        'Pending': 'В ожидании',
+        'Approved': 'Подтверждено',
+        'Rejected': 'Отклонено'
     };
     return typeMap[type] || type;
 };

@@ -74,6 +74,30 @@
     font-size: 14px;
     color: #6b7280;
     font-weight: 400;
+    margin-bottom: 16px;
+}
+
+.edit-profile-button {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    font-family: 'Outfit', sans-serif;
+}
+
+.edit-profile-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+.edit-profile-button:active {
+    transform: translateY(0);
 }
 
 .info-cards-grid {
@@ -182,4 +206,26 @@
 
 .logout-button:hover {
     background: #fecaca;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Modal input focus states */
+input:focus,
+select:focus {
+    border-color: #FF9800 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1) !important;
+}
+
+/* Modal button hover states */
+button:hover:not(:disabled) {
+    opacity: 0.9;
 }
