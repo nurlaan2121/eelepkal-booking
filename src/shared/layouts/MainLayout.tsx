@@ -3,15 +3,29 @@ import { Outlet, ScrollRestoration } from 'react-router-dom';
 import BottomNavigation from '../components/Navigation/BottomNavigation';
 import Footer from '../components/Footer/Footer';
 import ImageModal from '../../components/ui/ImageModal';
+import NotificationModal from '../../components/notifications/NotificationModal';
 import { useImageStore } from '../stores/imageStore';
-import { ZoomIn } from 'lucide-react';
+import { ZoomIn, Bell } from 'lucide-react';
+import { useAuthStore } from '../../features/auth/authStore';
+import AuthGuardModal from '../../features/auth/components/AuthGuardModal';
 
 const MainLayout: React.FC = () => {
     const [scrolled, setScrolled] = useState(false);
     const [showHint, setShowHint] = useState(false);
     const [lastClick, setLastClick] = useState({ time: 0, target: null as HTMLElement | null });
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isGuardOpen, setIsGuardOpen] = useState(false);
 
+    const { isAuthenticated } = useAuthStore();
     const { openImage } = useImageStore();
+
+    const handleNotificationClick = () => {
+        if (!isAuthenticated) {
+            setIsGuardOpen(true);
+        } else {
+            setIsNotificationOpen(true);
+        }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -108,6 +122,9 @@ const MainLayout: React.FC = () => {
                     <img src="/logo.png" alt="Ээлеп кал" style={{ height: 36, width: 36, objectFit: 'contain' }} />
                     <h1 style={styles.title}>Ээлеп кал</h1>
                 </div>
+                <button style={styles.notificationButton} onClick={handleNotificationClick}>
+                    <Bell size={24} />
+                </button>
             </header>
 
             <main style={styles.main}>
@@ -123,6 +140,17 @@ const MainLayout: React.FC = () => {
 
             <Footer />
             <BottomNavigation />
+
+            <NotificationModal
+                isOpen={isNotificationOpen}
+                onClose={() => setIsNotificationOpen(false)}
+            />
+
+            <AuthGuardModal
+                isOpen={isGuardOpen}
+                onClose={() => setIsGuardOpen(false)}
+                message="Войдите, чтобы просмотреть уведомления."
+            />
         </div>
     );
 };
@@ -151,6 +179,19 @@ const styles: { [key: string]: React.CSSProperties } = {
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
+        flex: 1,
+    },
+    notificationButton: {
+        background: 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        padding: '8px',
+        borderRadius: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--color-text)',
+        transition: 'all 0.2s ease',
     },
     iconCircle: {
         width: '36px',

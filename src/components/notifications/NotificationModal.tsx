@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { X, Bell, Calendar, AlertCircle, Loader2 } from 'lucide-react';
 import { clientNotificationService } from '../../api/services/notificationService';
 import { ClientNotification } from '../../api/dto/notificationDto';
+import { translateNotificationType, formatNotificationDate } from '../../shared/utils/dateFormatter';
 
 interface NotificationModalProps {
   isOpen: boolean;
@@ -73,26 +74,20 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
   };
 
   const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatNotificationDate(dateString);
   };
 
   const getNotificationTypeBadge = (type: string) => {
-    const typeMap: Record<string, { label: string; color: string; bgColor: string }> = {
-      'PROMO': { label: 'АКЦИЯ', color: '#E65100', bgColor: '#FFF3E0' },
-      'INFO': { label: 'ИНФО', color: '#1565C0', bgColor: '#E3F2FD' },
-      'BOOKING': { label: 'БРОНЬ', color: '#2E7D32', bgColor: '#E8F5E9' },
-      'SYSTEM': { label: 'СИСТЕМА', color: '#6A1B9A', bgColor: '#F3E5F5' },
-      'ALERT': { label: 'ВАЖНО', color: '#C62828', bgColor: '#FFEBEE' },
+    const translatedType = translateNotificationType(type);
+    const typeMap: Record<string, { color: string; bgColor: string }> = {
+      'АКЦИЯ': { color: '#E65100', bgColor: '#FFF3E0' },
+      'ИНФО': { color: '#1565C0', bgColor: '#E3F2FD' },
+      'БРОНЬ': { color: '#2E7D32', bgColor: '#E8F5E9' },
+      'СИСТЕМА': { color: '#6A1B9A', bgColor: '#F3E5F5' },
+      'ВАЖНО': { color: '#C62828', bgColor: '#FFEBEE' },
     };
 
-    const config = typeMap[type] || { label: type, color: '#424242', bgColor: '#F5F5F5' };
+    const config = typeMap[translatedType] || { color: '#424242', bgColor: '#F5F5F5' };
     
     return (
       <span style={{
@@ -100,7 +95,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
         color: config.color,
         backgroundColor: config.bgColor,
       }}>
-        {config.label}
+        {translatedType}
       </span>
     );
   };

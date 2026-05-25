@@ -1,26 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Search, Calendar, Heart, User, Bell } from 'lucide-react';
+import { Home, Search, Calendar, Heart, User } from 'lucide-react';
 import { useAuthStore } from '../../../features/auth/authStore';
 import AuthGuardModal from '../../../features/auth/components/AuthGuardModal';
-import NotificationModal from '../../../components/notifications/NotificationModal';
 
 const BottomNavigation: React.FC = () => {
     const { isAuthenticated } = useAuthStore();
     const [isGuardOpen, setIsGuardOpen] = React.useState(false);
     const [pendingPath, setPendingPath] = React.useState<string | null>(null);
-    const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
-
-    const handleNotificationClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!isAuthenticated) {
-            setPendingPath('/notifications');
-            setIsGuardOpen(true);
-        } else {
-            setIsNotificationOpen(true);
-        }
-    };
 
     const navItems = [
         { path: '/venues', icon: Home, label: 'Главная', protected: false },
@@ -44,7 +31,6 @@ const BottomNavigation: React.FC = () => {
         if (pendingPath === '/profile') return "Войдите, чтобы просмотреть свой профиль.";
         if (pendingPath === '/favorites') return "Войдите, чтобы просмотреть сохраненные заведения.";
         if (pendingPath === '/booking') return "Войдите, чтобы управлять вашими бронированиями.";
-        if (pendingPath === '/notifications') return "Войдите, чтобы просмотреть уведомления.";
         return "Пожалуйста, войдите в систему, чтобы продолжить.";
     };
 
@@ -80,29 +66,10 @@ const BottomNavigation: React.FC = () => {
                 </NavLink>
             ))}
 
-            {/* Notification Icon */}
-            <div
-                style={{
-                    ...styles.navItem,
-                    color: 'var(--color-text-muted)',
-                }}
-                onClick={handleNotificationClick}
-            >
-                <div style={styles.iconWrapper}>
-                    <Bell size={24} strokeWidth={2} />
-                </div>
-                <span style={styles.label}>Уведомления</span>
-            </div>
-
             <AuthGuardModal
                 isOpen={isGuardOpen}
                 onClose={() => setIsGuardOpen(false)}
                 message={getGuardMessage()}
-            />
-
-            <NotificationModal
-                isOpen={isNotificationOpen}
-                onClose={() => setIsNotificationOpen(false)}
             />
         </nav>
     );
@@ -131,11 +98,8 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '4px',
-        flex: '0 1 auto',
-        maxWidth: '80px',
-        padding: '4px 8px',
+        width: '100%',
         transition: 'all 0.2s ease',
-        cursor: 'pointer',
     },
     iconWrapper: {
         padding: '4px 16px',

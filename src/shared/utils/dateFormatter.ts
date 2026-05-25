@@ -39,13 +39,16 @@ export const formatTimestamp = (timestamp: number): string => {
 export const translateBookingStatus = (status: string): string => {
     const statusMap: Record<string, string> = {
         'APPROVED': 'Подтверждено',
+        'ACCEPTED': 'Подтверждено',
         'PENDING': 'В ожидании',
+        'WAITING': 'В ожидании',
         'CANCELLED': 'Отменено',
         'NOT_PAID': 'Ожидает оплаты',
         'PAID': 'Оплачено',
         'COMPLETED': 'Завершено',
         'ACTIVE': 'Активно',
-        'EXPIRED': 'Истекло'
+        'EXPIRED': 'Истекло',
+        'REJECTED': 'Отклонено'
     };
     return statusMap[status] || status;
 };
@@ -66,4 +69,42 @@ export const translateTableType = (type: string): string => {
         'Outdoor': 'На улице'
     };
     return typeMap[type] || type;
+};
+
+/**
+ * Translates notification type from English to Russian.
+ * @param type - The notification type in English
+ * @returns Translated type in Russian
+ */
+export const translateNotificationType = (type: string): string => {
+    const typeMap: Record<string, string> = {
+        'PROMO': 'АКЦИЯ',
+        'INFO': 'ИНФО',
+        'BOOKING': 'БРОНЬ',
+        'SYSTEM': 'СИСТЕМА',
+        'ALERT': 'ВАЖНО',
+        'CANCELLED': 'ОТМЕНЕНО',
+        'ACCEPTED': 'ПОДТВЕРЖДЕНО',
+        'WAITING': 'В ОЖИДАНИИ',
+        'PENDING': 'В ОЖИДАНИИ',
+        'APPROVED': 'ПОДТВЕРЖДЕНО',
+        'REJECTED': 'ОТКЛОНЕНО'
+    };
+    return typeMap[type] || type;
+};
+
+/**
+ * Formats notification date from ISO string to Russian format.
+ * @param dateString - ISO date string (e.g., "2026-05-25T08:19:01.721Z")
+ * @returns Formatted date string (e.g., "25.05.2026 • 14:20")
+ */
+export const formatNotificationDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).replace(',', ' •');
 };
