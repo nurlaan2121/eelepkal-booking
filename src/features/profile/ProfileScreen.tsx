@@ -15,6 +15,7 @@ const ProfileScreen: React.FC = () => {
     const [saveError, setSaveError] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const { logout } = useAuthStore();
 
     // Form state
@@ -130,20 +131,52 @@ const ProfileScreen: React.FC = () => {
         fileInputRef.current?.click();
     };
 
+    const handleLogoutClick = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const handleLogoutConfirm = () => {
+        setShowLogoutConfirm(false);
+        logout();
+    };
+
+    const handleLogoutCancel = () => {
+        setShowLogoutConfirm(false);
+    };
+
     const handleSave = async () => {
         setIsSaving(true);
         setSaveError(null);
         setSaveSuccess(false);
 
         try {
-            // Filter out undefined values
+            // Filter out undefined values but keep empty strings for optional fields
             const updateData: ProfileUpdateRequest = {};
-            Object.keys(formData).forEach(key => {
-                const k = key as keyof ProfileUpdateRequest;
-                if (formData[k] !== undefined && formData[k] !== '') {
-                    (updateData as any)[k] = formData[k];
-                }
-            });
+            
+            // Always include required fields
+            if (formData.name && formData.name.trim()) {
+                updateData.name = formData.name;
+            }
+            if (formData.email && formData.email.trim()) {
+                updateData.email = formData.email;
+            }
+            
+            // Include optional fields if they have values
+            if (formData.phoneNumber && formData.phoneNumber.trim()) {
+                updateData.phoneNumber = formData.phoneNumber;
+            }
+            if (formData.dateOfBirth && formData.dateOfBirth.trim()) {
+                updateData.dateOfBirth = formData.dateOfBirth;
+            }
+            if (formData.gender) {
+                updateData.gender = formData.gender;
+            }
+            // Include imageUrl if it exists (even if it's an empty string to remove photo)
+            if (formData.imageUrl !== undefined) {
+                updateData.imageUrl = formData.imageUrl;
+            }
+
+            console.log('Sending profile update:', JSON.stringify(updateData, null, 2));
 
             const updatedProfile = await profileService.updateProfile(updateData);
             setProfile(updatedProfile);
@@ -242,7 +275,7 @@ const ProfileScreen: React.FC = () => {
                 </div>
             </div>
 
-            <button className="logout-button" onClick={() => logout()}>
+            <button className="logout-button" onClick={handleLogoutClick}>
                 Выйти из аккаунта
             </button>
 
@@ -281,15 +314,20 @@ const ProfileScreen: React.FC = () => {
                                 <label style={styles.label}>Фото профиля</label>
                                 <div style={styles.photoUploadContainer}>
                                     <div style={styles.photoPreview}>
-                                        {formData.imageUrl ? (
-                                            <img src={formData.imageUrl} alt="Profile" style={styles.photoPreviewImage} />
+                                        {isUploading ? (
+                                            <div style={styles.photoPreviewLoading}>
+                                                <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: '#FF9800' }} />
+                                                <span style={styles.photoPreviewText}>Загрузка...</span>
+                                            </div>
+                                        ) : formData.imageUrl ? (
+                                            <>
+                                                <img src={formData.imageUrl} alt="Profile" style={styles.photoPreviewImage} />
+                                                <div style={styles.photoSuccessBadge}>
+                                                    <CheckCircle2 size={16} color="#22c55e" />
+                                                </div>
+                                            </>
                                         ) : (
                                             <User size={48} color="#9ca3af" />
-                                        )}
-                                        {isUploading && (
-                                            <div style={styles.photoUploadOverlay}>
-                                                <Loader2 size={24} style={{ animation: 'spin 1s linear infinite', color: '#FF9800' }} />
-                                            </div>
                                         )}
                                     </div>
                                     <div style={styles.photoUploadButtons}>
@@ -428,6 +466,35 @@ const ProfileScreen: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Logout Confirmation Modal */}
+            {showLogoutConfirm && (
+                <div style={styles.modalOverlay} onClick={handleLogoutCancel}>
+                    <div style={styles.confirmModal} onClick={e => e.stopPropagation()}>
+                        <div style={styles.confirmIcon}>
+                            <AlertCircle size={48} color="#ef4444" />
+                        </div>
+                        <h3 style={styles.confirmTitle}>Выйти из аккаунта?</h3>
+                        <p style={styles.confirmMessage}>
+                            Вы действительно хотите выйти? Вам придется снова войти в систему, чтобы получить доступ к своим данным.
+                        </p>
+                        <div style={styles.confirmButtons}>
+                            <button
+                                onClick={handleLogoutCancel}
+                                style={styles.confirmCancelButton}
+                            >
+                                Отмена
+                            </button>
+                            <button
+                                onClick={handleLogoutConfirm}
+                                style={styles.confirmLogoutButton}
+                            >
+                                Выйти
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -533,11 +600,41 @@ const styles: { [key: string]: React.CSSProperties } = {
         overflow: 'hidden',
         position: 'relative' as const,
         border: '3px solid #e5e7eb',
+        flexShrink: 0,
+    },
+    photoPreviewLoading: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+        backgroundColor: '#ffffff',
+    },
+    photoPreviewText: {
+        fontSize: '11px',
+        fontWeight: '600',
+        color: '#FF9800',
     },
     photoPreviewImage: {
         width: '100%',
         height: '100%',
         objectFit: 'cover' as const,
+    },
+    photoSuccessBadge: {
+        position: 'absolute' as const,
+        bottom: '2px',
+        right: '2px',
+        width: '24px',
+        height: '24px',
+        borderRadius: '50%',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '2px solid #22c55e',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
     },
     photoUploadOverlay: {
         position: 'absolute' as const,
@@ -658,5 +755,59 @@ const styles: { [key: string]: React.CSSProperties } = {
         justifyContent: 'center',
         gap: '8px',
         transition: 'all 0.2s',
+    },
+    confirmModal: {
+        backgroundColor: '#ffffff',
+        borderRadius: '24px',
+        width: '100%',
+        maxWidth: '400px',
+        padding: '32px 24px',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+        textAlign: 'center' as const,
+    },
+    confirmIcon: {
+        marginBottom: '16px',
+    },
+    confirmTitle: {
+        fontSize: '20px',
+        fontWeight: '700',
+        color: '#111827',
+        margin: '0 0 12px 0',
+    },
+    confirmMessage: {
+        fontSize: '14px',
+        color: '#6b7280',
+        lineHeight: '1.6',
+        margin: '0 0 24px 0',
+    },
+    confirmButtons: {
+        display: 'flex',
+        gap: '12px',
+    },
+    confirmCancelButton: {
+        flex: 1,
+        padding: '12px 24px',
+        backgroundColor: '#f3f4f6',
+        color: '#374151',
+        border: 'none',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        fontFamily: 'inherit',
+    },
+    confirmLogoutButton: {
+        flex: 1,
+        padding: '12px 24px',
+        backgroundColor: '#ef4444',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '12px',
+        fontSize: '14px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        fontFamily: 'inherit',
     },
 };

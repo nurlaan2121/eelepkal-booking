@@ -238,3 +238,12 @@ button:hover:not(:disabled) {
 .removeButton:hover:not(:disabled) {
     background-color: #fecaca !important;
 }
+
+.confirmCancelButton:hover {
+    background-color: #e5e7eb !important;
+}
+
+.confirmLogoutButton:hover {
+    background-color: #dc2626 !important;
+    transform: translateY(-1px);
+}
