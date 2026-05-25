@@ -205,6 +205,18 @@ const ProfileScreen: React.FC = () => {
             setProfile(updatedProfile);
             setSaveSuccess(true);
             
+            console.log('✅ Profile updated successfully, refreshing data...');
+            
+            // Fetch fresh profile data from API
+            try {
+                const freshProfile = await profileService.getProfile();
+                setProfile(freshProfile);
+                console.log('🔄 Profile data refreshed from server');
+            } catch (refreshErr) {
+                console.error('Failed to refresh profile data:', refreshErr);
+                // Use the response from update as fallback
+            }
+            
             // Close modal after 1.5 seconds
             setTimeout(() => {
                 closeEditModal();
