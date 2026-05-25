@@ -30,15 +30,16 @@ export const profileService = {
         console.log('📤 Raw axios response:', response);
         console.log('📤 response.data:', response.data);
         
-        // Server returns the URL directly in response.data as a string
-        // Or it might be in response.data.url
-        const url = typeof response.data === 'string' ? response.data : response.data.url;
+        // Server returns: { data: 'https://s3...url...', httpResponse: {...} }
+        // The URL is in response.data.data
+        const responseData = response.data as any;
+        const url = responseData.data || responseData.url || '';
         
         return {
             url: url,
-            fileName: response.data.fileName || '',
-            fileType: response.data.fileType || '',
-            size: response.data.size || 0
+            fileName: responseData.fileName || '',
+            fileType: responseData.fileType || '',
+            size: responseData.size || 0
         };
     },
 };
