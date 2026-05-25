@@ -30,3 +30,40 @@ export const formatTimestamp = (timestamp: number): string => {
         minute: '2-digit'
     });
 };
+
+/**
+ * Translates booking status from English to Russian.
+ * @param status - The booking status in English
+ * @returns Translated status in Russian
+ */
+export const translateBookingStatus = (status: string): string => {
+    const statusMap: Record<string, string> = {
+        'APPROVED': 'Подтверждено',
+        'PENDING': 'В ожидании',
+        'CANCELLED': 'Отменено',
+        'NOT_PAID': 'Ожидает оплаты',
+        'PAID': 'Оплачено',
+        'COMPLETED': 'Завершено',
+        'ACTIVE': 'Активно',
+        'EXPIRED': 'Истекло'
+    };
+    return statusMap[status] || status;
+};
+
+/**
+ * Translates table type from English to Russian.
+ * @param type - The table type in English
+ * @returns Translated type in Russian
+ */
+export const translateTableType = (type: string): string => {
+    const typeMap: Record<string, string> = {
+        'Terrace': 'Терраса',
+        'Terasa': 'Терраса',
+        ' terrace': 'Терраса',
+        'VIP': 'VIP',
+        'Standard': 'Стандарт',
+        'Main Hall': 'Основной зал',
+        'Outdoor': 'На улице'
+    };
+    return typeMap[type] || type;
+};

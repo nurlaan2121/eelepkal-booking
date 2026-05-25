@@ -26,7 +26,7 @@ const LoginForm: React.FC = () => {
                 message: err.message,
                 config: err.config
             });
-            setError(err.response?.data?.message || err.message || 'Failed to send OTP. Please try again.');
+            setError(err.response?.data?.message || err.message || 'Не удалось отправить OTP. Пожалуйста, попробуйте еще раз.');
         }
     };
 
@@ -44,7 +44,7 @@ const LoginForm: React.FC = () => {
                 message: err.message,
                 config: err.config
             });
-            setError(err.response?.data?.message || err.message || 'Invalid OTP. Please check and try again.');
+            setError(err.response?.data?.message || err.message || 'Неверный OTP. Пожалуйста, проверьте и попробуйте еще раз.');
         }
     };
 

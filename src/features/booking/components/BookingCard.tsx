@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Calendar, Users, Home, Clock } from 'lucide-react';
 import { BookingDTO } from '../../../api/dto/bookingDto';
-import { formatTimestamp } from '../../../shared/utils/dateFormatter';
+import { formatTimestamp, translateBookingStatus, translateTableType } from '../../../shared/utils/dateFormatter';
 
 interface BookingCardProps {
     booking: BookingDTO;
@@ -16,7 +16,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
             <div style={styles.imageContainer}>
                 <img src={booking.firstImageUrl} alt={booking.venueName} style={styles.image} />
                 <div style={styles.statusBadge(booking.bookingStatus)}>
-                    {booking.bookingStatus}
+                    {translateBookingStatus(booking.bookingStatus)}
                 </div>
                 <div style={styles.ratingBadge}>
                     <Star size={14} color="#FFD700" fill="#FFD700" />
@@ -50,7 +50,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
                         </div>
                         <div style={styles.detailItem}>
                             <Home size={16} color="#2196F3" />
-                            <span style={styles.detailText}>{booking.etableType}</span>
+                            <span style={styles.detailText}>{translateTableType(booking.etableType)}</span>
                         </div>
                     </div>
 

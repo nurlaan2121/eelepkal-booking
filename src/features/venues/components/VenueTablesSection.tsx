@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
 import { Users, Calendar, Clock, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { formatToBackendDateTime } from '../../../shared/utils/dateFormatter';
+import { formatToBackendDateTime, translateTableType } from '../../../shared/utils/dateFormatter';
 
 import { TableItem } from '../../../api/dto/venueDto';
 import TableDetailsModal from './TableDetailsModal';
@@ -222,7 +222,7 @@ const VenueTablesSection: React.FC<VenueTablesSectionProps> = ({ venueId }) => {
                             <div style={styles.tableInfo}>
                                 <h4 style={styles.tableName}>{table.title}</h4>
                                 <div style={styles.tagRow}>
-                                    <span style={styles.tag}>{table.tableType}</span>
+                                    <span style={styles.tag}>{translateTableType(table.tableType)}</span>
                                     <span style={styles.tag}>{table.capacity} чел.</span>
                                 </div>
                                 <div style={styles.tableMeta}>

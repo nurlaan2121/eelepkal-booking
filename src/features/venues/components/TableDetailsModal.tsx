@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Users, Shield } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
+import { translateTableType } from '../../../shared/utils/dateFormatter';
 
 interface TableDetailsModalProps {
     tableId: number;
@@ -56,7 +57,7 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
                 <div style={styles.body}>
                     <div style={styles.titleRow}>
                         <h2 style={styles.name}>{table.title}</h2>
-                        <span style={styles.type}>{table.tableType}</span>
+                        <span style={styles.type}>{translateTableType(table.tableType)}</span>
                     </div>
 
                     <div style={styles.mainInfo}>

@@ -18,7 +18,7 @@ import {
     Copy,
     ExternalLink
 } from 'lucide-react';
-import { formatTimestamp } from '../../shared/utils/dateFormatter';
+import { formatTimestamp, translateBookingStatus, translateTableType } from '../../shared/utils/dateFormatter';
 
 const BookingDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -102,7 +102,7 @@ const BookingDetailsPage: React.FC = () => {
                     <div>
                         <p style={styles.statusLabel}>Статус заказа</p>
                         <h2 style={styles.statusValue}>
-                            {booking.bookingStatus === 'NOT_PAID' ? 'Ожидает оплаты' : booking.bookingStatus}
+                            {translateBookingStatus(booking.bookingStatus)}
                         </h2>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ const BookingDetailsPage: React.FC = () => {
                     <Home size={20} color="#2196F3" />
                     <div>
                         <p style={styles.infoBoxLabel}>Стол</p>
-                        <p style={styles.infoBoxValue}>{booking.tableTitle} ({booking.tableType})</p>
+                        <p style={styles.infoBoxValue}>{booking.tableTitle} ({translateTableType(booking.tableType)})</p>
                     </div>
                 </div>
 
