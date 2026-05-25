@@ -94,12 +94,21 @@ export const translateNotificationType = (type: string): string => {
 };
 
 /**
- * Formats notification date from ISO string to Russian format.
- * @param dateString - ISO date string (e.g., "2026-05-25T08:19:01.721Z")
+ * Formats notification date from timestamp or ISO string to Russian format.
+ * @param dateValue - Timestamp (seconds) or ISO date string (e.g., 1779778800 or "2026-05-25T08:19:01.721Z")
  * @returns Formatted date string (e.g., "25.05.2026 • 14:20")
  */
-export const formatNotificationDate = (dateString: string): string => {
-    const date = new Date(dateString);
+export const formatNotificationDate = (dateValue: number | string): string => {
+    let date: Date;
+    
+    if (typeof dateValue === 'number') {
+        // It's a timestamp in seconds (like bookingFullVisitTime)
+        date = new Date(dateValue * 1000);
+    } else {
+        // It's an ISO string
+        date = new Date(dateValue);
+    }
+    
     return date.toLocaleDateString('ru-RU', {
         day: '2-digit',
         month: '2-digit',

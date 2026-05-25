@@ -73,8 +73,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
     fetchNotifications();
   };
 
-  const formatDateTime = (dateString: string) => {
-    return formatNotificationDate(dateString);
+  const formatDateTime = (dateValue: number | string) => {
+    return formatNotificationDate(dateValue);
   };
 
   const getNotificationTypeBadge = (type: string) => {
@@ -85,6 +85,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
       'БРОНЬ': { color: '#2E7D32', bgColor: '#E8F5E9' },
       'СИСТЕМА': { color: '#6A1B9A', bgColor: '#F3E5F5' },
       'ВАЖНО': { color: '#C62828', bgColor: '#FFEBEE' },
+      'ОТМЕНЕНО': { color: '#C62828', bgColor: '#FFEBEE' },
+      'ПОДТВЕРЖДЕНО': { color: '#2E7D32', bgColor: '#E8F5E9' },
+      'В ОЖИДАНИИ': { color: '#F57C00', bgColor: '#FFF3E0' },
+      'ОТКЛОНЕНО': { color: '#C62828', bgColor: '#FFEBEE' },
     };
 
     const config = typeMap[translatedType] || { color: '#424242', bgColor: '#F5F5F5' };

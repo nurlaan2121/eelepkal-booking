@@ -3,7 +3,7 @@ export interface ClientNotification {
   title: string;
   description: string;
   notificationType: string;
-  createdAt: string;
+  createdAt: number | string; // Can be timestamp (seconds) or ISO string
 }
 
 export interface NotificationResponse {
