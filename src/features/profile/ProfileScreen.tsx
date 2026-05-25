@@ -120,12 +120,15 @@ const ProfileScreen: React.FC = () => {
 
         try {
             const response = await profileService.uploadProfilePhoto(file);
+            console.log('📤 Upload response:', response);
+            console.log('📤 response.url:', response.url);
+            
             setFormData(prev => ({
                 ...prev,
                 imageUrl: response.url,
             }));
             setImageAction('uploaded'); // Mark as uploaded
-            console.log('📸 Photo uploaded successfully');
+            console.log('📸 Photo uploaded successfully, formData.imageUrl:', response.url);
         } catch (err: any) {
             console.error('Failed to upload photo:', err);
             setUploadError(err.response?.data?.message || 'Не удалось загрузить фото');
@@ -157,6 +160,9 @@ const ProfileScreen: React.FC = () => {
         setSaveSuccess(false);
 
         try {
+            console.log('🔍 Current formData.imageUrl:', formData.imageUrl);
+            console.log('🔍 Current imageAction:', imageAction);
+            
             // Build update data object
             const updateData: ProfileUpdateRequest = {};
             
