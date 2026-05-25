@@ -16,6 +16,7 @@ const ProfileScreen: React.FC = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [originalImageUrl, setOriginalImageUrl] = useState<string | null | undefined>(null);
     const { logout } = useAuthStore();
 
     // Form state
@@ -68,6 +69,9 @@ const ProfileScreen: React.FC = () => {
             ? `${profile.dateOfBirth[0]}-${String(profile.dateOfBirth[1]).padStart(2, '0')}-${String(profile.dateOfBirth[2]).padStart(2, '0')}`
             : undefined;
 
+        // Save original imageUrl to detect changes
+        setOriginalImageUrl(profile.imageUrl);
+
         setFormData({
             imageUrl: profile.imageUrl || undefined,
             name: profile.name,
@@ -85,6 +89,7 @@ const ProfileScreen: React.FC = () => {
         setIsEditModalOpen(false);
         setSaveSuccess(false);
         setSaveError(null);
+        setOriginalImageUrl(null);
     };
 
     const handleInputChange = (field: keyof ProfileUpdateRequest, value: string) => {
@@ -150,7 +155,7 @@ const ProfileScreen: React.FC = () => {
         setSaveSuccess(false);
 
         try {
-            // Filter out undefined values but keep empty strings for optional fields
+            // Build update data object
             const updateData: ProfileUpdateRequest = {};
             
             // Always include required fields
@@ -171,9 +176,18 @@ const ProfileScreen: React.FC = () => {
             if (formData.gender) {
                 updateData.gender = formData.gender;
             }
-            // Include imageUrl if it exists (even if it's an empty string to remove photo)
-            if (formData.imageUrl !== undefined) {
-                updateData.imageUrl = formData.imageUrl;
+            
+            // Smart imageUrl update - only include if it actually changed
+            const imageUrlChanged = formData.imageUrl !== originalImageUrl;
+            if (imageUrlChanged) {
+                updateData.imageUrl = formData.imageUrl || '';
+                console.log('✅ Image URL changed:', {
+                    original: originalImageUrl,
+                    new: formData.imageUrl,
+                    willSend: updateData.imageUrl
+                });
+            } else {
+                console.log('⏭️ Image URL not changed, skipping');
             }
 
             console.log('Sending profile update:', JSON.stringify(updateData, null, 2));
