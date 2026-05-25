@@ -27,6 +27,18 @@ export const profileService = {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        return response.data;
+        console.log('📤 Raw axios response:', response);
+        console.log('📤 response.data:', response.data);
+        
+        // Server returns the URL directly in response.data as a string
+        // Or it might be in response.data.url
+        const url = typeof response.data === 'string' ? response.data : response.data.url;
+        
+        return {
+            url: url,
+            fileName: response.data.fileName || '',
+            fileType: response.data.fileType || '',
+            size: response.data.size || 0
+        };
     },
 };
