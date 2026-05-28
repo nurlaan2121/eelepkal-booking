@@ -55,19 +55,6 @@ const formatPhoneNumber = (phone: string): string => {
     return phone;
 };
 
-// Helper to extract Instagram username from URL
-const extractInstagramUsername = (url: string): string => {
-    try {
-        const match = url.match(/instagram\.com\/([^/?#]+)/);
-        if (match && match[1]) {
-            return `@${match[1]}`;
-        }
-    } catch (e) {
-        // ignore
-    }
-    return url;
-};
-
 // Helper to format social media username or URL
 const formatSocialMedia = (value: string, platform: 'instagram' | 'telegram' | 'facebook'): { displayValue: string; url: string } => {
     const trimmed = value.trim();
