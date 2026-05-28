@@ -15,6 +15,8 @@ import VenuePayments from './components/VenuePayments';
 import VenueMenuSection from './components/VenueMenuSection';
 import VenueTablesSection from './components/VenueTablesSection';
 import AddReviewModal from './components/AddReviewModal';
+import ClaimVenueCTA from './components/ClaimVenueCTA';
+import ClaimVenueModal from './components/ClaimVenueModal';
 import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
 import Skeleton from '../../components/ui/Skeleton';
 import SEOManager from '../../shared/components/SEO/SEOManager';
@@ -35,6 +37,7 @@ const VenueDetailsPage: React.FC = () => {
     const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
     const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
     const [isAuthGuardOpen, setIsAuthGuardOpen] = React.useState(false);
+    const [isClaimVenueModalOpen, setIsClaimVenueModalOpen] = React.useState(false);
     const [guardAction, setGuardAction] = React.useState<'REVIEW' | 'BOOKING' | null>(null);
 
     const { isAuthenticated } = useAuthStore();
@@ -298,6 +301,8 @@ const VenueDetailsPage: React.FC = () => {
                         <VenueFilials filials={filialsQuery.data || []} />
 
                         <VenuePayments payments={paymentsQuery.data || []} />
+
+                        <ClaimVenueCTA onOpenModal={() => setIsClaimVenueModalOpen(true)} />
                     </>
                 )}
 
@@ -375,6 +380,11 @@ const VenueDetailsPage: React.FC = () => {
                     message={guardAction === 'BOOKING'
                         ? "Войдите, чтобы забронировать столик в этом заведении."
                         : "Войдите, чтобы оставить отзыв об этом заведении."}
+                />
+
+                <ClaimVenueModal
+                    isOpen={isClaimVenueModalOpen}
+                    onClose={() => setIsClaimVenueModalOpen(false)}
                 />
             </div>
 
