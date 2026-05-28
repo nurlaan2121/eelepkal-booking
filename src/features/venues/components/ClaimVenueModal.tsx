@@ -1,17 +1,29 @@
-import React, { useEffect, useRef } from 'react';
-import { X, Store, ExternalLink, Lightbulb, ArrowRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { X, Store, ExternalLink, Lightbulb, ArrowRight, Check, Clipboard } from 'lucide-react';
+import { useToastStore } from '../../../store/useToastStore';
 
 interface ClaimVenueModalProps {
     isOpen: boolean;
     onClose: () => void;
+    venueId: string;
 }
 
-const ClaimVenueModal: React.FC<ClaimVenueModalProps> = ({ isOpen, onClose }) => {
+const ClaimVenueModal: React.FC<ClaimVenueModalProps> = ({ isOpen, onClose, venueId }) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
+    const [isCopied, setIsCopied] = useState(false);
+    const [showManualCopy, setShowManualCopy] = useState(false);
+    const addToast = useToastStore((state) => state.addToast);
+
+    const venueUrl = `https://client.eelepkal.com/venue/${venueId}`;
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen) {
+            // Reset states when modal closes
+            setIsCopied(false);
+            setShowManualCopy(false);
+            return;
+        }
 
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -34,8 +46,41 @@ const ClaimVenueModal: React.FC<ClaimVenueModalProps> = ({ isOpen, onClose }) =>
         }
     };
 
-    const handleAdminLinkClick = () => {
-        window.open('https://admin.eelepkal.com/auth/login', '_blank', 'noopener,noreferrer');
+    const handleAdminLinkClick = async () => {
+        try {
+            // Auto-copy venue URL to clipboard
+            await navigator.clipboard.writeText(venueUrl);
+            
+            // Show success state
+            setIsCopied(true);
+            
+            // Show beautiful toast notification
+            addToast(
+                '✅ Ссылка вашего заведения скопирована. Вставьте её в разделе "Отправить запрос" в панели управления.'
+            );
+            
+            // Open admin panel after short delay
+            setTimeout(() => {
+                window.open('https://admin.eelepkal.com/super-admin/dashboard', '_blank', 'noopener,noreferrer');
+            }, 500);
+            
+        } catch (err) {
+            console.error('Failed to copy to clipboard:', err);
+            // Show fallback UI
+            setShowManualCopy(true);
+            addToast('Не удалось автоматически скопировать ссылку', 'error');
+        }
+    };
+
+    const handleManualCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(venueUrl);
+            setIsCopied(true);
+            setShowManualCopy(false);
+            addToast('✅ Ссылка скопирована');
+        } catch (err) {
+            addToast('Не удалось скопировать ссылку', 'error');
+        }
     };
 
     if (!isOpen) return null;
@@ -81,23 +126,57 @@ const ClaimVenueModal: React.FC<ClaimVenueModalProps> = ({ isOpen, onClose }) =>
                         <div style={styles.stepContent}>
                             <div style={styles.stepTitle}>Перейдите в панель управления</div>
                             <p style={styles.stepDescription}>
-                                Откройте административную панель Ээлеп кал
+                                Ссылка на заведение будет скопирована автоматически
                             </p>
                             <button 
                                 onClick={handleAdminLinkClick}
                                 style={styles.adminLinkButton}
+                                disabled={isCopied}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-1px)';
-                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.3)';
+                                    if (!isCopied) {
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.3)';
+                                    }
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.transform = 'translateY(0)';
                                     e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 152, 0, 0.2)';
                                 }}
                             >
-                                <ExternalLink size={16} />
-                                <span>Перейти в панель управления</span>
+                                {isCopied ? (
+                                    <>
+                                        <Check size={16} />
+                                        <span>Перейти в панель управления</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <ExternalLink size={16} />
+                                        <span>Перейти в панель управления</span>
+                                    </>
+                                )}
                             </button>
+
+                            {isCopied && (
+                                <div style={styles.successMessage}>
+                                    <Check size={16} color="#4CAF50" />
+                                    <span>Ссылка скопирована! Просто вставьте её в панели управления.</span>
+                                </div>
+                            )}
+
+                            {showManualCopy && (
+                                <div style={styles.fallbackBox}>
+                                    <p style={styles.fallbackText}>
+                                        Не удалось автоматически скопировать ссылку
+                                    </p>
+                                    <button 
+                                        onClick={handleManualCopy}
+                                        style={styles.manualCopyButton}
+                                    >
+                                        <Clipboard size={14} />
+                                        <span>Скопировать вручную</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -116,7 +195,7 @@ const ClaimVenueModal: React.FC<ClaimVenueModalProps> = ({ isOpen, onClose }) =>
                         <div style={styles.stepContent}>
                             <div style={styles.stepTitle}>Отправьте запрос</div>
                             <p style={styles.stepDescription}>
-                                После входа в панели управления в самом низу будет кнопка <strong>"Отправить запрос"</strong>. Вставьте ссылку вашей страницы заведения и отправьте заявку
+                                После входа в панели управления в самом низу будет кнопка <strong>"Отправить запрос"</strong>. Вставьте скопированную ссылку и отправьте заявку
                             </p>
                         </div>
                     </div>
@@ -303,6 +382,43 @@ const styles: { [key: string]: React.CSSProperties } = {
         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         marginTop: '8px',
         alignSelf: 'flex-start',
+    },
+    successMessage: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '10px 12px',
+        marginTop: '10px',
+        backgroundColor: '#E8F5E9',
+        borderRadius: '8px',
+        border: '1px solid #A5D6A7',
+    },
+    fallbackBox: {
+        marginTop: '12px',
+        padding: '12px',
+        backgroundColor: '#FFF3E0',
+        borderRadius: '10px',
+        border: '1px solid #FFCC80',
+    },
+    fallbackText: {
+        fontSize: '13px',
+        color: '#E65100',
+        margin: '0 0 8px 0',
+        fontWeight: '600',
+    },
+    manualCopyButton: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '8px 14px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #FF9800',
+        borderRadius: '8px',
+        color: '#FF9800',
+        fontSize: '12px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
     },
     infoBox: {
         background: 'linear-gradient(135deg, #FFF7ED 0%, #FFFBF5 100%)',
