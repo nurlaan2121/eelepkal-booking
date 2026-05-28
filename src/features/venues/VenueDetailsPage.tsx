@@ -283,7 +283,11 @@ const VenueDetailsPage: React.FC = () => {
 
                         <VenueDescription description={descriptionQuery.data || null} />
 
-                        <VenueAmenitiesSection amenities={amenitiesQuery.data || null} />
+                        <VenueAmenitiesSection 
+                            amenities={amenitiesQuery.data || null} 
+                            isLoading={amenitiesQuery.isLoading}
+                            isError={amenitiesQuery.isError}
+                        />
 
                         <VenueContacts 
                             contacts={contactsQuery.data || null} 
