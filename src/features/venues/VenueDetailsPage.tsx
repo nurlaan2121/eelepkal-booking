@@ -385,6 +385,7 @@ const VenueDetailsPage: React.FC = () => {
                 <ClaimVenueModal
                     isOpen={isClaimVenueModalOpen}
                     onClose={() => setIsClaimVenueModalOpen(false)}
+                    venueId={venueId}
                 />
             </div>
 
