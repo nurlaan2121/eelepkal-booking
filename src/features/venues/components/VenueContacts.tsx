@@ -104,7 +104,7 @@ const formatSocialMedia = (value: string, platform: 'instagram' | 'telegram' | '
 
 // Helper to create WhatsApp URL with pre-filled message
 const createWhatsAppUrl = (whatsappValue: string): string => {
-    const defaultMessage = "Здравствуйте! 👋 Пишу вам через Ээлеп кал по поводу бронирования столика.";
+    const defaultMessage = "Здравствуйте! Пишу вам через 'Ээлеп кал' хотел(а) уточнить информацию.";
     
     try {
         // Check if it's already a URL
