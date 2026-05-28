@@ -102,6 +102,47 @@ const formatSocialMedia = (value: string, platform: 'instagram' | 'telegram' | '
     return { displayValue: `@${cleanUsername}`, url };
 };
 
+// Helper to create WhatsApp URL with pre-filled message
+const createWhatsAppUrl = (whatsappValue: string): string => {
+    const defaultMessage = "Здравствуйте! 👋 Пишу вам через Ээлеп кал по поводу бронирования столика.";
+    
+    try {
+        // Check if it's already a URL
+        if (whatsappValue.startsWith('http')) {
+            // Extract phone number from URL
+            let phoneNumber = '';
+            
+            // Handle wa.me URLs
+            const waMeMatch = whatsappValue.match(/wa\.me\/([\d]+)/);
+            if (waMeMatch && waMeMatch[1]) {
+                phoneNumber = waMeMatch[1];
+            } else {
+                // Try to extract from other URL formats
+                try {
+                    const urlObj = new URL(whatsappValue);
+                    // Remove any existing query params and get clean base
+                    const baseUrl = `${urlObj.origin}${urlObj.pathname}`;
+                    return `${baseUrl}?text=${encodeURIComponent(defaultMessage)}`;
+                } catch (e) {
+                    // If URL parsing fails, use as-is with message
+                    return `${whatsappValue}?text=${encodeURIComponent(defaultMessage)}`;
+                }
+            }
+            
+            // Create new wa.me URL with pre-filled message
+            return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(defaultMessage)}`;
+        }
+        
+        // If it's just a phone number, create wa.me URL
+        const cleanPhone = whatsappValue.replace(/\D/g, '');
+        return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(defaultMessage)}`;
+    } catch (error) {
+        // Fallback: return original value if something goes wrong
+        console.warn('Failed to create WhatsApp URL with message:', error);
+        return whatsappValue.startsWith('http') ? whatsappValue : `https://wa.me/${whatsappValue.replace(/\D/g, '')}`;
+    }
+};
+
 // Helper to get field value with fallback for different API key formats
 const getField = (contacts: any, ...keys: string[]): string | undefined => {
     for (const key of keys) {
@@ -180,7 +221,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     // WhatsApp
     const whatsapp = getField(contacts, 'WhatsApp', 'whatsapp', 'Whatsapp');
     if (whatsapp) {
-        const whatsappUrl = whatsapp.startsWith('http') ? whatsapp : `https://wa.me/${whatsapp.replace(/\D/g, '')}`;
+        const whatsappUrl = createWhatsAppUrl(whatsapp);
         contactItems.push({
             type: 'whatsapp',
             icon: <MessageCircle size={22} />,
