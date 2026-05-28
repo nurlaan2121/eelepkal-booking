@@ -91,6 +91,9 @@ export interface VenueContacts {
     instagram?: string;
     gis2?: string;
     telegram?: string;
+    whatsapp?: string;
+    website?: string;
+    facebook?: string;
 }
 
 export interface PublicAdmin {
