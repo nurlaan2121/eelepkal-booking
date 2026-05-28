@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Users, Shield } from 'lucide-react';
+import { X, Users, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
 import { translateTableType } from '../../../shared/utils/dateFormatter';
@@ -12,6 +12,8 @@ interface TableDetailsModalProps {
 }
 
 const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTime, onClose, onBook }) => {
+    const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+    
     const { data: table, isLoading, error } = useQuery({
         queryKey: ['tableDetails', tableId, visitTime],
         queryFn: () => venueService.getTableDetails(tableId, visitTime),
@@ -34,8 +36,18 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
         </div>
     );
 
-    // Get the first available image URL if multiple exist
-    const imageUrl = Object.values(table.images)[0] || '';
+    // Get all image URLs from the images object
+    const imageUrls = Object.values(table.images).filter(Boolean);
+    const hasMultipleImages = imageUrls.length > 1;
+    const currentImageUrl = imageUrls[currentImageIndex] || '';
+    
+    // Debug: Log images to console
+    console.log('📸 Table Images:', {
+        total: imageUrls.length,
+        urls: imageUrls,
+        currentIndex: currentImageIndex,
+        hasMultiple: hasMultipleImages
+    });
 
     return (
         <div style={styles.overlay} onClick={onClose}>
@@ -45,7 +57,53 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
                 </button>
 
                 <div style={styles.imageContainer}>
-                    <img src={imageUrl} alt={table.title} style={styles.image} />
+                    <img src={currentImageUrl} alt={table.title} style={styles.image} />
+                    
+                    {/* Navigation arrows for multiple images */}
+                    {hasMultipleImages && (
+                        <>
+                            <button
+                                style={{ ...styles.imageNavBtn, left: '12px' }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1));
+                                }}
+                                aria-label="Предыдущее фото"
+                            >
+                                <ChevronLeft size={24} color="#FFF" />
+                            </button>
+                            <button
+                                style={{ ...styles.imageNavBtn, right: '12px' }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrentImageIndex((prev) => (prev === imageUrls.length - 1 ? 0 : prev + 1));
+                                }}
+                                aria-label="Следующее фото"
+                            >
+                                <ChevronRight size={24} color="#FFF" />
+                            </button>
+                            
+                            {/* Image counter */}
+                            <div style={styles.imageCounter}>
+                                {currentImageIndex + 1} / {imageUrls.length}
+                            </div>
+                            
+                            {/* Dots indicator */}
+                            <div style={styles.dotsContainer}>
+                                {imageUrls.map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            ...styles.dot,
+                                            backgroundColor: idx === currentImageIndex ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.4)',
+                                            transform: idx === currentImageIndex ? 'scale(1.3)' : 'scale(1)',
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    
                     <div style={{
                         ...styles.statusBadge,
                         backgroundColor: table.status === 'OPEN' ? '#4CAF50' : '#F44336'
@@ -273,7 +331,51 @@ const styles: { [key: string]: React.CSSProperties } = {
         border: 'none',
         backgroundColor: '#F5F5F5',
         cursor: 'pointer',
-    }
+    },
+    imageNavBtn: {
+        position: 'absolute',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        border: 'none',
+        borderRadius: '50%',
+        width: '36px',
+        height: '36px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        zIndex: 10,
+        backdropFilter: 'blur(4px)',
+        transition: 'all 0.2s ease',
+    },
+    imageCounter: {
+        position: 'absolute',
+        top: '12px',
+        left: '12px',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        color: '#FFF',
+        padding: '4px 10px',
+        borderRadius: '12px',
+        fontSize: '12px',
+        fontWeight: '600',
+        backdropFilter: 'blur(4px)',
+    },
+    dotsContainer: {
+        position: 'absolute',
+        bottom: '50px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: '6px',
+        zIndex: 10,
+    },
+    dot: {
+        width: '6px',
+        height: '6px',
+        borderRadius: '50%',
+        transition: 'all 0.3s ease',
+    },
 };
 
 export default TableDetailsModal;
