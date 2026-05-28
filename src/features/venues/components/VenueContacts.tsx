@@ -102,6 +102,16 @@ const formatSocialMedia = (value: string, platform: 'instagram' | 'telegram' | '
     return { displayValue: `@${cleanUsername}`, url };
 };
 
+// Helper to get field value with fallback for different API key formats
+const getField = (contacts: any, ...keys: string[]): string | undefined => {
+    for (const key of keys) {
+        if (contacts[key] && !isEmpty(contacts[key])) {
+            return contacts[key];
+        }
+    }
+    return undefined;
+};
+
 const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isError }) => {
     if (isLoading) {
         return (
@@ -152,15 +162,15 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }> = [];
 
     // Phone
-    if (!isEmpty(contacts.phoneNumber)) {
-        const phone = contacts.phoneNumber!;
+    const phoneNumber = getField(contacts, 'phone number', 'phoneNumber', 'Phone', 'phone');
+    if (phoneNumber) {
         contactItems.push({
             type: 'phone',
             icon: <Phone size={22} />,
             label: 'Телефон',
-            value: phone,
-            displayValue: formatPhoneNumber(phone),
-            link: `tel:${phone.replace(/\s/g, '')}`,
+            value: phoneNumber,
+            displayValue: formatPhoneNumber(phoneNumber),
+            link: `tel:${phoneNumber.replace(/\s/g, '')}`,
             linkLabel: 'Позвонить',
             color: '#10B981',
             bgColor: '#D1FAE5',
@@ -168,8 +178,8 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }
 
     // WhatsApp
-    if (!isEmpty(contacts.whatsapp)) {
-        const whatsapp = contacts.whatsapp!;
+    const whatsapp = getField(contacts, 'WhatsApp', 'whatsapp', 'Whatsapp');
+    if (whatsapp) {
         const whatsappUrl = whatsapp.startsWith('http') ? whatsapp : `https://wa.me/${whatsapp.replace(/\D/g, '')}`;
         contactItems.push({
             type: 'whatsapp',
@@ -184,8 +194,8 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }
 
     // Telegram
-    if (!isEmpty(contacts.telegram)) {
-        const telegram = contacts.telegram!;
+    const telegram = getField(contacts, 'telegram', 'Telegram');
+    if (telegram) {
         const { displayValue, url: telegramUrl } = formatSocialMedia(telegram, 'telegram');
         contactItems.push({
             type: 'telegram',
@@ -200,8 +210,8 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }
 
     // Instagram
-    if (!isEmpty(contacts.instagram)) {
-        const instagram = contacts.instagram!;
+    const instagram = getField(contacts, 'Instagram', 'instagram', 'Instagram');
+    if (instagram) {
         const { displayValue: displayUsername, url: instagramUrl } = formatSocialMedia(instagram, 'instagram');
         contactItems.push({
             type: 'instagram',
@@ -216,8 +226,8 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }
 
     // 2GIS
-    if (!isEmpty(contacts.gis2)) {
-        const gis2 = contacts.gis2!;
+    const gis2 = getField(contacts, '2GIS', 'gis2', '2gis');
+    if (gis2) {
         const gis2Url = formatUrl(gis2);
         contactItems.push({
             type: '2gis',
@@ -232,8 +242,8 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }
 
     // Website
-    if (!isEmpty(contacts.website)) {
-        const website = contacts.website!;
+    const website = getField(contacts, 'website', 'Website', 'site');
+    if (website) {
         const websiteUrl = formatUrl(website);
         if (websiteUrl) {
             contactItems.push({
@@ -250,8 +260,8 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
     }
 
     // Facebook
-    if (!isEmpty(contacts.facebook)) {
-        const facebook = contacts.facebook!;
+    const facebook = getField(contacts, 'facebook', 'Facebook');
+    if (facebook) {
         const { displayValue, url: facebookUrl } = formatSocialMedia(facebook, 'facebook');
         contactItems.push({
             type: 'facebook',

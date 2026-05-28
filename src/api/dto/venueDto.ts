@@ -87,13 +87,18 @@ export interface Amenity {
 
 export interface VenueContacts {
     email?: string;
+    'phone number'?: string;
     phoneNumber?: string;
+    'Instagram'?: string;
     instagram?: string;
+    '2GIS'?: string;
     gis2?: string;
     telegram?: string;
+    'WhatsApp'?: string;
     whatsapp?: string;
     website?: string;
     facebook?: string;
+    [key: string]: string | undefined;
 }
 
 export interface PublicAdmin {
