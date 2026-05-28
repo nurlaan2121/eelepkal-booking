@@ -213,7 +213,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             displayValue: formatPhoneNumber(phoneNumber),
             link: `tel:${phoneNumber.replace(/\s/g, '')}`,
             linkLabel: 'Позвонить',
-            color: '#10B981',
+            color: '#FFA600FF',
             bgColor: '#D1FAE5',
         });
     }
@@ -229,7 +229,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             value: 'Написать в WhatsApp',
             link: whatsappUrl,
             linkLabel: 'Написать',
-            color: '#25D366',
+            color: '#FFA600FF',
             bgColor: '#D1FAE5',
         });
     }
@@ -245,7 +245,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             value: displayValue,
             link: telegramUrl,
             linkLabel: 'Открыть',
-            color: '#0088CC',
+            color: '#FFA600FF',
             bgColor: '#DBEAFE',
         });
     }
@@ -261,7 +261,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             value: displayUsername,
             link: instagramUrl,
             linkLabel: 'Открыть',
-            color: '#E4405F',
+            color: '#FFA600FF',
             bgColor: '#FCE7F3',
         });
     }
@@ -277,7 +277,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             value: 'Посмотреть на карте',
             link: gis2Url || gis2,
             linkLabel: 'Открыть карту',
-            color: '#10B981',
+            color: '#FFA600FF',
             bgColor: '#D1FAE5',
         });
     }
@@ -294,7 +294,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
                 value: extractDomain(websiteUrl),
                 link: websiteUrl,
                 linkLabel: 'Открыть',
-                color: '#3B82F6',
+                color: '#FFA600FF',
                 bgColor: '#DBEAFE',
             });
         }
@@ -311,7 +311,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             value: displayValue,
             link: facebookUrl,
             linkLabel: 'Открыть',
-            color: '#1877F2',
+            color: '#FFA600FF',
             bgColor: '#DBEAFE',
         });
     }
@@ -326,7 +326,7 @@ const VenueContacts: React.FC<VenueContactsProps> = ({ contacts, isLoading, isEr
             value: email,
             link: `mailto:${email}`,
             linkLabel: 'Написать',
-            color: '#8B5CF6',
+            color: '#FFA600FF',
             bgColor: '#EDE9FE',
         });
     }
