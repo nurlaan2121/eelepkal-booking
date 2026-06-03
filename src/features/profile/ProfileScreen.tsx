@@ -174,6 +174,11 @@ const ProfileScreen: React.FC = () => {
                 updateData.email = formData.email;
             }
 
+            // Always include phoneNumber as requested, but from the read-only form state
+            if (formData.phoneNumber) {
+                updateData.phoneNumber = formData.phoneNumber;
+            }
+
             // Include optional fields if they have values
             if (formData.dateOfBirth && formData.dateOfBirth.trim()) {
                 updateData.dateOfBirth = formData.dateOfBirth;
@@ -424,6 +429,18 @@ const ProfileScreen: React.FC = () => {
                                     onChange={(e) => handleInputChange('email', e.target.value)}
                                     style={styles.input}
                                     placeholder="example@mail.com"
+                                />
+                            </div>
+
+                            {/* Phone (Read-only) */}
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Телефон (нельзя изменить)</label>
+                                <input
+                                    type="tel"
+                                    value={formData.phoneNumber || ''}
+                                    style={{ ...styles.input, backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
+                                    disabled
+                                    readOnly
                                 />
                             </div>
 
