@@ -14,32 +14,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, '');
-        if (!value.startsWith('996')) {
-            value = '996' + value;
+        let value = e.target.value;
+        // Allow only digits and + at the start
+        if (value.startsWith('+')) {
+            value = '+' + value.slice(1).replace(/\D/g, '');
+        } else {
+            value = value.replace(/\D/g, '');
         }
-        value = value.slice(0, 12);
         setPhoneNumber(value);
-    };
-
-    const displayPhone = (val: string) => {
-        if (!val) return '+996 (___) __-__-__';
-        const numbers = val.slice(3);
-        let res = '+996 (';
-        res += numbers.slice(0, 3).padEnd(3, '_');
-        res += ') ';
-        res += numbers.slice(3, 6).padEnd(3, '_');
-        res += '-';
-        res += numbers.slice(6, 8).padEnd(2, '_');
-        res += '-';
-        res += numbers.slice(8, 10).padEnd(2, '_');
-        return res;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (phoneNumber.length < 12) return;
-        await login({ phoneNumber, password });
+        if (phoneNumber.length < 9) return;
+        // Remove + for API
+        const cleanPhone = phoneNumber.replace('+', '');
+        await login({ phoneNumber: cleanPhone, password });
     };
 
     return (
@@ -50,12 +40,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
                     <div className="input-wrapper">
                         <Phone className="input-icon" size={20} />
                         <input
-                            type="text"
-                            placeholder="+996 (___) __-__-__"
-                            value={displayPhone(phoneNumber)}
+                            type="tel"
+                            placeholder="+996XXXXXXXXX"
+                            value={phoneNumber}
                             onChange={handlePhoneChange}
                             disabled={isLoading}
                             className="auth-input"
+                            required
                         />
                     </div>
                 </div>
@@ -82,9 +73,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
                     </div>
                 </div>
 
-                <button type="submit" className="auth-button primary" disabled={isLoading || phoneNumber.length < 12}>
-                    {isLoading ? <Loader2 className="animate-spin" /> : 'Войти'}
-                </button>
+                <div className="auth-actions">
+                    <button type="submit" className="auth-button primary" disabled={isLoading || phoneNumber.length < 9}>
+                        {isLoading ? <Loader2 className="animate-spin" /> : 'Войти'}
+                    </button>
+
+                    <a
+                        href="https://client.eelepkal.com/venues"
+                        className="auth-button secondary guest-btn"
+                    >
+                        Войти как гость
+                    </a>
+                </div>
 
                 <div className="auth-footer">
                     <span>Нет аккаунта?</span>
