@@ -21,7 +21,7 @@ const ProfileScreen: React.FC = () => {
 
     // Form state
     const [formData, setFormData] = useState<ProfileUpdateRequest>({});
-    
+
     // File input ref
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,7 +63,7 @@ const ProfileScreen: React.FC = () => {
 
     const openEditModal = () => {
         if (!profile) return;
-        
+
         // Convert dateOfBirth array to YYYY-MM-DD string
         const dateOfBirthString = profile.dateOfBirth
             ? `${profile.dateOfBirth[0]}-${String(profile.dateOfBirth[1]).padStart(2, '0')}-${String(profile.dateOfBirth[2]).padStart(2, '0')}`
@@ -122,7 +122,7 @@ const ProfileScreen: React.FC = () => {
             const response = await profileService.uploadProfilePhoto(file);
             console.log('📤 Upload response:', response);
             console.log('📤 response.url:', response.url);
-            
+
             setFormData(prev => ({
                 ...prev,
                 imageUrl: response.url,
@@ -162,10 +162,10 @@ const ProfileScreen: React.FC = () => {
         try {
             console.log('🔍 Current formData.imageUrl:', formData.imageUrl);
             console.log('🔍 Current imageAction:', imageAction);
-            
+
             // Build update data object
             const updateData: ProfileUpdateRequest = {};
-            
+
             // Always include required fields
             if (formData.name && formData.name.trim()) {
                 updateData.name = formData.name;
@@ -173,18 +173,15 @@ const ProfileScreen: React.FC = () => {
             if (formData.email && formData.email.trim()) {
                 updateData.email = formData.email;
             }
-            
+
             // Include optional fields if they have values
-            if (formData.phoneNumber && formData.phoneNumber.trim()) {
-                updateData.phoneNumber = formData.phoneNumber;
-            }
             if (formData.dateOfBirth && formData.dateOfBirth.trim()) {
                 updateData.dateOfBirth = formData.dateOfBirth;
             }
             if (formData.gender) {
                 updateData.gender = formData.gender;
             }
-            
+
             // Smart imageUrl update - use action tracking instead of string comparison
             if (imageAction === 'uploaded') {
                 // User uploaded a new photo
@@ -204,9 +201,9 @@ const ProfileScreen: React.FC = () => {
             const updatedProfile = await profileService.updateProfile(updateData);
             setProfile(updatedProfile);
             setSaveSuccess(true);
-            
+
             console.log('✅ Profile updated successfully, refreshing data...');
-            
+
             // Fetch fresh profile data from API
             try {
                 const freshProfile = await profileService.getProfile();
@@ -216,7 +213,7 @@ const ProfileScreen: React.FC = () => {
                 console.error('Failed to refresh profile data:', refreshErr);
                 // Use the response from update as fallback
             }
-            
+
             // Close modal after 1.5 seconds
             setTimeout(() => {
                 closeEditModal();
@@ -427,18 +424,6 @@ const ProfileScreen: React.FC = () => {
                                     onChange={(e) => handleInputChange('email', e.target.value)}
                                     style={styles.input}
                                     placeholder="example@mail.com"
-                                />
-                            </div>
-
-                            {/* Phone */}
-                            <div style={styles.formGroup}>
-                                <label style={styles.label}>Телефон</label>
-                                <input
-                                    type="tel"
-                                    value={formData.phoneNumber || ''}
-                                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                                    style={styles.input}
-                                    placeholder="+996 XXX XXX XXX"
                                 />
                             </div>
 

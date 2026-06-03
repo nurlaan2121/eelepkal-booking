@@ -46,7 +46,7 @@ export const authService = {
      * Forgot Password Step 1: Request OTP
      */
     forgotPassword: async (data: ForgotPasswordRequest): Promise<SimpleResponse> => {
-        const response = await api.post<SimpleResponse>('/api/auth/forgot-password', data, {
+        const response = await api.post<SimpleResponse>('/auth/forgot-password', data, {
             timeout: 30000
         });
         return response.data;
@@ -56,7 +56,7 @@ export const authService = {
      * Forgot Password Step 2: Reset Password
      */
     resetPassword: async (data: ResetPasswordRequest): Promise<SimpleResponse> => {
-        const response = await api.post<SimpleResponse>('/api/auth/reset-password', data, {
+        const response = await api.post<SimpleResponse>('/auth/reset-password', data, {
             timeout: 30000
         });
         return response.data;
