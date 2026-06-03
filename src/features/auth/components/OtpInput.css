@@ -1,0 +1,76 @@
+.otp-container {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 24px 0;
+}
+
+.otp-field {
+    width: 56px;
+    height: 64px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.otp-field:focus {
+    border-color: #3b82f6;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.otp-field.has-value {
+    border-color: #3b82f6;
+}
+
+.otp-field.error {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.shake {
+    animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+@media (max-width: 480px) {
+    .otp-field {
+        width: 48px;
+        height: 56px;
+        font-size: 20px;
+    }
+
+    .otp-container {
+        gap: 8px;
+    }
+}
