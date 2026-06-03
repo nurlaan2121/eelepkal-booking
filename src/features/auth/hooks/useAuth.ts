@@ -67,6 +67,16 @@ export const useAuth = () => {
                 return 'WRONG_OTP';
             }
 
+            if (data.message?.includes('Некорректный номер телефона')) {
+                addToast(data.message, 'error');
+                return 'INVALID_PHONE';
+            }
+
+            if (data.message?.includes('отклонено оператором')) {
+                addToast('SMS отклонено оператором. Проверьте номер.', 'error');
+                return 'REJECTED_BY_OPERATOR';
+            }
+
             addToast(data.message || 'Произошла ошибка. Попробуйте еще раз.', 'error');
             return data.message;
         }
@@ -110,6 +120,11 @@ export const useAuth = () => {
             // Status 200 (OK) or 202 (ACCEPTED) are successful
             if (response.httpStatus === 'OK' || response.httpStatus === 'ACCEPTED') {
                 return 'SUCCESS';
+            }
+
+            // If it's a "BAD_REQUEST" or other error in a 200 response
+            if (response.message) {
+                addToast(response.message, 'error');
             }
             return response.message;
         } catch (error) {

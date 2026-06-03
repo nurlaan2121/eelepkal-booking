@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Phone, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import './auth.css';
+import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 interface LoginFormProps {
     onSwitchToRegister: () => void;
@@ -13,23 +14,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value;
-        // Allow only digits and + at the start
-        if (value.startsWith('+')) {
-            value = '+' + value.slice(1).replace(/\D/g, '');
-        } else {
-            value = value.replace(/\D/g, '');
-        }
-        setPhoneNumber(value);
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (phoneNumber.length < 9) return;
-        // Remove + for API
-        const cleanPhone = phoneNumber.replace('+', '');
-        await login({ phoneNumber: cleanPhone, password });
+        await login({ phoneNumber, password });
     };
 
     return (
@@ -37,18 +25,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
             <form onSubmit={handleSubmit} className="auth-form">
                 <div className="input-group">
                     <label>Номер телефона</label>
-                    <div className="input-wrapper">
-                        <Phone className="input-icon" size={20} />
-                        <input
-                            type="tel"
-                            placeholder="+996XXXXXXXXX"
-                            value={phoneNumber}
-                            onChange={handlePhoneChange}
-                            disabled={isLoading}
-                            className="auth-input"
-                            required
-                        />
-                    </div>
+                    <InternationalPhoneInput
+                        value={phoneNumber}
+                        onChange={setPhoneNumber}
+                        disabled={isLoading}
+                    />
                 </div>
 
                 <div className="input-group">

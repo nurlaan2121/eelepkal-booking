@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { User, Phone, Lock, Eye, EyeOff, Loader2, X } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, X, User } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import './auth.css';
+import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 interface RegisterFormProps {
     onOtpSent: (phone: string, name: string, pass: string) => void;
@@ -16,25 +17,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
     const [showPassword, setShowPassword] = useState(false);
     const [showExistsModal, setShowExistsModal] = useState(false);
 
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value;
-        if (value.startsWith('+')) {
-            value = '+' + value.slice(1).replace(/\D/g, '');
-        } else {
-            value = value.replace(/\D/g, '');
-        }
-        setPhoneNumber(value);
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (phoneNumber.length < 9 || !fullName || !password) return;
 
-        // Remove + for API
-        const cleanPhone = phoneNumber.replace('+', '');
-        const result = await sendOtp({ phoneNumber: cleanPhone, fullName, password });
+        const result = await sendOtp({ phoneNumber, fullName, password });
         if (result === 'SUCCESS') {
-            onOtpSent(cleanPhone, fullName, password);
+            onOtpSent(phoneNumber, fullName, password);
         } else if (result === 'ACCOUNT_EXISTS') {
             setShowExistsModal(true);
         }
@@ -82,18 +71,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
 
                 <div className="input-group">
                     <label>Номер телефона</label>
-                    <div className="input-wrapper">
-                        <Phone className="input-icon" size={20} />
-                        <input
-                            type="tel"
-                            placeholder="+996XXXXXXXXX"
-                            value={phoneNumber}
-                            onChange={handlePhoneChange}
-                            disabled={isLoading}
-                            className="auth-input"
-                            required
-                        />
-                    </div>
+                    <InternationalPhoneInput
+                        value={phoneNumber}
+                        onChange={setPhoneNumber}
+                        disabled={isLoading}
+                    />
                 </div>
 
                 <div className="input-group">
