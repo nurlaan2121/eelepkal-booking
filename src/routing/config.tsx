@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import React from 'react';
-import LoginForm from '../features/auth/LoginForm';
-import RegistrationForm from '../features/auth/RegistrationForm';
+import AuthPage from '../features/auth/pages/AuthPage';
+import OtpVerification from '../features/auth/pages/OtpVerification';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from '../shared/layouts/MainLayout';
 import HomeScreen from '../features/home/HomeScreen';
@@ -35,11 +35,15 @@ const RootErrorBoundary = () => (
 export const router = createBrowserRouter([
     {
         path: '/login',
-        element: <LoginForm />,
+        element: <AuthPage />,
     },
     {
         path: '/register',
-        element: <RegistrationForm />,
+        element: <AuthPage />,
+    },
+    {
+        path: '/otp-verify',
+        element: <OtpVerification />,
     },
     {
         element: <RootErrorBoundary />,
