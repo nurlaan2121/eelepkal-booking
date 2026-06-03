@@ -14,13 +14,24 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
     const [fullName, setFullName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showExistsModal, setShowExistsModal] = useState(false);
+    const [showPhoneConfirmModal, setShowPhoneConfirmModal] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (phoneNumber.length < 9 || !fullName || !password) return;
 
+        if (password !== confirmPassword) {
+            return;
+        }
+
+        setShowPhoneConfirmModal(true);
+    };
+
+    const handleConfirmPhone = async () => {
+        setShowPhoneConfirmModal(false);
         const result = await sendOtp({ phoneNumber, fullName, password });
         if (result === 'SUCCESS') {
             onOtpSent(phoneNumber, fullName, password);
@@ -29,8 +40,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
         }
     };
 
+    const isFormValid = phoneNumber.length >= 9 && fullName && password && password === confirmPassword;
+
     return (
         <div className="auth-form-container">
+            {/* Account Exists Modal */}
             {showExistsModal && (
                 <div className="modal-overlay">
                     <div className="auth-modal">
@@ -52,6 +66,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
                     </div>
                 </div>
             )}
+
+            {/* Phone Confirmation Modal (WhatsApp style) */}
+            {showPhoneConfirmModal && (
+                <div className="modal-overlay">
+                    <div className="auth-modal">
+                        <div className="modal-header">
+                            <h2>Проверьте номер</h2>
+                            <p>Мы отправим проверочный код на этот номер:</p>
+                            <h3 className="phone-confirm-display">+{phoneNumber}</h3>
+                            <p>Всё верно?</p>
+                        </div>
+                        <div className="modal-actions">
+                            <button className="auth-button primary" onClick={handleConfirmPhone}>
+                                Да, всё верно
+                            </button>
+                            <button className="auth-button secondary" onClick={() => setShowPhoneConfirmModal(false)}>
+                                Изменить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <form onSubmit={handleSubmit} className="auth-form">
                 <div className="input-group">
                     <label>Имя</label>
@@ -91,6 +128,22 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
                             className="auth-input"
                             required
                         />
+                    </div>
+                </div>
+
+                <div className="input-group">
+                    <label>Повторите пароль</label>
+                    <div className="input-wrapper">
+                        <Lock className="input-icon" size={20} />
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Повторите пароль"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            disabled={isLoading}
+                            className={`auth-input ${confirmPassword && password !== confirmPassword ? 'error-border' : ''}`}
+                            required
+                        />
                         <button
                             type="button"
                             className="password-toggle"
@@ -99,13 +152,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
                             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                     </div>
+                    {confirmPassword && password !== confirmPassword && (
+                        <span className="input-error-text">Пароли не совпадают</span>
+                    )}
                 </div>
 
                 <div className="auth-actions">
                     <button
                         type="submit"
                         className="auth-button primary"
-                        disabled={isLoading || phoneNumber.length < 9 || !fullName || !password}
+                        disabled={isLoading || !isFormValid}
                     >
                         {isLoading ? <Loader2 className="animate-spin" /> : 'Получить код'}
                     </button>
