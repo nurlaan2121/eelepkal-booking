@@ -11,9 +11,9 @@
 }
 
 .phone-input-container:focus-within {
-    border-color: #3b82f6;
+    border-color: #FF9800;
     background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.1);
 }
 
 .country-selector {
@@ -124,7 +124,7 @@
 }
 
 .country-item.selected {
-    background-color: #eff6ff;
+    background-color: #fff7ed;
 }
 
 .country-item .flag {

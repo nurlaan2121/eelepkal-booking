@@ -34,7 +34,8 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 16px rgba(255, 152, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
+    border: 1px solid #fff7ed;
 }
 
 .auth-logo {
@@ -79,8 +80,8 @@
 
 .tab-btn.active {
     background-color: #ffffff;
-    color: #1e293b;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    color: #FF9800;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.1);
 }
 
 .auth-page-footer {
