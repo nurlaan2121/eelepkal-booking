@@ -1,7 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import React from 'react';
-import AuthPage from '../features/auth/pages/AuthPage';
-import OtpVerification from '../features/auth/pages/OtpVerification';
+import React, { lazy } from 'react';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from '../shared/layouts/MainLayout';
 import HomeScreen from '../features/home/HomeScreen';
@@ -12,6 +10,10 @@ import BookingDetailsPage from '../features/booking/BookingDetailsPage';
 import ProfileScreen from '../features/profile/ProfileScreen';
 import FavoritesScreen from '../features/favorites/FavoritesScreen';
 import ErrorBoundary from '../components/ui/ErrorBoundary';
+
+const AuthPage = lazy(() => import('../features/auth/pages/AuthPage'));
+const OtpVerification = lazy(() => import('../features/auth/pages/OtpVerification'));
+const ForgotPasswordPage = lazy(() => import('../features/auth/pages/ForgotPasswordPage'));
 
 // SEO Landing Pages — lazy loaded for performance
 const RestaurantsBishkekPage = React.lazy(() => import('../features/seo/RestaurantsBishkekPage'));
@@ -35,15 +37,19 @@ const RootErrorBoundary = () => (
 export const router = createBrowserRouter([
     {
         path: '/login',
-        element: <AuthPage />,
+        element: <SeoPageSuspense><AuthPage /></SeoPageSuspense>,
     },
     {
         path: '/register',
-        element: <AuthPage />,
+        element: <SeoPageSuspense><AuthPage /></SeoPageSuspense>,
     },
     {
         path: '/otp-verify',
-        element: <OtpVerification />,
+        element: <SeoPageSuspense><OtpVerification /></SeoPageSuspense>,
+    },
+    {
+        path: '/forgot-password',
+        element: <SeoPageSuspense><ForgotPasswordPage /></SeoPageSuspense>,
     },
     {
         element: <RootErrorBoundary />,

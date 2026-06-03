@@ -31,7 +31,23 @@ export interface SignInResponse {
     email: string;
 }
 
+export interface SimpleResponse {
+    status: string;
+    message: string;
+}
+
+export interface ForgotPasswordRequest {
+    phoneNumber: string;
+}
+
+export interface ResetPasswordRequest {
+    phoneNumber: string;
+    otpCode: string;
+    newPassword: string;
+}
+
 export interface ApiErrorResponse {
-    httpStatus: string;
+    httpStatus?: string;
+    status?: string;
     message: string;
 }

@@ -248,6 +248,73 @@
     margin-left: 4px;
 }
 
+.cooldown-text {
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.back-button {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.block {
+    display: block;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.forgot-password-link {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -12px;
+    margin-bottom: 8px;
+}
+
+.forgot-password-link .link-button {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.forgot-password-link .link-button:hover {
+    color: #3b82f6;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

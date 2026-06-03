@@ -5,7 +5,10 @@ import type {
     VerifyOtpRequest,
     VerifyOtpResponse,
     SignInRequest,
-    SignInResponse
+    SignInResponse,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    SimpleResponse
 } from '../types/auth.types';
 
 export const authService = {
@@ -35,6 +38,26 @@ export const authService = {
     signIn: async (data: SignInRequest): Promise<SignInResponse> => {
         const response = await api.post<SignInResponse>('/auth/sign-in', data, {
             timeout: 20000 // 20s for sign in
+        });
+        return response.data;
+    },
+
+    /**
+     * Forgot Password Step 1: Request OTP
+     */
+    forgotPassword: async (data: ForgotPasswordRequest): Promise<SimpleResponse> => {
+        const response = await api.post<SimpleResponse>('/api/auth/forgot-password', data, {
+            timeout: 30000
+        });
+        return response.data;
+    },
+
+    /**
+     * Forgot Password Step 2: Reset Password
+     */
+    resetPassword: async (data: ResetPasswordRequest): Promise<SimpleResponse> => {
+        const response = await api.post<SimpleResponse>('/api/auth/reset-password', data, {
+            timeout: 30000
         });
         return response.data;
     }

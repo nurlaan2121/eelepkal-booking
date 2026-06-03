@@ -7,6 +7,7 @@ import type {
     SendOtpSmsRequest,
     SignInRequest,
     VerifyOtpRequest,
+    ResetPasswordRequest,
     ApiErrorResponse
 } from '../types/auth.types';
 import axios from 'axios';
@@ -155,6 +156,43 @@ export const useAuth = () => {
         }
     };
 
+    const forgotPassword = async (phoneNumber: string) => {
+        setIsLoading(true);
+        try {
+            await authService.forgotPassword({ phoneNumber });
+            addToast('Код подтверждения отправлен на ваш номер', 'success');
+            return { success: true };
+        } catch (error: any) {
+            const data = error.response?.data as ApiErrorResponse;
+            const message = data?.message || 'Ошибка запроса кода. Попробуйте позже.';
+
+            // Check for cooldown in message (e.g., "через 300 секунд")
+            const secondsMatch = message.match(/(\d+)\s+секунд/);
+            const cooldownSeconds = secondsMatch ? parseInt(secondsMatch[1]) : null;
+
+            addToast(message, 'error');
+            return { success: false, message, cooldownSeconds };
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const resetPassword = async (data: ResetPasswordRequest) => {
+        setIsLoading(true);
+        try {
+            await authService.resetPassword(data);
+            addToast('Пароль успешно изменен!', 'success');
+            return { success: true };
+        } catch (error: any) {
+            const responseData = error.response?.data as ApiErrorResponse;
+            const message = responseData?.message || 'Ошибка сброса пароля. Проверьте данные.';
+            addToast(message, 'error');
+            return { success: false, message };
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -165,6 +203,8 @@ export const useAuth = () => {
         sendOtp,
         verifyOtp,
         logout: handleLogout,
+        forgotPassword,
+        resetPassword,
         isLoading
     };
 };
