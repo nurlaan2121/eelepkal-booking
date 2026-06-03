@@ -72,7 +72,15 @@
     padding: 0;
 }
 
+.auth-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
 .auth-button {
+    width: 100%;
     height: 56px;
     border-radius: 16px;
     font-size: 16px;
@@ -84,7 +92,7 @@
     justify-content: center;
     gap: 12px;
     border: none;
-    margin-top: 8px;
+    text-decoration: none;
 }
 
 .auth-button.primary {
@@ -110,6 +118,12 @@
 
 .auth-button.secondary:hover {
     background: #f1f5f9;
+    border-color: #e2e8f0;
+}
+
+.guest-btn {
+    font-size: 15px;
+    color: #64748b !important;
 }
 
 /* Modal Styles */

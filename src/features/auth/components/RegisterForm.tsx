@@ -17,35 +17,24 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
     const [showExistsModal, setShowExistsModal] = useState(false);
 
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, '');
-        if (!value.startsWith('996')) {
-            value = '996' + value;
+        let value = e.target.value;
+        if (value.startsWith('+')) {
+            value = '+' + value.slice(1).replace(/\D/g, '');
+        } else {
+            value = value.replace(/\D/g, '');
         }
-        value = value.slice(0, 12);
         setPhoneNumber(value);
-    };
-
-    const displayPhone = (val: string) => {
-        if (!val) return '+996 (___) __-__-__';
-        const numbers = val.slice(3);
-        let res = '+996 (';
-        res += numbers.slice(0, 3).padEnd(3, '_');
-        res += ') ';
-        res += numbers.slice(3, 6).padEnd(3, '_');
-        res += '-';
-        res += numbers.slice(6, 8).padEnd(2, '_');
-        res += '-';
-        res += numbers.slice(8, 10).padEnd(2, '_');
-        return res;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (phoneNumber.length < 12 || !fullName || !password) return;
+        if (phoneNumber.length < 9 || !fullName || !password) return;
 
-        const result = await sendOtp({ phoneNumber, fullName, password });
+        // Remove + for API
+        const cleanPhone = phoneNumber.replace('+', '');
+        const result = await sendOtp({ phoneNumber: cleanPhone, fullName, password });
         if (result === 'SUCCESS') {
-            onOtpSent(phoneNumber, fullName, password);
+            onOtpSent(cleanPhone, fullName, password);
         } else if (result === 'ACCOUNT_EXISTS') {
             setShowExistsModal(true);
         }
@@ -96,9 +85,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
                     <div className="input-wrapper">
                         <Phone className="input-icon" size={20} />
                         <input
-                            type="text"
-                            placeholder="+996 (___) __-__-__"
-                            value={displayPhone(phoneNumber)}
+                            type="tel"
+                            placeholder="+996XXXXXXXXX"
+                            value={phoneNumber}
                             onChange={handlePhoneChange}
                             disabled={isLoading}
                             className="auth-input"
@@ -130,13 +119,22 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onOtpSent, onSwitchT
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    className="auth-button primary"
-                    disabled={isLoading || phoneNumber.length < 12 || !fullName || !password}
-                >
-                    {isLoading ? <Loader2 className="animate-spin" /> : 'Получить код'}
-                </button>
+                <div className="auth-actions">
+                    <button
+                        type="submit"
+                        className="auth-button primary"
+                        disabled={isLoading || phoneNumber.length < 9 || !fullName || !password}
+                    >
+                        {isLoading ? <Loader2 className="animate-spin" /> : 'Получить код'}
+                    </button>
+
+                    <a
+                        href="https://client.eelepkal.com/venues"
+                        className="auth-button secondary guest-btn"
+                    >
+                        Войти как гость
+                    </a>
+                </div>
 
                 <div className="auth-footer">
                     <span>Уже есть аккаунт?</span>
