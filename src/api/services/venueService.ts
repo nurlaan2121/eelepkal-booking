@@ -111,8 +111,10 @@ export const venueService = {
 
     // Guest (unauthenticated): Get single table details
     getGuestTableDetails: async (tableId: number | string, fullVisitTime: string): Promise<TableDetails> => {
+        // Backend expects LocalDate (YYYY-MM-DD), not a full timestamp
+        const dateOnly = fullVisitTime.split('T')[0];
         const response = await api.get<TableDetails>(`/guest-table/get/${tableId}`, {
-            params: { fullVisitTime }
+            params: { fullVisitTime: dateOnly }
         });
         return response.data;
     },
