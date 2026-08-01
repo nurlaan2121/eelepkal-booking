@@ -15,13 +15,21 @@ const LIMIT = 10;
 const VenueTablesListSection: React.FC<VenueTablesListSectionProps> = ({ venueId }) => {
     const [floor, setFloor] = React.useState(1);
 
-    // Default to tomorrow 12:00
+    // Default to current local date
     const [selectedDate, setSelectedDate] = React.useState(() => {
         const date = new Date();
-        date.setDate(date.getDate() + 1);
-        return date.toISOString().split('T')[0];
+        const offset = date.getTimezoneOffset() * 60000;
+        const localISOTime = new Date(date.getTime() - offset).toISOString();
+        return localISOTime.split('T')[0];
     });
-    const [selectedTime, setSelectedTime] = React.useState("12:00");
+
+    // Default to current local time
+    const [selectedTime, setSelectedTime] = React.useState(() => {
+        const date = new Date();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    });
 
     const fullVisitTime = React.useMemo(() => {
         return formatToBackendDateTime(selectedDate, selectedTime);

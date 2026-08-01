@@ -275,10 +275,12 @@ export const venueService = {
             limit?: number;
         }
     ): Promise<TablesSchemaResponse> => {
+        // Extract only the date part (YYYY-MM-DD) as the server expects LocalDate for this guest endpoint
+        const dateOnly = params.fullVisitTime.split('T')[0];
         const response = await api.get<TablesSchemaResponse>(`/guest-table/get-all-tables-as-list/${venueId}`, {
             params: {
                 floor: params.floor,
-                fullVisitTime: params.fullVisitTime,
+                fullVisitTime: dateOnly,
                 offset: params.offset ?? 0,
                 limit: params.limit ?? 10
             }
