@@ -266,6 +266,26 @@ export const venueService = {
         }
     },
 
+    getGuestTables: async (
+        venueId: string | number,
+        params: {
+            floor: number;
+            fullVisitTime: string;
+            offset?: number;
+            limit?: number;
+        }
+    ): Promise<TablesSchemaResponse> => {
+        const response = await api.get<TablesSchemaResponse>(`/guest-table/get-all-tables-as-list/${venueId}`, {
+            params: {
+                floor: params.floor,
+                fullVisitTime: params.fullVisitTime,
+                offset: params.offset ?? 0,
+                limit: params.limit ?? 10
+            }
+        });
+        return response.data;
+    },
+
     // 14. Booking Conditions
     getBookingConditions: async (venueId: string | number): Promise<BookingConditions> => {
         const response = await api.get<BookingConditions>(`/guest-conditions/get/${venueId}`);

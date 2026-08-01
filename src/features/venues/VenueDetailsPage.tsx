@@ -14,6 +14,7 @@ import VenueFilials from './components/VenueFilials';
 import VenuePayments from './components/VenuePayments';
 import VenueMenuSection from './components/VenueMenuSection';
 import VenueTablesSection from './components/VenueTablesSection';
+import VenueTablesListSection from './components/VenueTablesListSection';
 import AddReviewModal from './components/AddReviewModal';
 import ClaimVenueCTA from './components/ClaimVenueCTA';
 import ClaimVenueModal from './components/ClaimVenueModal';
@@ -34,7 +35,7 @@ const VenueDetailsPage: React.FC = () => {
 
     const venueId = id || '';
 
-    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'BOOKING' | 'REVIEWS'>('ABOUT');
+    const [activeTab, setActiveTab] = React.useState<'ABOUT' | 'MENU' | 'TABLES' | 'BOOKING' | 'REVIEWS'>('ABOUT');
     const [isAddReviewModalOpen, setIsAddReviewModalOpen] = React.useState(false);
     const [isAuthGuardOpen, setIsAuthGuardOpen] = React.useState(false);
     const [isClaimVenueModalOpen, setIsClaimVenueModalOpen] = React.useState(false);
@@ -255,6 +256,12 @@ const VenueDetailsPage: React.FC = () => {
                         Меню
                     </button>
                     <button
+                        onClick={() => setActiveTab('TABLES')}
+                        style={{ ...styles.tab, borderBottom: activeTab === 'TABLES' ? '3px solid #FF9800' : '3px solid transparent', color: activeTab === 'TABLES' ? '#FF9800' : '#757575' }}
+                    >
+                        Столики
+                    </button>
+                    <button
                         onClick={() => setActiveTab('BOOKING')}
                         style={{ ...styles.tab, borderBottom: activeTab === 'BOOKING' ? '3px solid #FF9800' : '3px solid transparent', color: activeTab === 'BOOKING' ? '#FF9800' : '#757575' }}
                     >
@@ -286,14 +293,14 @@ const VenueDetailsPage: React.FC = () => {
 
                         <VenueDescription description={descriptionQuery.data || null} />
 
-                        <VenueAmenitiesSection 
-                            amenities={amenitiesQuery.data || null} 
+                        <VenueAmenitiesSection
+                            amenities={amenitiesQuery.data || null}
                             isLoading={amenitiesQuery.isLoading}
                             isError={amenitiesQuery.isError}
                         />
 
-                        <VenueContacts 
-                            contacts={contactsQuery.data || null} 
+                        <VenueContacts
+                            contacts={contactsQuery.data || null}
                             isLoading={contactsQuery.isLoading}
                             isError={contactsQuery.isError}
                         />
@@ -307,6 +314,8 @@ const VenueDetailsPage: React.FC = () => {
                 )}
 
                 {activeTab === 'MENU' && <VenueMenuSection venueId={venueId} />}
+
+                {activeTab === 'TABLES' && <VenueTablesListSection venueId={venueId} />}
 
                 {activeTab === 'BOOKING' && <VenueTablesSection venueId={venueId} />}
 
