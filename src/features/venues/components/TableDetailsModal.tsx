@@ -13,10 +13,10 @@ interface TableDetailsModalProps {
 
 const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTime, onClose, onBook }) => {
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
-    
+
     const { data: table, isLoading, error } = useQuery({
-        queryKey: ['tableDetails', tableId, visitTime],
-        queryFn: () => venueService.getTableDetails(tableId, visitTime),
+        queryKey: ['guestTableDetails', tableId, visitTime],
+        queryFn: () => venueService.getGuestTableDetails(tableId, visitTime),
     });
 
     if (isLoading) return (
@@ -40,7 +40,7 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
     const imageUrls = Object.values(table.images).filter(Boolean);
     const hasMultipleImages = imageUrls.length > 1;
     const currentImageUrl = imageUrls[currentImageIndex] || '';
-    
+
     // Debug: Log images to console
     console.log('📸 Table Images:', {
         total: imageUrls.length,
@@ -58,7 +58,7 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
 
                 <div style={styles.imageContainer}>
                     <img src={currentImageUrl} alt={table.title} style={styles.image} />
-                    
+
                     {/* Navigation arrows for multiple images */}
                     {hasMultipleImages && (
                         <>
@@ -82,12 +82,12 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
                             >
                                 <ChevronRight size={24} color="#FFF" />
                             </button>
-                            
+
                             {/* Image counter */}
                             <div style={styles.imageCounter}>
                                 {currentImageIndex + 1} / {imageUrls.length}
                             </div>
-                            
+
                             {/* Dots indicator */}
                             <div style={styles.dotsContainer}>
                                 {imageUrls.map((_, idx) => (
@@ -103,7 +103,7 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
                             </div>
                         </>
                     )}
-                    
+
                     <div style={{
                         ...styles.statusBadge,
                         backgroundColor: table.status === 'OPEN' ? '#4CAF50' : '#F44336'

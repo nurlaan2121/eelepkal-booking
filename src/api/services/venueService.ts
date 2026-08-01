@@ -109,6 +109,14 @@ export const venueService = {
         return response.data;
     },
 
+    // Guest (unauthenticated): Get single table details
+    getGuestTableDetails: async (tableId: number | string, fullVisitTime: string): Promise<TableDetails> => {
+        const response = await api.get<TableDetails>(`/guest-table/get/${tableId}`, {
+            params: { fullVisitTime }
+        });
+        return response.data;
+    },
+
     getVenueHours: async (venueId: string | number): Promise<VenueSchedule> => {
         const { isAuthenticated } = useAuthStore.getState();
         const endpoint = isAuthenticated ? `/client-venue/get-hours/${venueId}` : `/guest-venue/get-hours/${venueId}`;

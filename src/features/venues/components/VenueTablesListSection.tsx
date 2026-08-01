@@ -5,6 +5,10 @@ import { venueService } from '../../../api/services/venueService';
 import { formatToBackendDateTime, translateTableType } from '../../../shared/utils/dateFormatter';
 import { TableItem } from '../../../api/dto/venueDto';
 import InfiniteScrollList from '../../../components/ui/InfiniteScrollList';
+import TableDetailsModal from './TableDetailsModal';
+import BookingConfirmationModal from './BookingConfirmationModal';
+import AuthGuardModal from '../../auth/components/AuthGuardModal';
+import { useAuthStore } from '../../auth/authStore';
 
 interface VenueTablesListSectionProps {
     venueId: string | number;
@@ -14,6 +18,11 @@ const LIMIT = 10;
 
 const VenueTablesListSection: React.FC<VenueTablesListSectionProps> = ({ venueId }) => {
     const [floor, setFloor] = React.useState(1);
+    const [selectedTableId, setSelectedTableId] = React.useState<number | null>(null);
+    const [bookingConfirmation, setBookingConfirmation] = React.useState<{ tableId: number; title: string } | null>(null);
+    const [isAuthGuardOpen, setIsAuthGuardOpen] = React.useState(false);
+
+    const { isAuthenticated } = useAuthStore();
 
     // Default to current local date
     const [selectedDate, setSelectedDate] = React.useState(() => {
@@ -63,6 +72,19 @@ const VenueTablesListSection: React.FC<VenueTablesListSectionProps> = ({ venueId
     const countBusy = tablesQuery.data?.pages[0]?.countBusy ?? 0;
 
     const allTables = tablesQuery.data?.pages.flatMap((page) => page.tables ?? []) ?? [];
+
+    const handleTableClick = (table: TableItem) => {
+        setSelectedTableId(table.id);
+    };
+
+    const handleBook = (tableId: number, tableTitle: string) => {
+        if (!isAuthenticated) {
+            setIsAuthGuardOpen(true);
+            return;
+        }
+        setSelectedTableId(null);
+        setBookingConfirmation({ tableId, title: tableTitle });
+    };
 
     return (
         <div style={styles.container}>
@@ -129,12 +151,16 @@ const VenueTablesListSection: React.FC<VenueTablesListSectionProps> = ({ venueId
                         const isRecommended = table.recommendationForBooking;
 
                         return (
-                            <div style={{
-                                ...styles.tableCard,
-                                border: isRecommended ? '1.5px solid #FFD54F' : '1px solid #F0F0F0',
-                                boxShadow: isRecommended ? '0 4px 12px rgba(255, 213, 79, 0.15)' : styles.tableCard.boxShadow,
-                                position: 'relative',
-                            }}>
+                            <div
+                                style={{
+                                    ...styles.tableCard,
+                                    border: isRecommended ? '1.5px solid #FFD54F' : '1px solid #F0F0F0',
+                                    boxShadow: isRecommended ? '0 4px 12px rgba(255, 213, 79, 0.15)' : styles.tableCard.boxShadow,
+                                    position: 'relative',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleTableClick(table)}
+                            >
                                 {isRecommended && (
                                     <div style={styles.recommendedBadge}>
                                         <Sparkles size={11} style={{ marginRight: '3px' }} />
@@ -183,6 +209,42 @@ const VenueTablesListSection: React.FC<VenueTablesListSectionProps> = ({ venueId
                     gap={16}
                 />
             </div>
+
+            {/* Table Details Modal */}
+            {selectedTableId !== null && (
+                <TableDetailsModal
+                    tableId={selectedTableId}
+                    visitTime={fullVisitTime}
+                    onClose={() => setSelectedTableId(null)}
+                    onBook={() => {
+                        const table = allTables.find(t => t.id === selectedTableId);
+                        if (table) {
+                            handleBook(table.id, table.title);
+                        }
+                    }}
+                />
+            )}
+
+            {/* Booking Confirmation Modal */}
+            {bookingConfirmation !== null && (
+                <BookingConfirmationModal
+                    tableId={bookingConfirmation.tableId}
+                    tableTitle={bookingConfirmation.title}
+                    bookingData={{
+                        venueId: Number(venueId),
+                        floor,
+                        countOfGuests: 1,
+                        fullVisitTime,
+                    }}
+                    onClose={() => setBookingConfirmation(null)}
+                />
+            )}
+
+            {/* Auth Guard */}
+            <AuthGuardModal
+                isOpen={isAuthGuardOpen}
+                onClose={() => setIsAuthGuardOpen(false)}
+            />
         </div>
     );
 };
@@ -278,6 +340,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderRadius: '16px',
         backgroundColor: '#FFFFFF',
         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+        transition: 'box-shadow 0.2s, transform 0.15s',
     },
     recommendedBadge: {
         position: 'absolute',
