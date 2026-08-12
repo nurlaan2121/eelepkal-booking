@@ -197,8 +197,10 @@ export const venueService = {
     },
 
     // 11. Menu Categories
-    getMenuCategories: async (): Promise<MenuCategory[]> => {
-        const response = await api.get<MenuCategory[]>('/dev/category/allIdAndName');
+    getMenuCategories: async (venueId: string | number): Promise<MenuCategory[]> => {
+        const response = await api.get<MenuCategory[]>('/dev/category/allIdAndName', {
+            params: { venueId },
+        });
         return response.data;
     },
 
