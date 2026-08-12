@@ -245,7 +245,7 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
                         <div style={styles.paymentCard}>
                             {payment.qrcodeUrl && (
                                 <div style={styles.qrContainer}>
-                                    <img src={payment.qrcodeUrl} alt="QR Code" style={styles.qrImage} />
+                                    <img src={payment.qrcodeUrl} alt="QR Code" style={styles.qrImage} loading="lazy" decoding="async" />
                                     <div style={styles.qrLabel}>
                                         <QrCode size={14} />
                                         Отсканируйте для оплаты

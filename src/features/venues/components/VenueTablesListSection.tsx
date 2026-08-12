@@ -9,6 +9,7 @@ import TableDetailsModal from './TableDetailsModal';
 import BookingConfirmationModal from './BookingConfirmationModal';
 import AuthGuardModal from '../../auth/components/AuthGuardModal';
 import { useAuthStore } from '../../auth/authStore';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface VenueTablesListSectionProps {
     venueId: string | number;
@@ -169,7 +170,7 @@ const VenueTablesListSection: React.FC<VenueTablesListSectionProps> = ({ venueId
                                 )}
 
                                 {table.image ? (
-                                    <img src={table.image} alt={table.title} style={styles.tableImage} />
+                                    <OptimizedImage src={table.image} alt={table.title} style={styles.tableImage} />
                                 ) : (
                                     <div style={styles.tableImagePlaceholder}>
                                         <span style={styles.placeholderLabel}>Стул</span>

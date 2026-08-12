@@ -1,6 +1,7 @@
 import React from 'react';
 import { Star, User } from 'lucide-react';
 import type { VenueReview } from '../../../api/dto/venueDto';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface VenueReviewsProps {
     reviews: VenueReview[];
@@ -18,7 +19,7 @@ const VenueReviews: React.FC<VenueReviewsProps> = ({ reviews }) => {
                         <div style={styles.header}>
                             <div style={styles.avatar}>
                                 {review.client.image ? (
-                                    <img src={review.client.image} alt={review.client.fullName} style={styles.avatarImg} />
+                                    <OptimizedImage src={review.client.image} alt={review.client.fullName} style={styles.avatarImg} />
                                 ) : (
                                     <User size={20} color="#757575" />
                                 )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { FavoriteMenu } from '../../../api/dto/venueDto';
 import FavoriteButton from '../../../components/ui/FavoriteButton';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface FavoriteMenuCardProps {
     menuItem: FavoriteMenu;
@@ -28,7 +29,7 @@ const FavoriteMenuCard: React.FC<FavoriteMenuCardProps> = ({ menuItem }) => {
             onClick={handleClick}
         >
             <div style={styles.imageContainer}>
-                <img src={menuItem.imageUrl} alt={menuItem.name} style={styles.image} />
+                <OptimizedImage src={menuItem.imageUrl} alt={menuItem.name} style={styles.image} />
                 {isInactive && (
                     <div style={styles.inactiveOverlay}>
                         <span style={styles.inactiveText}>Недоступно</span>
@@ -54,7 +55,7 @@ const FavoriteMenuCard: React.FC<FavoriteMenuCardProps> = ({ menuItem }) => {
 
                 <div style={styles.venueRow}>
                     <div style={styles.logoContainer}>
-                        <img src={menuItem.venueLogoUrl} alt={menuItem.from} style={styles.venueLogo} />
+                        <OptimizedImage src={menuItem.venueLogoUrl} alt={menuItem.from} style={styles.venueLogo} />
                     </div>
                     <span style={styles.venueName}>{menuItem.from}</span>
                 </div>

@@ -20,6 +20,7 @@ import ClaimVenueCTA from './components/ClaimVenueCTA';
 import ClaimVenueModal from './components/ClaimVenueModal';
 import InfiniteScrollList from '../../components/ui/InfiniteScrollList';
 import Skeleton from '../../components/ui/Skeleton';
+import OptimizedImage from '../../components/ui/OptimizedImage';
 import SEOManager from '../../shared/components/SEO/SEOManager';
 import AuthGuardModal from '../auth/components/AuthGuardModal';
 import { useAuthStore } from '../auth/authStore';
@@ -334,7 +335,7 @@ const VenueDetailsPage: React.FC = () => {
                                     <div style={styles.reviewHeader}>
                                         <div style={styles.reviewAvatar}>
                                             {review.client.image ? (
-                                                <img src={review.client.image} alt={review.client.fullName} style={styles.reviewAvatarImg} />
+                                                <OptimizedImage src={review.client.image} alt={review.client.fullName} style={styles.reviewAvatarImg} />
                                             ) : (
                                                 <span style={styles.reviewAvatarInitial}>
                                                     {review.client.fullName?.charAt(0) ?? '?'}

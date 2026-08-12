@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Calendar, Users, Home, Clock } from 'lucide-react';
 import { BookingDTO } from '../../../api/dto/bookingDto';
 import { formatTimestamp, translateBookingStatus, translateTableType } from '../../../shared/utils/dateFormatter';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface BookingCardProps {
     booking: BookingDTO;
@@ -14,7 +15,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
     return (
         <div style={styles.card} onClick={() => navigate(`/booking/${booking.bookingId}`)}>
             <div style={styles.imageContainer}>
-                <img src={booking.firstImageUrl} alt={booking.venueName} style={styles.image} />
+                <OptimizedImage src={booking.firstImageUrl} alt={booking.venueName} style={styles.image} />
                 <div style={styles.statusBadge(booking.bookingStatus)}>
                     {translateBookingStatus(booking.bookingStatus)}
                 </div>

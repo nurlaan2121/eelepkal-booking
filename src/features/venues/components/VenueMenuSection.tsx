@@ -6,6 +6,7 @@ import InfiniteScrollList from '../../../components/ui/InfiniteScrollList';
 import MenuItemDetailsModal from './MenuItemDetailsModal';
 import type { MenuItem } from '../../../api/dto/venueDto';
 import { UtensilsCrossed } from 'lucide-react';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 const LIMIT = 10;
 
@@ -93,7 +94,7 @@ const VenueMenuSection: React.FC<VenueMenuSectionProps> = ({ venueId }) => {
                         style={styles.menuCard}
                         onClick={() => setSelectedMenuId(item.id)}
                     >
-                        <img src={item.imageUrl} alt={item.name} style={styles.itemImage} />
+                        <OptimizedImage src={item.imageUrl} alt={item.name} style={styles.itemImage} />
                         <div style={styles.itemInfo}>
                             <h4 style={styles.itemName}>{item.name}</h4>
                             <p style={styles.itemDesc}>{item.description}</p>

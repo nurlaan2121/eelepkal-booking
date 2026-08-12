@@ -3,6 +3,7 @@ import { X, Users, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
 import { translateTableType } from '../../../shared/utils/dateFormatter';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface TableDetailsModalProps {
     tableId: number;
@@ -57,7 +58,7 @@ const TableDetailsModal: React.FC<TableDetailsModalProps> = ({ tableId, visitTim
                 </button>
 
                 <div style={styles.imageContainer}>
-                    <img src={currentImageUrl} alt={table.title} style={styles.image} />
+                    <OptimizedImage src={currentImageUrl} variant="preview" priority alt={table.title} style={styles.image} />
 
                     {/* Navigation arrows for multiple images */}
                     {hasMultipleImages && (

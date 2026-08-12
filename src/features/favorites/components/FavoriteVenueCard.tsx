@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Star, MapPin } from 'lucide-react';
 import type { FavoriteVenue } from '../../../api/dto/venueDto';
 import FavoriteButton from '../../../components/ui/FavoriteButton';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface FavoriteVenueCardProps {
     venue: FavoriteVenue;
@@ -29,7 +30,7 @@ const FavoriteVenueCard: React.FC<FavoriteVenueCardProps> = ({ venue }) => {
             onClick={handleClick}
         >
             <div style={styles.imageContainer}>
-                <img src={venue.firstImageUrl} alt={venue.venueName} style={styles.image} />
+                <OptimizedImage src={venue.firstImageUrl} alt={venue.venueName} style={styles.image} />
                 {isInactive && (
                     <div style={styles.inactiveOverlay}>
                         <span style={styles.inactiveText}>Недоступно</span>

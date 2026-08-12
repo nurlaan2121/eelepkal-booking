@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useImageStore } from '../../shared/stores/imageStore';
+import { getImageUrl } from '../../shared/utils/imageUrl';
 
 const ImageModal: React.FC = () => {
     const { isOpen, images, currentIndex, nextImage, prevImage, closeImage } = useImageStore();
@@ -11,15 +12,15 @@ const ImageModal: React.FC = () => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            // Preload images
-            images.forEach(src => {
+            // Load only the current image and its immediate neighbours.
+            [images[currentIndex], images[currentIndex - 1], images[currentIndex + 1]].filter(Boolean).forEach(src => {
                 const img = new Image();
-                img.src = src;
+                img.src = getImageUrl(src, 'full');
             });
         } else {
             document.body.style.overflow = 'unset';
         }
-    }, [isOpen, images]);
+    }, [isOpen, images, currentIndex]);
 
     const handleTouchStart = (e: React.TouchEvent) => {
         setTouchEnd(null);
@@ -74,10 +75,11 @@ const ImageModal: React.FC = () => {
 
                 <img
                     key={imageUrl}
-                    src={imageUrl}
+                    src={getImageUrl(imageUrl, 'full')}
                     alt="Full size"
                     style={styles.image}
                     className="animate-fade-in"
+                    decoding="async"
                 />
 
                 {images.length > 1 && (

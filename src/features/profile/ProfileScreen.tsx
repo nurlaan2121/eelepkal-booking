@@ -3,6 +3,7 @@ import { profileService } from '../../api/services/profileService';
 import { ProfileResponse, ProfileUpdateRequest } from '../../api/dto/profile';
 import './ProfileScreen.css';
 import { useAuthStore } from '../auth/authStore';
+import OptimizedImage from '../../components/ui/OptimizedImage';
 import { X, Save, Loader2, CheckCircle2, AlertCircle, Upload, User } from 'lucide-react';
 
 const ProfileScreen: React.FC = () => {
@@ -264,7 +265,7 @@ const ProfileScreen: React.FC = () => {
             <div className="profile-header">
                 <div className="avatar-container">
                     {profile?.imageUrl ? (
-                        <img src={profile.imageUrl} alt={profile.name} className="profile-image" />
+                        <OptimizedImage src={profile.imageUrl} alt={profile.name} className="profile-image" />
                     ) : (
                         <div className="avatar-placeholder">
                             {profile?.name?.charAt(0) || 'U'}
@@ -358,7 +359,7 @@ const ProfileScreen: React.FC = () => {
                                             </div>
                                         ) : formData.imageUrl ? (
                                             <>
-                                                <img src={formData.imageUrl} alt="Profile" style={styles.photoPreviewImage} />
+                                                <OptimizedImage src={formData.imageUrl} variant="preview" priority alt="Profile" style={styles.photoPreviewImage} />
                                                 <div style={styles.photoSuccessBadge}>
                                                     <CheckCircle2 size={16} color="#22c55e" />
                                                 </div>

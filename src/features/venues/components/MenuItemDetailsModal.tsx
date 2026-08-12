@@ -3,6 +3,7 @@ import { X, MapPin, Scale } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { venueService } from '../../../api/services/venueService';
 import FavoriteButton from '../../../components/ui/FavoriteButton';
+import OptimizedImage from '../../../components/ui/OptimizedImage';
 
 interface MenuItemDetailsModalProps {
     menuId: number;
@@ -40,7 +41,7 @@ const MenuItemDetailsModal: React.FC<MenuItemDetailsModalProps> = ({ menuId, onC
                 </button>
 
                 <div style={styles.imageContainer}>
-                    <img src={item.imageUrl} alt={item.name} style={styles.image} />
+                    <OptimizedImage src={item.imageUrl} variant="preview" priority alt={item.name} style={styles.image} />
                     <FavoriteButton
                         id={item.id}
                         type="menu"
